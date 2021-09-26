@@ -11,6 +11,9 @@ public class Spawning : MonoBehaviour
     float speed = 1f;
     private bool isSpawned;
 
+    int maxSpawned = 5;
+    int currentSpawned = 0;
+    float lifeTime = 5f;
     void Start()
     {
         isSpawned = false;
@@ -19,42 +22,56 @@ public class Spawning : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !isSpawned)
+
+        
+
+        //CASE 3
+        if(Input.GetKeyDown(KeyCode.Mouse0) && currentSpawned < maxSpawned)
         {
-            StartCoroutine("destroyPrefab");
-            itemPrefab = (GameObject)Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
-            //spawnedPrefabs.Add(itemPrefab);
-
-            Debug.Log("Object Spawned");
-            isSpawned = true;
+            currentSpawned++;
+            StartCoroutine("ManageObj");
         }
-
-        if (isSpawned)
-            moveObject();
+        //---------
     }
 
-    void moveObject()
+    //CASE 3
+    IEnumerator ManageObj()
     {
-        itemPrefab.transform.position += itemPrefab.transform.forward * Time.deltaTime * speed;
-    }
+        GameObject go =  Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
+        float time = 0;
 
-    IEnumerator destroyPrefab()
-    {
-        System.DateTime myTime = System.DateTime.UtcNow;
-        while (true)
+        while(time <= lifeTime)
         {
-            while ((System.DateTime.UtcNow - myTime).Seconds < 5.0)
-            {
-                yield return null; //"si es null ejecuta frame y después vuelve a ver si he acabado."
-                                   //Debug.Log(System.DataTime.UtcNow;
-
-            }
-
-            Destroy(itemPrefab);
-            Debug.Log("The object has been destroyed after 5 seconds");
-            isSpawned = false;
-
-            myTime = System.DateTime.UtcNow;
+            go.transform.position += go.transform.forward * Time.deltaTime * speed;
+            time += Time.deltaTime;
+            yield return null;
         }
+        currentSpawned--;
+        Destroy(go);
+        
     }
+    //void moveObject()
+    //{
+    //    itemPrefab.transform.position += itemPrefab.transform.forward * Time.deltaTime * speed;
+    //}
+
+    //IEnumerator destroyPrefab()
+    //{
+    //    System.DateTime myTime = System.DateTime.UtcNow;
+    //    while (true)
+    //    {
+    //        while ((System.DateTime.UtcNow - myTime).Seconds < 5.0)
+    //        {
+    //            yield return null; //"si es null ejecuta frame y después vuelve a ver si he acabado."
+    //                               //Debug.Log(System.DataTime.UtcNow;
+
+    //        }
+
+    //        Destroy(itemPrefab);
+    //        Debug.Log("The object has been destroyed after 5 seconds");
+    //        isSpawned = false;
+
+    //        myTime = System.DateTime.UtcNow;
+    //    }
+    //}
 }
