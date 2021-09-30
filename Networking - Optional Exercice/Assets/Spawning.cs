@@ -5,7 +5,6 @@ using UnityEngine;
 public class Spawning : MonoBehaviour
 {
     public GameObject itemPrefab;
-    //List<GameObject> spawnedPrefabs = new List<GameObject>();
 
     private Vector3 spawnPosition = new Vector3(0.0f, 0.0f, 0.0f);
     float speed = 1f;
@@ -14,17 +13,21 @@ public class Spawning : MonoBehaviour
 
     int maxSpawned = 5;
     int currentSpawned = 0;
+
+    float time = 0;
     float lifeTime = 5f;
+
+    float sharedTime = 0;
     
     void Update()
     {
-
         //CASE 1
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            StartCoroutine("CASE_1");
-        }
-        //------------
+        //if (Input.GetKeyDown(KeyCode.Mouse0))
+        //{
+        //    StartCoroutine("CASE_1");
+        //}
+        //--------------- 
+
         //CASE 2
         //if (Input.GetKeyDown(KeyCode.Mouse0) && !isCoroutineRunning)
         //{
@@ -38,14 +41,22 @@ public class Spawning : MonoBehaviour
         //    currentSpawned++;
         //    StartCoroutine("CASE_3");
         //}
-        //---------
+        //--------------- 
+
+        //CASE 4
+        if (Input.GetKeyDown(KeyCode.Mouse0) && currentSpawned < maxSpawned)
+        {
+            currentSpawned++;
+            sharedTime = sharedTime + 5f;
+            StartCoroutine("CASE_4");
+        }
     }
 
     //CASE 1
     IEnumerator CASE_1()
     {
         GameObject go = Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
-        float time = 0;
+        time = 0;
 
         while (time <= lifeTime)
         {
@@ -61,7 +72,7 @@ public class Spawning : MonoBehaviour
     {
         isCoroutineRunning = true;
         GameObject go = Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
-        float time = 0;
+        time = 0;
 
         while (time <= lifeTime)
         {
@@ -77,7 +88,8 @@ public class Spawning : MonoBehaviour
     IEnumerator CASE_3()
     {
         GameObject go =  Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
-        float time = 0;
+        time = 0;
+        
 
         while(time <= lifeTime)
         {
@@ -87,8 +99,21 @@ public class Spawning : MonoBehaviour
         }
         currentSpawned--;
         Destroy(go);
-        
     }
+    //---------
+    //CASE 4
+    IEnumerator CASE_4()
+    {
+        GameObject go = Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
+        time = 0;
 
-
+        while (time <= sharedTime)
+        {
+            go.transform.position += go.transform.forward * Time.deltaTime * speed;
+            time += Time.deltaTime;
+            yield return null;
+        }
+        currentSpawned--;
+        Destroy(go);
+    }
 }
