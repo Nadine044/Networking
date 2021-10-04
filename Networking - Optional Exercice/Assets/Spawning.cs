@@ -22,10 +22,10 @@ public class Spawning : MonoBehaviour
     void Update()
     {
         //CASE 1
-        //if (Input.GetKeyDown(KeyCode.Mouse0))
-        //{
-        //    StartCoroutine("CASE_1");
-        //}
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            StartCoroutine("CASE_1");
+        }
         //--------------- 
 
         //CASE 2
@@ -44,12 +44,12 @@ public class Spawning : MonoBehaviour
         //--------------- 
 
         //CASE 4
-        if (Input.GetKeyDown(KeyCode.Mouse0) && currentSpawned < maxSpawned)
-        {
-            currentSpawned++;
-            sharedTime = sharedTime + 5f;
-            StartCoroutine("CASE_4");
-        }
+        //if (Input.GetKeyDown(KeyCode.Mouse0) && currentSpawned < maxSpawned)
+        //{
+        //    currentSpawned++;
+        //    sharedTime = sharedTime + 5f;
+        //    StartCoroutine("CASE_4");
+        //}
     }
 
     //CASE 1
