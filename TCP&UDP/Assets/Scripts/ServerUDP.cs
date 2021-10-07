@@ -17,7 +17,6 @@ public class ServerUDP : MonoBehaviour
     public void Start()
     {
         startThreadingFunction(Server);
-        //StartCoroutine(Server());
     }
 
 
@@ -27,7 +26,7 @@ public class ServerUDP : MonoBehaviour
         t.Start();
     }
 
-
+    //Maybe not do everything in the thread only the blocking things
     void Server()
     {
         int count = 0;
@@ -52,11 +51,12 @@ public class ServerUDP : MonoBehaviour
         Thread.Sleep(500);
         count++;
         string pong = "pong";
+
         data = Encoding.ASCII.GetBytes(pong);
         _socket.SendTo(data, data.Length, SocketFlags.None, epFrom);
 
 
-        while (count <5 )
+        while (count <5 ) //number of sended messages to client
         {
             count++;
             data = new byte[1024];

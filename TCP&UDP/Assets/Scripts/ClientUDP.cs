@@ -30,27 +30,32 @@ public class ClientUDP : MonoBehaviour
     }
 
 
-
+    //Maybe not do everything in the thread only the blocking things
     void ExampleClient()
     {
         int count = 0;
+
+        //Creates Sockets
         server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         EndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
 
         string ping = "ping";
         count++;
         data = Encoding.ASCII.GetBytes(ping);
+        //Sends ping string to the server & waits for response// the thread blocks here
         server.SendTo(data, data.Length, SocketFlags.None, ipep);
 
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
         EndPoint Remote = (EndPoint)sender;
 
+        //we receieve the the message from the server
         data = new byte[1024];
         int recv = server.ReceiveFrom(data, ref Remote);
 
         Debug.Log("Message recieved from " + Remote.ToString());
         Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
 
+        //Until we sent 5 messages to the server the thread will continue running 
         while (count <5)
         {
             count++;
