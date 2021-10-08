@@ -27,7 +27,6 @@ public class ClientTCP : MonoBehaviour
     }
     void Client()
     {
-        Thread.Sleep(1000);
         Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
 
