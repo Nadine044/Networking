@@ -45,13 +45,16 @@ public class ClientTCP : MonoBehaviour
         }
 
         //Recieve is blocking
+        server.Send(Encoding.ASCII.GetBytes(ping));
+        count++;
+        Thread.Sleep(500);
         int recv = server.Receive(data);
         Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
 
         while(count < 5 && connected )
         {
             count++;
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
             server.Send(Encoding.ASCII.GetBytes(ping));
             data = new byte[1024];
             recv = server.Receive(data);

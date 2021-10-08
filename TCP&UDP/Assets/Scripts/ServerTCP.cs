@@ -50,6 +50,7 @@ public class ServerTCP : MonoBehaviour
             count++;
             data = Encoding.ASCII.GetBytes(pong);
             client.Send(data, data.Length, SocketFlags.None);
+            Thread.Sleep(500);
         }
         catch(Exception e)
         {
@@ -63,10 +64,10 @@ public class ServerTCP : MonoBehaviour
 
             if (client != null)
             {
-                Thread.Sleep(1000);
                 recv = client.Receive(data);
-                Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
-                client.Send(data, recv, SocketFlags.None);
+                Thread.Sleep(500);
+                client.Send(Encoding.ASCII.GetBytes(pong));
+                Debug.Log(Encoding.ASCII.GetString(data,0,recv));
             }
 
         }
