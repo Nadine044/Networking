@@ -42,25 +42,27 @@ public class ClientTCP : MonoBehaviour
         catch (SocketException e)
         {
             Debug.Log("Unable to connect to server  " + e.ToString());
-            Thread.CurrentThread.Abort();
+            Debug.Log("que pasa");
+           // Thread.CurrentThread.Abort();
         }
 
         //Recieve is blocking
         server.Send(Encoding.ASCII.GetBytes(ping));
-        Debug.Log("ping");
+        Debug.Log("Send  client ping ");
         count++;
-        Thread.Sleep(500);
+        Thread.Sleep(2000);
         int recv = server.Receive(data);
-        Debug.Log(Encoding.ASCII.GetString(data, 0, recv)); //Peta
+        Debug.Log("Recieved  Client" + Encoding.ASCII.GetString(data, 0, recv)); //Peta
 
         while(count < 5 && connected )
         {
             count++;
-            Thread.Sleep(500);
+            Thread.Sleep(2000);
             server.Send(Encoding.ASCII.GetBytes(ping));
+            Debug.Log("Send client ping");
             data = new byte[1024];
             recv = server.Receive(data);
-            Debug.Log(Encoding.ASCII.GetString(data, 0, recv)); //Crashes here in the last update
+            Debug.Log("Recived client " +Encoding.ASCII.GetString(data, 0, recv)); //Crashes here in the last update
 
         }
 

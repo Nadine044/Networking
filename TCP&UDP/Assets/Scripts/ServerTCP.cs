@@ -6,18 +6,18 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-
+using System.Threading.Tasks;
 public class ServerTCP : MonoBehaviour
 {
     // Start is called before the first frame update
-    public int maxClients = 1;
+    readonly int maxClients = 1;
     private Socket _socket;
     private IPEndPoint ipep;
 
-    Dictionary<string, Socket> dictionary = new Dictionary<string, Socket>();
     private int current_clients = 0;
-    int exiting_clients=0;
     bool listening = true;
+
+    Queue<Thread> thread_queue = new Queue<Thread>();
     void Start()
     {
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -30,16 +30,27 @@ public class ServerTCP : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(listening && current_clients >=5)
+        if(listening && current_clients == maxClients)
         {
             listening = false;
         }
+
+        if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive) //fails the first must be alread started
+        {
+            thread_queue.Dequeue();
+            Debug.Log("thread dequeued");
+            if (thread_queue.Count > 0)
+                thread_queue.Peek().Start();
+        }
+
+
     }
+
 
     //Maybe use thread pool
     void MultipleServer()
     {
-        Socket client;
+        Socket client=null;
 
         _socket.Bind(ipep);
         _socket.Listen(maxClients);
@@ -47,17 +58,39 @@ public class ServerTCP : MonoBehaviour
         //maybe do a loop here until a maximum capcity of clients has come
         while (listening)
         {
+
             client = _socket.Accept();
-            ThreadPool.QueueUserWorkItem(ClientHandler, client);
-            Thread.Sleep(500);
+
+            //  ThreadPool.QueueUserWorkItem(ClientHandler, client); //Need to use some thread at a time
+            //Thread.Sleep(500);
+
+            thread_queue.Enqueue(new Thread(() => ClientHandler(client)));
+            if (thread_queue.Count == 1)
+                thread_queue.Peek().Start();
+
+
            // new Thread(() => ClientHandler(client)).Start();
         }
 
+        
         Debug.Log("Closing server");
         _socket.Close();
     }
 
 
+    //async void ManageClientsQueue()
+    //{
+    //    //for(int i =0; i <= thread_queue.Count; i++)
+    //    //{
+    //    //    thread_queue.GetEnumerator().Current.Start();
+    //    //    if(thread_queue.)
+    //    //}
+    //    while(thread_queue.Count !=0)
+    //    {
+    //        thread_queue.GetEnumerator().Current.Start();
+    //        if (thread_queue.)
+    //    }
+    //}
 
     void ClientHandler(object c)
     {
@@ -73,12 +106,12 @@ public class ServerTCP : MonoBehaviour
 
         client_ep = (IPEndPoint)client.RemoteEndPoint;
         Debug.Log("Connected: " + client_ep.ToString());
-
         data = Encoding.ASCII.GetBytes(pong);
         client.Send(data, data.Length, SocketFlags.None);
+        Debug.Log("Send server " + Encoding.ASCII.GetString(data));
         count++;
 
-        Thread.Sleep(500);
+        Thread.Sleep(2000);
 
         while(count < 5)
         {
@@ -86,13 +119,12 @@ public class ServerTCP : MonoBehaviour
 
             data = new byte[1024];
             recv = client.Receive(data);
-            Thread.Sleep(500);
+            Debug.Log("Recieved server " + Encoding.ASCII.GetString(data));
+            Thread.Sleep(2000);
             client.Send(Encoding.ASCII.GetBytes(pong));
-            Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+            Debug.Log("Send server" + Encoding.ASCII.GetString(data, 0, recv));
         }
-        exiting_clients++;
         client.Close();
-
     }
 
     public void startThreadingFunction(Action function)
