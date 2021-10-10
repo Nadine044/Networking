@@ -10,7 +10,7 @@ using System.Threading;
 public class ServerTCP : MonoBehaviour
 {
     // Start is called before the first frame update
-    int maxClients = 5;
+    public int maxClients = 1;
     private Socket _socket;
     private IPEndPoint ipep;
 
@@ -30,7 +30,7 @@ public class ServerTCP : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(listening && current_clients >5)
+        if(listening && current_clients >=5)
         {
             listening = false;
         }
@@ -53,10 +53,6 @@ public class ServerTCP : MonoBehaviour
            // new Thread(() => ClientHandler(client)).Start();
         }
 
-        while(exiting_clients< maxClients)
-        {
-
-        }
         Debug.Log("Closing server");
         _socket.Close();
     }
@@ -84,7 +80,7 @@ public class ServerTCP : MonoBehaviour
 
         Thread.Sleep(500);
 
-        while(count < maxClients)
+        while(count < 5)
         {
             count++;
 
