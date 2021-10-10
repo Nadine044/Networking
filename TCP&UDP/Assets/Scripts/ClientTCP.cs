@@ -10,7 +10,7 @@ public class ClientTCP : MonoBehaviour
 {
     string ping = "ping";
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         StartThreadingFunction(Client);
     }
@@ -37,18 +37,21 @@ public class ClientTCP : MonoBehaviour
         {
             server.Connect(ipep);
             connected = true;
+            Debug.Log("connected to server");
         }
         catch (SocketException e)
         {
             Debug.Log("Unable to connect to server  " + e.ToString());
+            Thread.CurrentThread.Abort();
         }
 
         //Recieve is blocking
         server.Send(Encoding.ASCII.GetBytes(ping));
+        Debug.Log("ping");
         count++;
         Thread.Sleep(500);
         int recv = server.Receive(data);
-        Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+        Debug.Log(Encoding.ASCII.GetString(data, 0, recv)); //Peta
 
         while(count < 5 && connected )
         {
@@ -65,5 +68,6 @@ public class ClientTCP : MonoBehaviour
         server.Shutdown(SocketShutdown.Both);
         
         server.Close();
+        Thread.CurrentThread.Abort();
     }
 }
