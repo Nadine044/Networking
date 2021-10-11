@@ -33,43 +33,95 @@ public class ClientTCP : MonoBehaviour
         byte[] data = new byte[1024];
         int count = 0;
         bool connected = false;
+
+        //tries to connect all the time to the server until the client achieve it
+        while (!connected)
+        {
+            try
+            {
+                server.Connect(ipep);
+                connected = true;
+                Debug.Log("connected to server");
+            }
+            catch (SocketException e)
+            {
+                if (e.NativeErrorCode.Equals(10035))
+                {
+                    Debug.LogWarning("Still Connected, but the Send would block");
+                }
+                else
+                {
+                    Debug.LogWarning("Disconnected: error code "+ e.NativeErrorCode);
+                }
+                Debug.LogWarning("Unable to connect to server  " + e.ToString());
+
+            }
+
+        }
+
+        //Sends the first ping or message to the server
         try
         {
-            server.Connect(ipep);
-            connected = true;
-            Debug.Log("connected to server");
-        }
-        catch (SocketException e)
-        {
-            Debug.Log("Unable to connect to server  " + e.ToString());
-            Debug.Log("que pasa");
-           // Thread.CurrentThread.Abort();
-        }
-
-        //Recieve is blocking
-        server.Send(Encoding.ASCII.GetBytes(ping));
-        Debug.Log("Send  client ping ");
-        count++;
-        Thread.Sleep(2000);
-        int recv = server.Receive(data);
-        Debug.Log("Recieved  Client" + Encoding.ASCII.GetString(data, 0, recv)); //Peta
-
-        while(count < 5 && connected )
-        {
-            count++;
-            Thread.Sleep(2000);
             server.Send(Encoding.ASCII.GetBytes(ping));
-            Debug.Log("Send client ping");
-            data = new byte[1024];
+            //Debug.Log("Send  client ping ");
+        } catch(SocketException e)
+        {
+            Debug.LogWarning(e.SocketErrorCode);
+            
+        }
+
+        int recv;
+        //Recieves the first message from the server & waits for 500ms
+        try
+        {
             recv = server.Receive(data);
-            Debug.Log("Recived client " +Encoding.ASCII.GetString(data, 0, recv)); //Crashes here in the last update
+            Debug.Log("Recieved  Client" + Encoding.ASCII.GetString(data, 0, recv)); 
+            Thread.Sleep(500);
+        }
+        catch(SystemException e)
+        {
+            Debug.LogWarning("Client coulnd't recieve from server " + e);
+        }
+        
+        count++;
+        while (count < 5)
+        {
+            try //Sends message to server
+            {
+                count++;
+                server.Send(Encoding.ASCII.GetBytes(ping));
+                //Debug.Log("Send client ping");
+            }
+            catch(SystemException e)
+            {
+                Debug.LogWarning("Client Couldn't send message to server " + e);
+                break;
+            }
+
+
+            data = new byte[1024];
+            try //Recieves message from server & waits for 500ms
+            {
+                recv = server.Receive(data);
+                Debug.Log("Recived client " + Encoding.ASCII.GetString(data, 0, recv)); //Crashes here in the last update
+                Thread.Sleep(500);
+            }
+            catch (SystemException e)
+            {
+                Debug.LogWarning("Couldn't recieve from server " + e);
+            }
 
         }
 
         Debug.Log("Disconnecting From server");
-        server.Shutdown(SocketShutdown.Both);
-        
+        try
+        {
+            server.Shutdown(SocketShutdown.Both);
+        }
+        catch(SystemException e)
+        {
+            Debug.LogWarning("Couldn't shutdown the server, socket already closed " +e);
+        }
         server.Close();
-        Thread.CurrentThread.Abort();
     }
 }

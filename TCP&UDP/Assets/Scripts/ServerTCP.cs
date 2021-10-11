@@ -10,36 +10,35 @@ using System.Threading.Tasks;
 public class ServerTCP : MonoBehaviour
 {
     // Start is called before the first frame update
-    readonly int maxClients = 1;
+    readonly int maxClients = 3;
     private Socket _socket;
     private IPEndPoint ipep;
 
     private int current_clients = 0;
     bool listening = true;
-
+    bool current_client_thread_alive = false;
     Queue<Thread> thread_queue = new Queue<Thread>();
+
+    private EventWaitHandle wh = new AutoResetEvent(false);
     void Start()
     {
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ipep = new IPEndPoint(IPAddress.Any, 27000);
 
-        startThreadingFunction(MultipleServer);
+        startThreadingFunction(Server);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(listening && current_clients == maxClients)
-        {
-            listening = false;
-        }
 
-        if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive) //fails the first must be alread started
+        //Here we check that once a thread is over we dequeue it and start the following one
+        if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive) 
         {
             thread_queue.Dequeue();
             Debug.Log("thread dequeued");
-            if (thread_queue.Count > 0)
+            if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive)
                 thread_queue.Peek().Start();
         }
 
@@ -47,56 +46,47 @@ public class ServerTCP : MonoBehaviour
     }
 
 
-    //Maybe use thread pool
-    void MultipleServer()
-    {
-        Socket client=null;
 
+    //Maybe use thread pool
+    void Server()
+    {
+        Socket client;
         _socket.Bind(ipep);
         _socket.Listen(maxClients);
         Debug.Log("Waiting for a client");
         //maybe do a loop here until a maximum capcity of clients has come
         while (listening)
         {
+            if (!current_client_thread_alive)
+            {
+                current_client_thread_alive = true;
+                client = _socket.Accept();
+                thread_queue.Enqueue(new Thread(() => ClientHandler(client)));
+                if (thread_queue.Count == 1)
+                    thread_queue.Peek().Start();
+            }
 
-            client = _socket.Accept();
-
-            //  ThreadPool.QueueUserWorkItem(ClientHandler, client); //Need to use some thread at a time
-            //Thread.Sleep(500);
-
-            thread_queue.Enqueue(new Thread(() => ClientHandler(client)));
-            if (thread_queue.Count == 1)
-                thread_queue.Peek().Start();
-
-
-           // new Thread(() => ClientHandler(client)).Start();
         }
 
-        
-        Debug.Log("Closing server");
+        //We pause the execution until is resumed once all the clients are done
+        wh.WaitOne();
+
         _socket.Close();
+        Debug.Log("Closing server");
+
     }
 
-
-    //async void ManageClientsQueue()
-    //{
-    //    //for(int i =0; i <= thread_queue.Count; i++)
-    //    //{
-    //    //    thread_queue.GetEnumerator().Current.Start();
-    //    //    if(thread_queue.)
-    //    //}
-    //    while(thread_queue.Count !=0)
-    //    {
-    //        thread_queue.GetEnumerator().Current.Start();
-    //        if (thread_queue.)
-    //    }
-    //}
 
     void ClientHandler(object c)
     {
         current_clients++;
         Debug.Log("Client accepted" + current_clients);
 
+        //This way we stop iterating on the Server Thread once all the clients has been accepted
+        if (current_clients == maxClients)
+            listening = false;
+
+        
         Socket client = (Socket)c;
         IPEndPoint client_ep;
         string pong = "pong";
@@ -104,27 +94,74 @@ public class ServerTCP : MonoBehaviour
         int count = 0;
         int recv = 0;
 
-        client_ep = (IPEndPoint)client.RemoteEndPoint;
-        Debug.Log("Connected: " + client_ep.ToString());
+        //Checks if the client is still connected to get the remote endpoint
+        if (client.Connected)
+        {
+            client_ep = (IPEndPoint)client.RemoteEndPoint;
+            Debug.Log("Connected: to client " + client_ep.ToString());
+        }
+        else
+        {
+            Debug.Log("Clients isn't connectet");
+            Thread.CurrentThread.Abort();
+        }
+
+        //Recieves first message from client
+        try
+        {
+            recv = client.Receive(data);
+            Debug.Log("recieved Server " + Encoding.ASCII.GetString(data, 0, recv));
+        }
+        catch (SocketException e)
+        {
+            Debug.LogWarning("can't recive first time from client " + e);
+        }
+
+        //Sends frist message to client & waits for 500ms
+        data = new byte[1024];
         data = Encoding.ASCII.GetBytes(pong);
         client.Send(data, data.Length, SocketFlags.None);
-        Debug.Log("Send server " + Encoding.ASCII.GetString(data));
+        Thread.Sleep(500);
+
         count++;
-
-        Thread.Sleep(2000);
-
-        while(count < 5)
+        while (count < 5) //Recieves & Sends messages to client
         {
             count++;
 
             data = new byte[1024];
-            recv = client.Receive(data);
-            Debug.Log("Recieved server " + Encoding.ASCII.GetString(data));
-            Thread.Sleep(2000);
-            client.Send(Encoding.ASCII.GetBytes(pong));
-            Debug.Log("Send server" + Encoding.ASCII.GetString(data, 0, recv));
+            try //Recieve ping message
+            {
+                recv = client.Receive(data);
+                Debug.Log("Recieved server " + Encoding.ASCII.GetString(data));
+                Thread.Sleep(500);
+            }
+            catch (SystemException e)
+            {
+                Debug.LogWarning("Can't recieve from client" + e);
+            }
+
+            try //Send pong message & waits for 500ms
+            {
+                client.Send(Encoding.ASCII.GetBytes(pong));
+                Thread.Sleep(500);
+            }
+            catch (SystemException e)
+            {
+                Debug.LogWarning("Can't send to client " + e);
+            }
+
         }
+
+        Debug.Log("Closing Socket with client");
         client.Close();
+
+        //To resume the server thread & close server socket
+        if (current_clients == maxClients)
+            wh.Set();
+        
+
+        current_client_thread_alive = false;
+
     }
 
     public void startThreadingFunction(Action function)
@@ -132,59 +169,9 @@ public class ServerTCP : MonoBehaviour
         Thread t = new Thread(function.Invoke);
         t.Start();
     }
-    ////for now programmed for only 1 connection
-    //void Server() //Need to polish the use of Threads
-    //{
-    //    IPEndPoint client_ep = null;
-    //    bool connected = false;
-    //    int count=0;
-    //    byte[] data = new byte[1024];
-    //    int recv=0;
-    //    Socket client = null;
-    //    string pong = "pong";
-    //    try
-    //    {
-    //        _socket.Bind(ipep);
-    //        _socket.Listen(maxClients);
-    //        Debug.Log("Waiting for a client");
-    //        client = _socket.Accept(); //Blocking execution
-    //       // ClientHandler(client);
 
-    //        client_ep = (IPEndPoint)client.RemoteEndPoint;
-    //        Debug.Log("Connected: " + client_ep.ToString());
-    //        connected = true;
-    //        count++;
-    //        //Send Pong Message
-    //        data = Encoding.ASCII.GetBytes(pong);
-    //        client.Send(data, data.Length, SocketFlags.None);
-    //        Thread.Sleep(500);
-    //    }
-    //    catch(Exception e)
-    //    {
-    //        Debug.LogError("Connection failed..." + e.ToString());
-    //        Thread.CurrentThread.Abort();
 
-    //    }
-    //    while (count <5 && connected)
-    //    {
-    //        count++;
-    //        data = new byte[1024];
 
-    //        if (client != null)
-    //        {
-    //            recv = client.Receive(data);
-    //            Thread.Sleep(500);
-    //            client.Send(Encoding.ASCII.GetBytes(pong));
-    //            Debug.Log(Encoding.ASCII.GetString(data,0,recv));
-    //        }
-
-    //    }
-
-    //    Debug.Log("Disconnected from" + client_ep.Address);
-    //    client.Close();
-    //    _socket.Close();
-
-    //}
 
 
 }
