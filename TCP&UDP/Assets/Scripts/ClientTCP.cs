@@ -9,10 +9,14 @@ using System.Threading;
 public class ClientTCP : MonoBehaviour
 {
     string ping = "ping";
+    int maxClients = 3;
     // Start is called before the first frame update
-    public void Start()
+    public void Start() //We should create the several clients from here
     {
-        StartThreadingFunction(Client);
+        for (int i = 0; i < maxClients; i++)
+        {
+            StartThreadingFunction(Client);
+        }
     }
 
     // Update is called once per frame

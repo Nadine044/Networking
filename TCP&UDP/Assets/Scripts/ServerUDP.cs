@@ -39,19 +39,17 @@ public class ServerUDP : MonoBehaviour
 
 
         //wait Until datagram packet arrives from client
+        //Recieve message from client & wait 500ms
         recv = _socket.ReceiveFrom(data, ref epFrom);
 
-        //when this arrives 
-
-        //we process it and send to the client
-
-        Debug.Log("Welcome to the server " + epFrom.ToString());
-        Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+        Debug.Log("Welcome to the UDP server " + epFrom.ToString());
+        Debug.Log("Recieved UDP Server" + Encoding.ASCII.GetString(data, 0, recv));
 
         Thread.Sleep(500);
         count++;
         string pong = "pong";
 
+        //Send message to client
         data = Encoding.ASCII.GetBytes(pong);
         _socket.SendTo(data, data.Length, SocketFlags.None, epFrom);
 
@@ -61,8 +59,7 @@ public class ServerUDP : MonoBehaviour
             count++;
             data = new byte[1024];
             recv = _socket.ReceiveFrom(data, ref epFrom);
-            Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
-
+            Debug.Log("Recieved UDP Server " + Encoding.ASCII.GetString(data, 0, recv));
             Thread.Sleep(500);
             data = Encoding.ASCII.GetBytes(pong);
             _socket.SendTo(data, recv, SocketFlags.None, epFrom);

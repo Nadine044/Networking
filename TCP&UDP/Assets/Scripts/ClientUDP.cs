@@ -14,13 +14,12 @@ public class ClientUDP : MonoBehaviour
     private Socket server;
     byte[] data = new byte[1024];
 
-    ServerUDP serverUDP;
-    bool testing = false;
+    //bool testing = false;
     void Start()
     {
-         
+
         //c.Client("127.0.0.1", 27000);
-        //startThreadingFunction(ExampleClient);
+        startThreadingFunction(ExampleClient);
     }
 
     public void startThreadingFunction(Action function)
@@ -52,8 +51,9 @@ public class ClientUDP : MonoBehaviour
         data = new byte[1024];
         int recv = server.ReceiveFrom(data, ref Remote);
 
-        Debug.Log("Message recieved from " + Remote.ToString());
-        Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+       // Debug.Log("Message recieved from " + Remote.ToString());
+        Debug.Log("Recieved UDP Client " + Encoding.ASCII.GetString(data, 0, recv));
+        Thread.Sleep(500);
 
         //Until we sent 5 messages to the server the thread will continue running 
         while (count <5)
@@ -61,29 +61,31 @@ public class ClientUDP : MonoBehaviour
             count++;
 
             server.SendTo(Encoding.ASCII.GetBytes(ping), Remote);
-            Thread.Sleep(500);
+
             data = new byte[1024];
             recv = server.ReceiveFrom(data, ref Remote);
-            Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+            Debug.Log("Recieved UDP Client " + Encoding.ASCII.GetString(data, 0, recv));
+            Thread.Sleep(500);
+
         }
 
-        //server.Close();
+        server.Close();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space) && !testing)
-        {
-            testing = true;
-            startThreadingFunction(ExampleClient);
-        }
-        if(Input.GetKeyDown(KeyCode.Escape) && testing)
-        {
-            Application.Quit();
-        }
+    //void Update()
+    //{
+    //    if(Input.GetKeyDown(KeyCode.Space) && !testing)
+    //    {
+    //        testing = true;
+    //        startThreadingFunction(ExampleClient);
+    //    }
+    //    if(Input.GetKeyDown(KeyCode.Escape) && testing)
+    //    {
+    //        Application.Quit();
+    //    }
        
-    }
+    //}
 
     
     

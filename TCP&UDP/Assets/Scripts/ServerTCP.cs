@@ -80,7 +80,7 @@ public class ServerTCP : MonoBehaviour
     void ClientHandler(object c)
     {
         current_clients++;
-        Debug.Log("Client accepted" + current_clients);
+        Debug.Log("Client accepted " + current_clients);
 
         //This way we stop iterating on the Server Thread once all the clients has been accepted
         if (current_clients == maxClients)
@@ -106,22 +106,22 @@ public class ServerTCP : MonoBehaviour
             Thread.CurrentThread.Abort();
         }
 
-        //Recieves first message from client
+        //Recieves first message from client & waits for 500ms
         try
         {
             recv = client.Receive(data);
             Debug.Log("recieved Server " + Encoding.ASCII.GetString(data, 0, recv));
+            Thread.Sleep(500);
         }
         catch (SocketException e)
         {
             Debug.LogWarning("can't recive first time from client " + e);
         }
 
-        //Sends frist message to client & waits for 500ms
+        //Sends first message to client 
         data = new byte[1024];
         data = Encoding.ASCII.GetBytes(pong);
         client.Send(data, data.Length, SocketFlags.None);
-        Thread.Sleep(500);
 
         count++;
         while (count < 5) //Recieves & Sends messages to client
@@ -143,7 +143,7 @@ public class ServerTCP : MonoBehaviour
             try //Send pong message & waits for 500ms
             {
                 client.Send(Encoding.ASCII.GetBytes(pong));
-                Thread.Sleep(500);
+   
             }
             catch (SystemException e)
             {
