@@ -5,31 +5,22 @@ using System;
 using System.Threading;
 public class ServerProgram : MonoBehaviour
 {
-   protected Queue<Action> functionsToRunInMainThread;
+    protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();
+    protected string CurrentLog;
 
-
+    [SerializeField]
+    protected TextLogControl logControl;
     // Start is called before the first frame update
     void Start()
     {
-        for(int i =0; i <3; i++)
-        {
-            GameObject go = new GameObject();
-            go.AddComponent<ClientTCP>();
-        }
+
+        this.gameObject.AddComponent<ServerTCP>();
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
-        while (functionsToRunInMainThread.Count > 0)
-        {
-            //Grab the first/oldest function in the list
-            Action someFunc = functionsToRunInMainThread.Peek();
-            functionsToRunInMainThread.Dequeue();
 
-            //Now run it;
-            someFunc();
-        }
     }
 
 
@@ -37,5 +28,14 @@ public class ServerProgram : MonoBehaviour
     {
         Thread t = new Thread(someFunction.Invoke);
         t.Start();
+
+    }
+
+    public void QueueMainThreadFunction(Action someFunction)
+    {
+        //We need to make sure that some function is running from the main Thread
+
+        //someFunction(); //This isn't okay, if we're in a child thread
+        functionsToRunInMainThread.Enqueue(someFunction);
     }
 }

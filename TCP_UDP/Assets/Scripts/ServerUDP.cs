@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ServerUDP : MonoBehaviour
+public class ServerUDP : ServerProgram
 {
     public Socket _socket;
     int recv;
@@ -17,13 +17,6 @@ public class ServerUDP : MonoBehaviour
     public void Start()
     {
         startThreadingFunction(Server);
-    }
-
-
-    public void startThreadingFunction(Action function)
-    {
-        Thread t = new Thread(function.Invoke);
-        t.Start();
     }
 
     //Maybe not do everything in the thread only the blocking things
