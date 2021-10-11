@@ -6,8 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-public class ServerTCP : MonoBehaviour
+public class ServerTCP : ServerProgram
 {
     // Start is called before the first frame update
     readonly int maxClients = 3;
@@ -162,12 +161,6 @@ public class ServerTCP : MonoBehaviour
 
         current_client_thread_alive = false;
 
-    }
-
-    public void startThreadingFunction(Action function)
-    {
-        Thread t = new Thread(function.Invoke);
-        t.Start();
     }
 
 

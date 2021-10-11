@@ -72,20 +72,6 @@ public class ClientUDP : MonoBehaviour
         server.Close();
     }
 
-    // Update is called once per frame
-    //void Update()
-    //{
-    //    if(Input.GetKeyDown(KeyCode.Space) && !testing)
-    //    {
-    //        testing = true;
-    //        startThreadingFunction(ExampleClient);
-    //    }
-    //    if(Input.GetKeyDown(KeyCode.Escape) && testing)
-    //    {
-    //        Application.Quit();
-    //    }
-       
-    //}
 
     
     
