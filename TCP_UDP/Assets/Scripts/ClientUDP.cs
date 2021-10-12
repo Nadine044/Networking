@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ClientUDP : ClientProgram
+public class ClientUDP : ClientBase
 {
     // Start is called before the first frame update
     //IPAddress.Parse("127.0.0.1")

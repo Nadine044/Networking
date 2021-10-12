@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ServerTCP : ServerProgram
+public class ServerTCP : ServerBase
 {
     // Start is called before the first frame update
     readonly int maxClients = 3;

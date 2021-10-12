@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ServerUDP : ServerProgram //Not working with ui
+public class ServerUDP : ServerBase //Not working with ui
 {
 
     int recv;

@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ClientTCP : ClientProgram
+public class ClientTCP : ClientBase
 {
     string ping = "ping";
     int maxClients = 3;
