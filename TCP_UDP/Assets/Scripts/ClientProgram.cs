@@ -5,11 +5,8 @@ using System;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-public class ServerProgram : MonoBehaviour
+public class ClientProgram : MonoBehaviour
 {
-
-    protected Socket _socket;
-    protected IPEndPoint ipep;
 
     protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();
     protected string CurrentLog;
@@ -18,45 +15,61 @@ public class ServerProgram : MonoBehaviour
 
     [SerializeField]
     GameObject starterPanel;
+    [SerializeField]
+    private GameObject restartUDPClient;
 
     [SerializeField]
     protected TextLogControl logControl;
+
     // Start is called before the first frame update
     void Start()
     {
+        restartUDPClient.SetActive(false);
+
         foreach (GameObject go in UI_to_hide)
         {
             go.SetActive(false);
         }
-    } 
+    }
 
+  
 
-    public void StartUDPServer()
+    public void StartUDPClient()
+    {
+        starterPanel.SetActive(false);
+        restartUDPClient.SetActive(true);
+        foreach (GameObject go in UI_to_hide)
+        {
+            go.SetActive(true);
+        }
+        this.GetComponent<ClientUDP>().enabled = true;
+
+    }
+    public void StartSingleTCPClient()
     {
         starterPanel.SetActive(false);
         foreach (GameObject go in UI_to_hide)
         {
             go.SetActive(true);
         }
-        this.GetComponent<ServerUDP>().enabled = true;
-
+        this.GetComponent<ClientTCP>().enabled = true;
+        this.GetComponent<ClientTCP>().SetNClients(1);
     }
-    public void StartTCPServer()
+    public void StartMultipleTCPClient()
     {
         starterPanel.SetActive(false);
         foreach (GameObject go in UI_to_hide)
         {
             go.SetActive(true);
         }
-        this.GetComponent<ServerTCP>().enabled = true;
-
+        this.GetComponent<ClientTCP>().enabled = true;
+        this.GetComponent<ClientTCP>().SetNClients(3);
     }
 
-    protected void startThreadingFunction(Action someFunction)
+    protected void StartThreadingFunction(Action function)
     {
-        Thread t = new Thread(someFunction.Invoke);
+        Thread t = new Thread(function.Invoke);
         t.Start();
-
     }
 
     public void QueueMainThreadFunction(Action someFunction)

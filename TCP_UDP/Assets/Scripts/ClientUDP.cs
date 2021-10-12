@@ -6,54 +6,96 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ClientUDP : MonoBehaviour
+public class ClientUDP : ClientProgram
 {
     // Start is called before the first frame update
     //IPAddress.Parse("127.0.0.1")
 
-    private Socket server;
-    byte[] data = new byte[1024];
 
     //bool testing = false;
     void Start()
     {
 
-        //c.Client("127.0.0.1", 27000);
-        startThreadingFunction(ExampleClient);
+        StartThreadingFunction(Client);
     }
 
-    public void startThreadingFunction(Action function)
+    private void Update()
     {
-        Thread t = new Thread(function.Invoke);
-        t.Start();
+        while (functionsToRunInMainThread.Count > 0)
+        {
+            //Grab the first/oldest function in the list
+            Action someFunc = functionsToRunInMainThread.Peek();
+            functionsToRunInMainThread.Dequeue();
+
+            //Now run it;
+            someFunc();
+        }
     }
+
 
 
     //Maybe not do everything in the thread only the blocking things
-    void ExampleClient()
+    void Client()
     {
         int count = 0;
+        byte[] data = new byte[1024];
 
         //Creates Sockets
-        server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         EndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
+
+        Action Connected = () => { logControl.LogText("Created Socket", Color.black); };
+        QueueMainThreadFunction(Connected);
 
         string ping = "ping";
         count++;
         data = Encoding.ASCII.GetBytes(ping);
-        //Sends ping string to the server & waits for response// the thread blocks here
-        server.SendTo(data, data.Length, SocketFlags.None, ipep);
 
+
+        //Sends ping string to the server & waits for response// the thread blocks here
+           
+        server.SendTo(data, data.Length, SocketFlags.None, ipep);
+        
+      
+        
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
         EndPoint Remote = (EndPoint)sender;
 
         //we receieve the the message from the server
         data = new byte[1024];
-        int recv = server.ReceiveFrom(data, ref Remote);
+        int recv=0;
+        bool connected = false;
+        while (!connected)
+        {
+            try
+            {
+                recv = server.ReceiveFrom(data, ref Remote);
+                Debug.Log("First message recieved from server");
 
-       // Debug.Log("Message recieved from " + Remote.ToString());
+                connected = true;
+                Action Recieved = () => { logControl.LogText(Encoding.ASCII.GetString(data, 0, recv), Color.black); };
+                QueueMainThreadFunction(Recieved);
+                Thread.Sleep(500);
+            }
+            catch (SocketException e)
+            {
+                Debug.Log("Couldn't recive from server" + e);
+                connected = false;
+                Action RecievedError = () =>
+                {
+                    logControl.LogText("Couldn't connect to server" + e, Color.black);
+                    logControl.LogText("Try restarting the client & connecting the server first" + e, Color.black);
+                };
+                QueueMainThreadFunction(RecievedError);
+                //Maybe
+                server.Close();
+                Thread.CurrentThread.Abort();
+            }
+        }
+
+        // Debug.Log("Message recieved from " + Remote.ToString());
         Debug.Log("Recieved UDP Client " + Encoding.ASCII.GetString(data, 0, recv));
-        Thread.Sleep(500);
+      
 
         //Until we sent 5 messages to the server the thread will continue running 
         while (count <5)
@@ -64,15 +106,25 @@ public class ClientUDP : MonoBehaviour
 
             data = new byte[1024];
             recv = server.ReceiveFrom(data, ref Remote);
+            Action Recieved = () => { logControl.LogText(Encoding.ASCII.GetString(data, 0, recv), Color.black); };
+            QueueMainThreadFunction(Recieved);
             Debug.Log("Recieved UDP Client " + Encoding.ASCII.GetString(data, 0, recv));
             Thread.Sleep(500);
 
         }
 
+        Action ClosingSocket = () => { logControl.LogText("Closing Socket", Color.black); };
+        QueueMainThreadFunction(ClosingSocket);
+
         server.Close();
     }
 
 
-    
-    
+    public void RestartClient()
+    {
+        StartThreadingFunction(Client);
+
+    }
+
+
 }

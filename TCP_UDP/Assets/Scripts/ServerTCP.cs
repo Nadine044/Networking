@@ -6,12 +6,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-public class ServerTCP : MonoBehaviour
+public class ServerTCP : ServerProgram
 {
     // Start is called before the first frame update
     readonly int maxClients = 3;
-    private Socket _socket;
-    private IPEndPoint ipep;
+
 
     private int current_clients = 0;
 
@@ -22,11 +21,6 @@ public class ServerTCP : MonoBehaviour
 
     private EventWaitHandle wh = new AutoResetEvent(false);
 
-    protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();
-    protected string CurrentLog;
-
-    [SerializeField]
-    protected TextLogControl logControl;
 
     void Start()
     {
@@ -59,19 +53,7 @@ public class ServerTCP : MonoBehaviour
         }
         
     }
-    private void startThreadingFunction(Action someFunction)
-    {
-        Thread t = new Thread(someFunction.Invoke);
-        t.Start();
 
-    }
-    public void QueueMainThreadFunction(Action someFunction)
-    {
-        //We need to make sure that some function is running from the main Thread
-
-        //someFunction(); //This isn't okay, if we're in a child thread
-        functionsToRunInMainThread.Enqueue(someFunction);
-    }
 
     //Maybe use thread pool
     void Server()
@@ -80,10 +62,8 @@ public class ServerTCP : MonoBehaviour
         _socket.Bind(ipep);
         _socket.Listen(maxClients);
         Debug.Log("Waiting for a client");
-        Action WaitingClient = () =>
-        {
-            logControl.LogText("waiting for a client", Color.black);
-        };
+
+        Action WaitingClient = () =>{logControl.LogText("waiting for a client", Color.black);};
         QueueMainThreadFunction(WaitingClient);
         //maybe do a loop here until a maximum capcity of clients has come
         while (listening)
@@ -102,14 +82,16 @@ public class ServerTCP : MonoBehaviour
         //We pause the execution until is resumed once all the clients are done
         wh.WaitOne();
 
-        _socket.Close();
-        Debug.Log("Closing server");
-
+        
         Action ClosingServer = () =>
         {
             logControl.LogText("Closing server", Color.black);
         };
         QueueMainThreadFunction(ClosingServer);
+
+        _socket.Close();
+        Debug.Log("Closing server");
+
 
     }
 
@@ -236,9 +218,6 @@ public class ServerTCP : MonoBehaviour
         current_client_thread_alive = false;
 
     }
-
-
-
 
 
 }
