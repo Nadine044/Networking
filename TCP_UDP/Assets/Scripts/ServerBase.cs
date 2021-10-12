@@ -16,10 +16,11 @@ public class ServerBase : MonoBehaviour
     [SerializeField]
     protected TextLogControl logControl;
 
+    protected Thread temp_thread;
     protected void startThreadingFunction(Action someFunction)
     {
-        Thread t = new Thread(someFunction.Invoke);
-        t.Start();
+        temp_thread = new Thread(someFunction.Invoke);
+        temp_thread.Start();
 
     }
 

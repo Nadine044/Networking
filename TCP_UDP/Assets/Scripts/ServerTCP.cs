@@ -21,9 +21,14 @@ public class ServerTCP : ServerBase
 
     private EventWaitHandle wh = new AutoResetEvent(false);
 
+    Socket client;
 
+    //In case of suddenly exiting the App
+    Queue<Socket> socket_queue = new Queue<Socket>();
     void Start()
     {
+        GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
+
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ipep = new IPEndPoint(IPAddress.Any, 27000);
 
@@ -58,7 +63,6 @@ public class ServerTCP : ServerBase
     //Maybe use thread pool
     void Server()
     {
-        Socket client;
         _socket.Bind(ipep);
         _socket.Listen(maxClients);
         Debug.Log("Waiting for a client");
@@ -112,6 +116,7 @@ public class ServerTCP : ServerBase
 
         
         Socket client = (Socket)c;
+        socket_queue.Enqueue(client);
         IPEndPoint client_ep;
         string pong = "pong";
         byte[] data = new byte[1024];
@@ -216,6 +221,39 @@ public class ServerTCP : ServerBase
         
 
         current_client_thread_alive = false;
+
+    }
+
+
+    void CloseApp()
+    {
+        while(thread_queue.Count>0 && !thread_queue.Peek().IsAlive)
+        {
+
+            try
+            {
+                socket_queue.Peek().Close();
+            }
+            catch(SocketException e)
+            {
+                Debug.Log(e);
+            }
+            socket_queue.Dequeue();
+
+            thread_queue.Peek().Abort();
+        }
+
+        try
+        {
+            _socket.Close();
+        }
+        catch (SocketException e)
+        {
+            Debug.Log("Couldn't Close socket while exiting info" + e);
+        }
+
+        if (temp_thread.ThreadState == ThreadState.Running)
+            temp_thread.Abort();
 
     }
 

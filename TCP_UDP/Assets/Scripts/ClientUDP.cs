@@ -11,11 +11,11 @@ public class ClientUDP : ClientBase
     // Start is called before the first frame update
     //IPAddress.Parse("127.0.0.1")
 
-
+    Socket server;
     //bool testing = false;
     void Start()
     {
-
+        GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
         StartThreadingFunction(Client);
     }
 
@@ -41,7 +41,7 @@ public class ClientUDP : ClientBase
         byte[] data = new byte[1024];
 
         //Creates Sockets
-        Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         EndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
 
         Action Connected = () => { logControl.LogText("Created Socket", Color.black); };
@@ -117,12 +117,30 @@ public class ClientUDP : ClientBase
         QueueMainThreadFunction(ClosingSocket);
 
         server.Close();
+        temp_threads.Dequeue();
     }
 
 
     public void RestartClient()
     {
         StartThreadingFunction(Client);
+
+    }
+
+    void CloseApp()
+    {
+        while(temp_threads.Count >0)
+        {
+            try
+            {
+                server.Close();
+            }
+            catch(SystemException e)
+            {
+                Debug.Log("Couldn't Close socket" + e);
+            }
+            temp_threads.Dequeue().Abort();
+        }
 
     }
 

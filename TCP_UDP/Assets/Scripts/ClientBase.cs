@@ -13,10 +13,11 @@ public class ClientBase : MonoBehaviour
     [SerializeField]
     protected TextLogControl logControl;
 
-
+    protected Queue<Thread> temp_threads = new Queue<Thread>();
     protected void StartThreadingFunction(Action someFunction)
     {
         Thread t = new Thread(someFunction.Invoke);
+        temp_threads.Enqueue(t);
         t.Start();
 
     }

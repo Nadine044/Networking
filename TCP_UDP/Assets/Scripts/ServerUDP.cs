@@ -15,6 +15,7 @@ public class ServerUDP : ServerBase //Not working with ui
 
     public void Start()
     {
+        GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
         startThreadingFunction(Server);
     }
     private void Update()
@@ -85,4 +86,22 @@ public class ServerUDP : ServerBase //Not working with ui
         QueueMainThreadFunction(SocketClosed);
     }
 
+
+    //Function Called when closeApp event is invoke in ServerProgram.cs to make sure the socket is closed
+    void CloseApp()
+    {
+        try
+        {
+            _socket.Close();
+        }
+        catch(SocketException e)
+        {
+            Debug.Log("Couldn't Close socket while exiting info" + e);
+        }
+
+        if (temp_thread.ThreadState == ThreadState.Running)
+            temp_thread.Abort();
+    }
+
+      
 }

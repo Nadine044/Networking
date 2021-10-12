@@ -10,9 +10,13 @@ public class ClientTCP : ClientBase
 {
     string ping = "ping";
     int maxClients = 3;
+
+
+    Queue<Socket> sockets_q = new Queue<Socket>();
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
+        GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
         for (int i = 0; i < maxClients; i++)
         {
             StartThreadingFunction(Client);
@@ -41,6 +45,7 @@ public class ClientTCP : ClientBase
     void Client()
     {
         Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        sockets_q.Enqueue(server);
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
 
         byte[] data = new byte[1024];
@@ -154,7 +159,25 @@ public class ClientTCP : ClientBase
         }
 
         server.Close();
+        sockets_q.Dequeue();
         Action CloseSocket = () => { logControl.LogText("Socket Closed", Color.black); };
         QueueMainThreadFunction(CloseSocket);
+    }
+
+    void CloseApp()
+    {
+        while (temp_threads.Count > 0)
+        {
+            try
+            {
+                sockets_q.Dequeue().Close();
+            }
+            catch (SystemException e)
+            {
+                Debug.Log("Couldn't Close socket" + e);
+            }
+            temp_threads.Dequeue().Abort();
+        }
+
     }
 }
