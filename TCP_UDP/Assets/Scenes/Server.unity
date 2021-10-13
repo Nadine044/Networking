@@ -157,6 +157,9 @@ MonoBehaviour:
   UI_to_hide:
   - {fileID: 406274012}
   starterPanel: {fileID: 350733976}
+  closingAppEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &41831524
 Transform:
   m_ObjectHideFlags: 0
@@ -860,7 +863,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 41831526}
+      - m_Target: {fileID: 41831523}
         m_TargetAssemblyTypeName: ServerProgram, Assembly-CSharp
         m_MethodName: StartUDPServer
         m_Mode: 1
