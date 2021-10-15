@@ -9,6 +9,12 @@ using UnityEngine.Events;
 
 public class ClientProgram : MonoBehaviour
 {
+    enum CLIENT_TYPE
+    {
+        NONE,
+        TCP,
+        UDP
+    }
 
     [SerializeField]
     List<GameObject> UI_to_hide;
@@ -20,7 +26,7 @@ public class ClientProgram : MonoBehaviour
     private GameObject restartUDPClient;
 
     public UnityEvent closingAppEvent;
-
+    CLIENT_TYPE client_type = CLIENT_TYPE.NONE;
     // Start is called before the first frame update
     void Start()
     {
@@ -79,4 +85,27 @@ public class ClientProgram : MonoBehaviour
     }
 
 
+    public void BackToMenu()
+    {
+        closingAppEvent.Invoke();
+
+        foreach (GameObject go in UI_to_hide)
+        {
+            go.SetActive(false);
+        }
+        starterPanel.SetActive(true);
+
+
+        switch (client_type)
+        {
+            case CLIENT_TYPE.TCP:
+                GetComponent<ClientTCP>().enabled = false;
+                break;
+
+            case CLIENT_TYPE.UDP:
+                restartUDPClient.SetActive(false);
+                GetComponent<ClientUDP>().enabled = false;
+                break;
+        }
+    }
 }

@@ -38,6 +38,7 @@ public class ServerTCP : ServerBase
     // Update is called once per frame
     void Update()
     {
+        //WE execute the functions created in the secondary threads, otherwise we couldn't modify UnityObjects through threads
         while (functionsToRunInMainThread.Count > 0)
         {
             //Grab the first/oldest function in the list
@@ -99,15 +100,14 @@ public class ServerTCP : ServerBase
 
     }
 
+    //------------------
 
+    //Handles each client  when is connected to the server
     void ClientHandler(object c)
     {
         current_clients++;
         Debug.Log("Client accepted " + current_clients);
-        Action ClientAccepted = () =>
-        {
-            logControl.LogText("Client accepted " + current_clients, Color.black);
-        };
+        Action ClientAccepted = () => {logControl.LogText("Client accepted " + current_clients, Color.black); };
         QueueMainThreadFunction(ClientAccepted);
 
         //This way we stop iterating on the Server Thread once all the clients has been accepted
@@ -128,20 +128,15 @@ public class ServerTCP : ServerBase
         {
             client_ep = (IPEndPoint)client.RemoteEndPoint;
             Debug.Log("Connected: to client " + client_ep.ToString());
-            Action ConnectedtoClient = () =>
-            {
-                logControl.LogText("Connected: to client " + client_ep.ToString(), Color.black);
-            };
+            Action ConnectedtoClient = () => {logControl.LogText("Connected: to client " + client_ep.ToString(), Color.black); };
             QueueMainThreadFunction(ConnectedtoClient);
         }
         else
         {
             Debug.Log("Clients isn't connected");
-            Action ClientNoConnect = () =>
-            {
-                logControl.LogText("Clients isn't connected", Color.black);
-            };
+            Action ClientNoConnect = () => {logControl.LogText("Clients isn't connected", Color.black);};
             QueueMainThreadFunction(ClientNoConnect);
+            client.Close();
             Thread.CurrentThread.Abort();
         }
 
@@ -150,10 +145,7 @@ public class ServerTCP : ServerBase
         {
             recv = client.Receive(data);
             Debug.Log("recieved Server " + Encoding.ASCII.GetString(data, 0, recv));
-            Action RecieveMsg = () =>
-            {
-                logControl.LogText("recieved Server " + Encoding.ASCII.GetString(data, 0, recv), Color.black);
-            };
+            Action RecieveMsg = () => {logControl.LogText("recieved Server " + Encoding.ASCII.GetString(data, 0, recv), Color.black);};
             QueueMainThreadFunction(RecieveMsg);
             Thread.Sleep(500);
         }
@@ -168,7 +160,7 @@ public class ServerTCP : ServerBase
         client.Send(data, data.Length, SocketFlags.None);
 
         count++;
-        while (count < 5) //Recieves & Sends messages to client
+        while (count < 5) //Recieves & Sends  4 messages to client
         {
             count++;
 
@@ -194,13 +186,10 @@ public class ServerTCP : ServerBase
                 client.Send(Encoding.ASCII.GetBytes(pong));
    
             }
-            catch (SystemException e)
+            catch (SystemException e)//If couldn't send launches a error message and continues with the iteration
             {
                 Debug.LogWarning("Can't send to client " + e);
-                Action CantSend = () =>
-                {
-                    logControl.LogText("Can't send to client " + e, Color.black);
-                };
+                Action CantSend = () => {logControl.LogText("Can't send to client " + e, Color.black); };
                 QueueMainThreadFunction(CantSend);
             }
 

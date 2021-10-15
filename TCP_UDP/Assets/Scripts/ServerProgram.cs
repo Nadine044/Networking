@@ -4,6 +4,12 @@ using UnityEngine;
 using UnityEngine.Events;
 public class ServerProgram : MonoBehaviour
 {
+    enum SERVER_TYPE
+    {
+        NONE,
+        TCP,
+        UDP
+    }
 
     [SerializeField]
     List<GameObject> UI_to_hide;
@@ -12,6 +18,9 @@ public class ServerProgram : MonoBehaviour
     GameObject starterPanel;
 
     public UnityEvent closingAppEvent;
+
+
+    SERVER_TYPE server_type = SERVER_TYPE.NONE;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +46,7 @@ public class ServerProgram : MonoBehaviour
 
     public void StartUDPServer()
     {
+        server_type = SERVER_TYPE.UDP;
         starterPanel.SetActive(false);
         foreach (GameObject go in UI_to_hide)
         {
@@ -47,6 +57,7 @@ public class ServerProgram : MonoBehaviour
     }
     public void StartTCPServer()
     {
+        server_type = SERVER_TYPE.TCP;
         starterPanel.SetActive(false);
         foreach (GameObject go in UI_to_hide)
         {
@@ -56,5 +67,28 @@ public class ServerProgram : MonoBehaviour
 
     }
 
+    
+    public void BackToMenu()
+    {
+        closingAppEvent.Invoke();
+
+        foreach (GameObject go in UI_to_hide)
+        {
+            go.SetActive(false);
+        }
+        starterPanel.SetActive(true);
+
+        
+        switch (server_type)
+        {
+            case SERVER_TYPE.TCP:
+                GetComponent<ServerTCP>().enabled = false;
+                break;
+
+            case SERVER_TYPE.UDP:
+                GetComponent<ServerUDP>().enabled = false;
+                break;
+        }
+    }
 
 }
