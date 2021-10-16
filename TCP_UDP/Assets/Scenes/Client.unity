@@ -194,8 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2380816ecb756bd40a43f2681a6374e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UI_to_hide:
-  - {fileID: 406274012}
+  UI_TextLog: []
   starterPanel: {fileID: 350733976}
   restartUDPClient: {fileID: 250566538}
   closingAppEvent:
@@ -271,7 +270,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Back To Start Menu
+  m_Text: start multiple tcp client
 --- !u!222 &207496733
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -693,6 +692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textTemplate: {fileID: 1241558238}
+  textItems: []
 --- !u!1 &423650318
 GameObject:
   m_ObjectHideFlags: 0
@@ -2184,7 +2184,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1480098937}
   m_HandleRect: {fileID: 1480098936}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

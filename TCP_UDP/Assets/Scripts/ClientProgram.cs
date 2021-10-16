@@ -17,7 +17,7 @@ public class ClientProgram : MonoBehaviour
     }
 
     [SerializeField]
-    List<GameObject> UI_to_hide;
+    List<GameObject> UI_TextLog;
 
     [SerializeField]
     GameObject starterPanel;
@@ -35,7 +35,7 @@ public class ClientProgram : MonoBehaviour
 
         restartUDPClient.SetActive(false);
 
-        foreach (GameObject go in UI_to_hide)
+        foreach (GameObject go in UI_TextLog)
         {
             go.SetActive(false);
         }
@@ -54,34 +54,45 @@ public class ClientProgram : MonoBehaviour
     }
     public void StartUDPClient()
     {
+        client_type = CLIENT_TYPE.UDP;
+
         starterPanel.SetActive(false);
         restartUDPClient.SetActive(true);
-        foreach (GameObject go in UI_to_hide)
+        foreach (GameObject go in UI_TextLog)
         {
             go.SetActive(true);
         }
-        this.GetComponent<ClientUDP>().enabled = true;
+        GetComponent<ClientUDP>().enabled = true;
+        GetComponent<ClientUDP>().StartClient();
+
 
     }
     public void StartSingleTCPClient()
     {
+        client_type = CLIENT_TYPE.TCP;
+
         starterPanel.SetActive(false);
-        foreach (GameObject go in UI_to_hide)
+        foreach (GameObject go in UI_TextLog)
         {
             go.SetActive(true);
         }
-        this.GetComponent<ClientTCP>().enabled = true;
-        this.GetComponent<ClientTCP>().SetNClients(1);
+        GetComponent<ClientTCP>().enabled = true;
+        GetComponent<ClientTCP>().SetNClients(1);
+        GetComponent<ClientTCP>().StartClient();
     }
     public void StartMultipleTCPClient()
     {
+        client_type = CLIENT_TYPE.TCP;
+
         starterPanel.SetActive(false);
-        foreach (GameObject go in UI_to_hide)
+        foreach (GameObject go in UI_TextLog)
         {
             go.SetActive(true);
         }
-        this.GetComponent<ClientTCP>().enabled = true;
-        this.GetComponent<ClientTCP>().SetNClients(3);
+        GetComponent<ClientTCP>().enabled = true;
+        GetComponent<ClientTCP>().SetNClients(3);
+        GetComponent<ClientTCP>().StartClient();
+
     }
 
 
@@ -89,7 +100,7 @@ public class ClientProgram : MonoBehaviour
     {
         closingAppEvent.Invoke();
 
-        foreach (GameObject go in UI_to_hide)
+        foreach (GameObject go in UI_TextLog)
         {
             go.SetActive(false);
         }
@@ -99,11 +110,13 @@ public class ClientProgram : MonoBehaviour
         switch (client_type)
         {
             case CLIENT_TYPE.TCP:
+                GetComponent<ClientTCP>().ClearLog();
                 GetComponent<ClientTCP>().enabled = false;
                 break;
 
             case CLIENT_TYPE.UDP:
                 restartUDPClient.SetActive(false);
+                GetComponent<ClientUDP>().ClearLog();
                 GetComponent<ClientUDP>().enabled = false;
                 break;
         }

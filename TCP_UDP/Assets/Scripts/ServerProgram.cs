@@ -52,7 +52,10 @@ public class ServerProgram : MonoBehaviour
         {
             go.SetActive(true);
         }
-        this.GetComponent<ServerUDP>().enabled = true;
+        GetComponent<ServerUDP>().enabled = true;
+        GetComponent<ServerUDP>().StartServer();
+        
+
 
     }
     public void StartTCPServer()
@@ -63,8 +66,8 @@ public class ServerProgram : MonoBehaviour
         {
             go.SetActive(true);
         }
-        this.GetComponent<ServerTCP>().enabled = true;
-
+        GetComponent<ServerTCP>().enabled = true;
+        GetComponent<ServerTCP>().StartServer();
     }
 
     
@@ -82,10 +85,12 @@ public class ServerProgram : MonoBehaviour
         switch (server_type)
         {
             case SERVER_TYPE.TCP:
+                GetComponent<ServerTCP>().ClearLog();
                 GetComponent<ServerTCP>().enabled = false;
                 break;
 
             case SERVER_TYPE.UDP:
+                GetComponent<ServerUDP>().ClearLog();
                 GetComponent<ServerUDP>().enabled = false;
                 break;
         }

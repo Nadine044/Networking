@@ -16,6 +16,10 @@ public class ServerUDP : ServerBase //Not working with ui
     public void Start()
     {
         GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
+    }
+
+    public void StartServer()
+    {
         startThreadingFunction(Server);
     }
     private void Update()

@@ -17,6 +17,11 @@ public class ClientTCP : ClientBase
     public void Start() //We should create the several clients from here
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
+
+    }
+
+    public void StartClient()
+    {
         for (int i = 0; i < maxClients; i++)
         {
             StartThreadingFunction(Client);
@@ -38,7 +43,8 @@ public class ClientTCP : ClientBase
             functionsToRunInMainThread.Dequeue();
 
             //Now run it;
-            someFunc();
+            if(someFunc != null)
+                someFunc();
         }
     }
 
@@ -176,7 +182,9 @@ public class ClientTCP : ClientBase
             {
                 Debug.Log("Couldn't Close socket" + e);
             }
-            temp_threads.Dequeue().Abort();
+            if (temp_threads.Peek().IsAlive)
+                temp_threads.Dequeue().Abort();
+            else temp_threads.Dequeue();
         }
 
     }

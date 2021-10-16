@@ -29,4 +29,14 @@ public class ClientBase : MonoBehaviour
         //someFunction(); //This isn't okay, if we're in a child thread
         functionsToRunInMainThread.Enqueue(someFunction);
     }
+
+    public void ClearLog()
+    {
+
+        foreach(GameObject go in logControl.textItems)
+        {
+            Destroy(go);
+        }
+        logControl.textItems.Clear();
+    }
 }

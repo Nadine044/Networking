@@ -16,9 +16,12 @@ public class ClientUDP : ClientBase
     void Start()
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
-        StartThreadingFunction(Client);
     }
 
+    public void StartClient()
+    {
+        StartThreadingFunction(Client);
+    }
     private void Update()
     {
         while (functionsToRunInMainThread.Count > 0)

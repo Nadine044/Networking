@@ -32,4 +32,13 @@ public class ServerBase : MonoBehaviour
         functionsToRunInMainThread.Enqueue(someFunction);
     }
 
+    public void ClearLog()
+    {
+        foreach (GameObject go in logControl.textItems)
+        {
+            Destroy(go);
+        }
+        logControl.textItems.Clear();
+    }
+
 }

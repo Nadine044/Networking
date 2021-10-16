@@ -28,10 +28,10 @@ public class ServerTCP : ServerBase
     void Start()
     {
         GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
+    }
 
-        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 27000);
-
+    public void StartServer()
+    {
         startThreadingFunction(Server);
     }
 
@@ -61,9 +61,11 @@ public class ServerTCP : ServerBase
     }
 
 
-    //Maybe use thread pool
     void Server()
     {
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ipep = new IPEndPoint(IPAddress.Any, 27000);
+
         _socket.Bind(ipep);
         _socket.Listen(maxClients);
         Debug.Log("Waiting for a client");
@@ -216,6 +218,7 @@ public class ServerTCP : ServerBase
 
     void CloseApp()
     {
+
         while(thread_queue.Count>0 && !thread_queue.Peek().IsAlive)
         {
 
@@ -243,6 +246,11 @@ public class ServerTCP : ServerBase
 
         if (temp_thread.ThreadState == ThreadState.Running)
             temp_thread.Abort();
+
+
+        current_clients = 0;
+        listening = true;
+        current_client_thread_alive = false;
 
     }
 
