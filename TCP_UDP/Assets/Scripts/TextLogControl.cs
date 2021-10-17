@@ -9,10 +9,7 @@ public class TextLogControl : MonoBehaviour
 
     public List<GameObject> textItems = new List<GameObject>();
 
-    private void Start()
-    {
-       // textItems = new List<GameObject>();
-    }
+
 
     public void LogText(string  newTextString,Color newColor)
     {
