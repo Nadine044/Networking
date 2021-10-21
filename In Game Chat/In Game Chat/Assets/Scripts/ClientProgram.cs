@@ -66,7 +66,6 @@ public class ClientProgram : MonoBehaviour
         }
         GetComponent<ClientTCP>().enabled = true;
         GetComponent<ClientTCP>().SetClientName(client_name);
-        GetComponent<ClientTCP>().SetNClients(1);
         GetComponent<ClientTCP>().StartClient();
     }
 

@@ -18,7 +18,6 @@ public class ClientTCP : ClientBase
 
     [SerializeField]
     InputField inputField_text;
-    int maxClients = 3;
 
     string msg_to_send = string.Empty;
     string client_name = string.Empty;
@@ -31,6 +30,7 @@ public class ClientTCP : ClientBase
 
     private static EventWaitHandle wh = new AutoResetEvent(false);
 
+    bool connected = false; //TODO CHANGE THIS, use another method
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
@@ -41,17 +41,12 @@ public class ClientTCP : ClientBase
     public void StartClient()
     {
         //Only for testing
-        msg_to_send = "Helo Testing Message";
-        for (int i = 0; i < maxClients; i++)
-        {
-            StartThreadingFunction(Client);
-        }
+        msg_to_send = "connected";
+
+        StartThreadingFunction(Client);
+        
     }
 
-    public void SetNClients(int n_clients)
-    {
-        maxClients = n_clients;
-    }
 
     // Update is called once per frame
     void Update()
@@ -63,8 +58,7 @@ public class ClientTCP : ClientBase
             functionsToRunInMainThread.Dequeue();
 
             //Now run it;
-            if(someFunc != null)
-                someFunc();
+            someFunc?.Invoke();
         }
         if (Input.GetKeyDown(KeyCode.S))
             client.Close();
@@ -73,11 +67,12 @@ public class ClientTCP : ClientBase
     void Client()
     {
 
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
 
         byte[] data = new byte[1024];
         //int count = 0;
-        bool connected = false;
 
+        int error_counter = 0;
         //tries to connect all the time to the server until the client achieve it
         while (!connected)
         {
@@ -102,13 +97,18 @@ public class ClientTCP : ClientBase
                     Debug.LogWarning("Disconnected: error code "+ e.NativeErrorCode);
                 }
                 Debug.LogWarning("Unable to connect to server  " + e.ToString());
-                Action ConnectionError = () => { logControl.LogText("Unable to connect to server  " + e.ToString(), Color.black); };
-                QueueMainThreadFunction(ConnectionError);
+                if (error_counter == 0)
+                {
+                    Action ConnectionError = () => { logControl.LogText("Unable to connect to server  " + e.ToString(), Color.black); };
+                    QueueMainThreadFunction(ConnectionError);
+                    error_counter++;
+                }
+
             }
 
         }
 
-
+        //FIRST MESSAGE, NEEDS TO CHANGE
         data = Serialize(msg_to_send);
         //Sends the first ping or message to the server
         try
@@ -122,28 +122,65 @@ public class ClientTCP : ClientBase
             QueueMainThreadFunction(SendingError);
         }
 
-        wh.WaitOne();
-        int recv;
-        //Recieves the first message from the server & waits for 500ms
+        StateObject state = new StateObject();
+        state.workSocket = client;
+
+        while (true)
+        {
+            try
+            {
+                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                new AsyncCallback(ReadCallback), state);
+                while (client.Available == 0)
+                {
+                    Thread.Sleep(1);
+                }
+            }
+            catch (SystemException e)
+            {
+                //Debug.Log(e);
+                //client.Close();
+                //break;
+            }
+        }
+
         try
         {
-            recv = client.Receive(data);
-            Debug.Log("Recieved  Client" + Encoding.ASCII.GetString(data, 0, recv));
-            Action Recieved = () => { logControl.LogText(Encoding.ASCII.GetString(data, 0, recv), Color.black); };
-            QueueMainThreadFunction(Recieved);
-        }
-        catch(SystemException e)
+            client.Shutdown(SocketShutdown.Both);
+        }catch(SocketException e)
         {
-            Debug.LogWarning("Client coulnd't recieve from server " + e);
-            Action RecievingError = () => { logControl.LogText("Unable to recieve " + e.ToString(), Color.black); };
-            QueueMainThreadFunction(RecievingError);
+            Debug.Log("Couldnt shutdown server" + e);
         }
-        
-        
+        client.Close();
 
-       
+
     }
 
+    void ReadCallback(IAsyncResult ar)
+    {
+        string content = string.Empty;
+
+        StateObject state = (StateObject)ar.AsyncState;
+        Socket handler = state.workSocket;
+        int bytesRead = handler.EndReceive(ar);
+
+        if(bytesRead >0)
+        {
+            Message msg = Deserialize(state.buffer);
+
+            string s = msg.name_ + ": " + msg.message;
+
+            Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
+            QueueMainThreadFunction(RecieveMsg);
+        }
+
+        else //Server is disconnected
+        {
+            Action ServerDisconnect = () => { logControl.LogText("The server has shutet down", Color.black); };
+            QueueMainThreadFunction(ServerDisconnect);
+            connected = false;
+        }
+    }
 
     byte[] Serialize(string message)
     {
