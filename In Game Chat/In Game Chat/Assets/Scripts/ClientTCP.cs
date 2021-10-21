@@ -12,7 +12,7 @@ public class ClientTCP : ClientBase
     int maxClients = 3;
 
 
-    Queue<Socket> sockets_q = new Queue<Socket>();
+    Queue<Socket> sockets_q = new Queue<Socket>(); //Need to make safe thread queue == ConcurrentQueue
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {

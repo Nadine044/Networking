@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Collections.Concurrent;
 public class ServerTCP : ServerBase
 {
     // Start is called before the first frame update
@@ -16,7 +17,6 @@ public class ServerTCP : ServerBase
 
 
     bool listening = true;
-    bool current_client_thread_alive = false;
     Queue<Thread> thread_queue = new Queue<Thread>();
 
     private EventWaitHandle wh = new AutoResetEvent(false);
@@ -24,7 +24,7 @@ public class ServerTCP : ServerBase
     Socket client;
 
     //In case of suddenly exiting the App
-    Queue<Socket> socket_queue = new Queue<Socket>();
+    ConcurrentQueue<Socket> socket_queue = new ConcurrentQueue<Socket>();
     void Start()
     {
         GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
@@ -42,22 +42,18 @@ public class ServerTCP : ServerBase
         while (functionsToRunInMainThread.Count > 0)
         {
             //Grab the first/oldest function in the list
-            Action someFunc = functionsToRunInMainThread.Peek();
-            functionsToRunInMainThread.Dequeue();
+            Action someFunc;
+            functionsToRunInMainThread.TryDequeue(out someFunc);
 
             //Now run it;
             someFunc();
         }
 
-        //Here we check that once a thread is over we dequeue it and start the following one
-        if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive) 
+        //Temporal to end server thread
+        if(Input.GetKeyDown(KeyCode.Space))
         {
-            thread_queue.Dequeue();
-            Debug.Log("thread dequeued");
-            if (thread_queue.Count > 0 && !thread_queue.Peek().IsAlive)
-                thread_queue.Peek().Start();
+            wh.Set();
         }
-        
     }
 
 
@@ -75,14 +71,12 @@ public class ServerTCP : ServerBase
         //maybe do a loop here until a maximum capcity of clients has come
         while (listening)
         {
-            if (!current_client_thread_alive)
-            {
-                current_client_thread_alive = true;
-                client = _socket.Accept();
-                thread_queue.Enqueue(new Thread(() => ClientHandler(client)));
-                if (thread_queue.Count == 1)
-                    thread_queue.Peek().Start();
-            }
+
+            //Accept all clients simultaneously
+            client = _socket.Accept();
+            Thread t = new Thread(ClientHandler);
+            t.Start(client);
+            thread_queue.Enqueue(t);
 
         }
 
@@ -211,7 +205,6 @@ public class ServerTCP : ServerBase
             wh.Set();
         
 
-        current_client_thread_alive = false;
 
     }
 
@@ -222,15 +215,14 @@ public class ServerTCP : ServerBase
         while(thread_queue.Count>0 && !thread_queue.Peek().IsAlive)
         {
 
-            try
-            {
-                socket_queue.Peek().Close();
-            }
+            Socket s;
+            socket_queue.TryDequeue(out s);
+            try { s.Close(); }
             catch(SocketException e)
             {
-                Debug.Log(e);
+                Debug.LogWarning("Socket already closed");
             }
-            socket_queue.Dequeue();
+
 
             thread_queue.Peek().Abort();
         }
@@ -250,7 +242,6 @@ public class ServerTCP : ServerBase
 
         current_clients = 0;
         listening = true;
-        current_client_thread_alive = false;
 
     }
 

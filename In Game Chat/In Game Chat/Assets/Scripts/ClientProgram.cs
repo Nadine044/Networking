@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using System.Threading;
-using System.Net;
-using System.Net.Sockets;
 using UnityEngine.Events;
 
 public class ClientProgram : MonoBehaviour
@@ -22,8 +18,6 @@ public class ClientProgram : MonoBehaviour
     [SerializeField]
     GameObject starterPanel;
 
-    [SerializeField]
-    private GameObject restartUDPClient;
 
     public UnityEvent closingAppEvent;
     CLIENT_TYPE client_type = CLIENT_TYPE.NONE;
@@ -33,7 +27,6 @@ public class ClientProgram : MonoBehaviour
         if (closingAppEvent == null)
             closingAppEvent = new UnityEvent();
 
-        restartUDPClient.SetActive(false);
 
         foreach (GameObject go in UI_TextLog)
         {
@@ -52,21 +45,7 @@ public class ClientProgram : MonoBehaviour
 
         }
     }
-    public void StartUDPClient()
-    {
-        client_type = CLIENT_TYPE.UDP;
 
-        starterPanel.SetActive(false);
-        restartUDPClient.SetActive(true);
-        foreach (GameObject go in UI_TextLog)
-        {
-            go.SetActive(true);
-        }
-        GetComponent<ClientUDP>().enabled = true;
-        GetComponent<ClientUDP>().StartClient();
-
-
-    }
     public void StartSingleTCPClient()
     {
         client_type = CLIENT_TYPE.TCP;
@@ -114,11 +93,6 @@ public class ClientProgram : MonoBehaviour
                 GetComponent<ClientTCP>().enabled = false;
                 break;
 
-            case CLIENT_TYPE.UDP:
-                restartUDPClient.SetActive(false);
-                GetComponent<ClientUDP>().ClearLog();
-                GetComponent<ClientUDP>().enabled = false;
-                break;
         }
     }
 }

@@ -5,12 +5,15 @@ using System;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections.Concurrent;
+
 public class ServerBase : MonoBehaviour
 {
     protected Socket _socket;
     protected IPEndPoint ipep;
 
-    protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();
+    //protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();
+    protected ConcurrentQueue<Action> functionsToRunInMainThread = new ConcurrentQueue<Action>();
     protected string CurrentLog;
 
     [SerializeField]

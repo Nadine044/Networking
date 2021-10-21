@@ -44,20 +44,7 @@ public class ServerProgram : MonoBehaviour
         }
     }
 
-    public void StartUDPServer()
-    {
-        server_type = SERVER_TYPE.UDP;
-        starterPanel.SetActive(false);
-        foreach (GameObject go in UI_to_hide)
-        {
-            go.SetActive(true);
-        }
-        GetComponent<ServerUDP>().enabled = true;
-        GetComponent<ServerUDP>().StartServer();
-        
 
-
-    }
     public void StartTCPServer()
     {
         server_type = SERVER_TYPE.TCP;
@@ -89,10 +76,6 @@ public class ServerProgram : MonoBehaviour
                 GetComponent<ServerTCP>().enabled = false;
                 break;
 
-            case SERVER_TYPE.UDP:
-                GetComponent<ServerUDP>().ClearLog();
-                GetComponent<ServerUDP>().enabled = false;
-                break;
         }
     }
 
