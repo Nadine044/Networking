@@ -9,7 +9,7 @@ using System.Collections.Concurrent;
 
 public class ServerBase : MonoBehaviour
 {
-    protected Socket _socket;
+    protected Socket listener;
     protected IPEndPoint ipep;
 
     //protected Queue<Action> functionsToRunInMainThread = new Queue<Action>();

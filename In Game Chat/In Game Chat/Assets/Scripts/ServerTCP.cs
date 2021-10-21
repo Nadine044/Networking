@@ -7,6 +7,22 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.IO;
+
+public class StateObject
+{
+    // Size of receive buffer.  
+    public const int BufferSize = 1024;
+
+    // Receive buffer.  
+    public byte[] buffer = new byte[BufferSize];
+
+    // Received data string.
+    public StringBuilder sb = new StringBuilder();
+
+    // Client socket.
+    public Socket workSocket = null;
+}
 public class ServerTCP : ServerBase
 {
     // Start is called before the first frame update
@@ -19,7 +35,7 @@ public class ServerTCP : ServerBase
     bool listening = true;
     Queue<Thread> thread_queue = new Queue<Thread>();
 
-    private EventWaitHandle wh = new AutoResetEvent(false);
+    private static EventWaitHandle wh = new AutoResetEvent(false);
 
     Socket client;
 
@@ -59,30 +75,25 @@ public class ServerTCP : ServerBase
 
     void Server()
     {
-        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ipep = new IPEndPoint(IPAddress.Any, 27000);
 
-        _socket.Bind(ipep);
-        _socket.Listen(maxClients);
+        listener.Bind(ipep);
+        listener.Listen(maxClients);
         Debug.Log("Waiting for a client");
 
         Action WaitingClient = () =>{logControl.LogText("waiting for a client", Color.black);};
         QueueMainThreadFunction(WaitingClient);
         //maybe do a loop here until a maximum capcity of clients has come
-        while (listening)
+        while (listening) //TODO Keep listening while the server is not full or if has been full but the number of clients has decreased
         {
-
-            //Accept all clients simultaneously
-            client = _socket.Accept();
-            Thread t = new Thread(ClientHandler);
-            t.Start(client);
-            thread_queue.Enqueue(t);
-
+            wh.Reset();
+            listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+            wh.WaitOne();
         }
 
         //We pause the execution until is resumed once all the clients are done
         wh.WaitOne();
-
         
         Action ClosingServer = () =>
         {
@@ -90,11 +101,133 @@ public class ServerTCP : ServerBase
         };
         QueueMainThreadFunction(ClosingServer);
 
-        _socket.Close();
+        listener.Close();
         Debug.Log("Closing server");
 
 
     }
+    public  void AcceptCallback(IAsyncResult ar)
+    {
+        // Signal the main thread to continue.  
+
+        // Get the socket that handles the client request.  
+        Socket listener = (Socket)ar.AsyncState;
+        Socket handler = listener.EndAccept(ar);
+
+
+
+        Thread t = new Thread(HandleClient);
+        t.Start(handler);
+        thread_queue.Enqueue(t);
+
+        wh.Set();
+
+    } //Keep Listening
+
+    void HandleClient(object c)
+    {
+        Socket handler = (Socket)c;
+
+        // Create the state object.  
+        StateObject state = new StateObject();
+        state.workSocket = handler;
+
+        while (true)
+        {
+            try
+            {
+                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                new AsyncCallback(ReadCallback), state);
+                while(handler.Available ==0)
+                {
+                    Thread.Sleep(1);
+                }
+            }
+            catch (SystemException e)
+            {
+                Debug.Log(e);
+                handler.Close();
+            }
+        }
+    }
+    public  void ReadCallback(IAsyncResult ar)
+    {
+        String content = String.Empty;
+
+        // Retrieve the state object and the handler socket  
+        // from the asynchronous state object.  
+        StateObject state = (StateObject)ar.AsyncState;
+        Socket handler = state.workSocket;
+
+        // Read data from the client socket.
+        int bytesRead = handler.EndReceive(ar);
+
+
+       
+
+        if (bytesRead > 0)
+        {
+            // There  might be more data, so store the data received so far.  
+            state.sb.Append(Encoding.ASCII.GetString(
+                state.buffer, 0, bytesRead));
+
+            Message msg = Deserialize(state.buffer);
+            string s = msg.name_ + ": " + msg.message;
+            // Check for end-of-file tag. If it is not there, read
+            // more data.  
+            content = state.sb.ToString();
+            Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
+            QueueMainThreadFunction(RecieveMsg);
+
+            //Send to other Clients
+           // Send(handler, content);
+            //if (content.IndexOf("<EOF>") > -1)
+            //{
+            //    // All the data has been read from the
+            //    // client. Display it on the console.  
+            //   Debug.Log("Read "+ content.Length + " bytes from socket. \n Data : "+ content);
+            //    // Echo the data back to the client.  
+            //    Send(handler, content);
+            //}
+            //else
+            //{
+            //    // Not all data received. Get more.  
+            //    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+            //    new AsyncCallback(ReadCallback), state);
+            //}
+        }
+    }
+
+    private static void Send(Socket handler, String data)
+    {
+        // Convert the string data to byte data using ASCII encoding.  
+        byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+        // Begin sending the data to the remote device.  
+        handler.BeginSend(byteData, 0, byteData.Length, 0,
+            new AsyncCallback(SendCallback), handler);
+    }
+    private static void SendCallback(IAsyncResult ar)
+    {
+        try
+        {
+            // Retrieve the socket from the state object.  
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.  
+            int bytesSent = handler.EndSend(ar);
+           Debug.Log("Sent " + bytesSent +" bytes to client.");
+
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+    }
+
 
     //------------------
 
@@ -114,9 +247,8 @@ public class ServerTCP : ServerBase
         Socket client = (Socket)c;
         socket_queue.Enqueue(client);
         IPEndPoint client_ep;
-        string pong = "pong";
         byte[] data = new byte[1024];
-        int count = 0;
+        //int count = 0;
         int recv = 0;
 
         //Checks if the client is still connected to get the remote endpoint
@@ -140,57 +272,21 @@ public class ServerTCP : ServerBase
         try
         {
             recv = client.Receive(data);
-            Debug.Log("recieved Server " + Encoding.ASCII.GetString(data, 0, recv));
-            Action RecieveMsg = () => {logControl.LogText("recieved Server " + Encoding.ASCII.GetString(data, 0, recv), Color.black);};
+            Message msg = Deserialize(data);
+            string s = msg.name_ + ": " + msg.message;
+            //Debug.Log("recieved Server " + Encoding.ASCII.GetString(data, 0, recv));
+            Action RecieveMsg = () => {logControl.LogText(s, Color.black);};
             QueueMainThreadFunction(RecieveMsg);
-            Thread.Sleep(500);
         }
         catch (SocketException e)
         {
             Debug.LogWarning("can't recive first time from client " + e);
         }
 
+        //Now we have to send to all other clients who are in the server
+
         //Sends first message to client 
-        data = new byte[1024];
-        data = Encoding.ASCII.GetBytes(pong);
-        client.Send(data, data.Length, SocketFlags.None);
-
-        count++;
-        while (count < 5) //Recieves & Sends  4 messages to client
-        {
-            count++;
-
-            data = new byte[1024];
-            try //Recieve ping message
-            {
-                recv = client.Receive(data);
-                Debug.Log("Recieved server " + Encoding.ASCII.GetString(data));
-                Action RecieveMsg = () =>
-                {
-                    logControl.LogText("recieved Server " + Encoding.ASCII.GetString(data), Color.black);
-                };
-                QueueMainThreadFunction(RecieveMsg);
-                Thread.Sleep(500);
-            }
-            catch (SystemException e)
-            {
-                Debug.LogWarning("Can't recieve from client" + e);
-            }
-
-            try //Send pong message & waits for 500ms
-            {
-                client.Send(Encoding.ASCII.GetBytes(pong));
-   
-            }
-            catch (SystemException e)//If couldn't send launches a error message and continues with the iteration
-            {
-                Debug.LogWarning("Can't send to client " + e);
-                Action CantSend = () => {logControl.LogText("Can't send to client " + e, Color.black); };
-                QueueMainThreadFunction(CantSend);
-            }
-
-        }
-
+      
         Debug.Log("Closing Socket with client");
         Action CloseServer = () =>
         {
@@ -208,20 +304,46 @@ public class ServerTCP : ServerBase
 
     }
 
+    void startRecieve(Socket client)
+    {
+      //  client.BeginReceive();
+    }
+    //byte[] Serialize(string message)
+    //{
+    //    MemoryStream stream = new MemoryStream();
+    //    BinaryWriter writer = new BinaryWriter(stream);
+    //    writer.Write(client_name);
+    //    writer.Write(message);
+    //    return stream.GetBuffer();
+    //}
 
+    Message Deserialize(byte[] data)
+    {
+        Message msg = new Message();
+        MemoryStream stream = new MemoryStream(data);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        msg.name_ = reader.ReadString();
+        msg.message = reader.ReadString();
+        return msg;
+    }
     void CloseApp()
     {
 
         while(thread_queue.Count>0 && !thread_queue.Peek().IsAlive)
         {
 
-            Socket s;
-            socket_queue.TryDequeue(out s);
-            try { s.Close(); }
-            catch(SocketException e)
-            {
-                Debug.LogWarning("Socket already closed");
-            }
+
+            //try
+            //{
+            //    Socket s;
+            //    socket_queue.TryDequeue(out s);
+            //    s.Close();
+            //}
+            //catch(SocketException e)
+            //{
+            //    Debug.LogWarning("Socket already closed");
+            //}
 
 
             thread_queue.Peek().Abort();
@@ -229,7 +351,7 @@ public class ServerTCP : ServerBase
 
         try
         {
-            _socket.Close();
+            listener.Close();
         }
         catch (SocketException e)
         {

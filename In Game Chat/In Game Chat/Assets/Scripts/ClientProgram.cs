@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class ClientProgram : MonoBehaviour
 {
+    string client_name;
     enum CLIENT_TYPE
     {
         NONE,
@@ -18,6 +19,8 @@ public class ClientProgram : MonoBehaviour
     [SerializeField]
     GameObject starterPanel;
 
+    [SerializeField]
+    GameObject warningPanel;
 
     public UnityEvent closingAppEvent;
     CLIENT_TYPE client_type = CLIENT_TYPE.NONE;
@@ -48,6 +51,12 @@ public class ClientProgram : MonoBehaviour
 
     public void StartSingleTCPClient()
     {
+        if(client_name == null)
+        {
+            warningPanel.SetActive(true);
+            return;
+        }
+
         client_type = CLIENT_TYPE.TCP;
 
         starterPanel.SetActive(false);
@@ -56,23 +65,11 @@ public class ClientProgram : MonoBehaviour
             go.SetActive(true);
         }
         GetComponent<ClientTCP>().enabled = true;
+        GetComponent<ClientTCP>().SetClientName(client_name);
         GetComponent<ClientTCP>().SetNClients(1);
         GetComponent<ClientTCP>().StartClient();
     }
-    public void StartMultipleTCPClient()
-    {
-        client_type = CLIENT_TYPE.TCP;
 
-        starterPanel.SetActive(false);
-        foreach (GameObject go in UI_TextLog)
-        {
-            go.SetActive(true);
-        }
-        GetComponent<ClientTCP>().enabled = true;
-        GetComponent<ClientTCP>().SetNClients(3);
-        GetComponent<ClientTCP>().StartClient();
-
-    }
 
 
     public void BackToMenu()
@@ -94,5 +91,11 @@ public class ClientProgram : MonoBehaviour
                 break;
 
         }
+    }
+
+    public void ReadStringInput(string s)
+    {
+        client_name = s;
+        Debug.Log(s);
     }
 }

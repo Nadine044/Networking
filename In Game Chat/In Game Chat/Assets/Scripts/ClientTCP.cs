@@ -6,13 +6,31 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.IO;
+using UnityEngine.UI;
+public class Message
+{
+    public string name_;
+    public string message;
+}
 public class ClientTCP : ClientBase
 {
-    string ping = "ping";
+
+    [SerializeField]
+    InputField inputField_text;
     int maxClients = 3;
 
+    string msg_to_send = string.Empty;
+    string client_name = string.Empty;
 
-    Queue<Socket> sockets_q = new Queue<Socket>(); //Need to make safe thread queue == ConcurrentQueue
+    Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
+
+    private static ManualResetEvent sendDone =
+    new ManualResetEvent(false);
+
+    private static EventWaitHandle wh = new AutoResetEvent(false);
+
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
@@ -22,6 +40,8 @@ public class ClientTCP : ClientBase
 
     public void StartClient()
     {
+        //Only for testing
+        msg_to_send = "Helo Testing Message";
         for (int i = 0; i < maxClients; i++)
         {
             StartThreadingFunction(Client);
@@ -46,16 +66,16 @@ public class ClientTCP : ClientBase
             if(someFunc != null)
                 someFunc();
         }
+        if (Input.GetKeyDown(KeyCode.S))
+            client.Close();
     }
 
     void Client()
     {
-        Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        sockets_q.Enqueue(server);
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
+
 
         byte[] data = new byte[1024];
-        int count = 0;
+        //int count = 0;
         bool connected = false;
 
         //tries to connect all the time to the server until the client achieve it
@@ -63,11 +83,13 @@ public class ClientTCP : ClientBase
         {
             try
             {
-                server.Connect(ipep);
+                client.Connect(ipep);
                 connected = true;
                 Action Connected_Server = () => { logControl.LogText("connected to server", Color.black); };
                 QueueMainThreadFunction(Connected_Server);
                 Debug.Log("connected to server");
+
+               // client.BeginConnect(ipep,AsyncCall)
             }
             catch (SocketException e)
             {
@@ -86,10 +108,12 @@ public class ClientTCP : ClientBase
 
         }
 
+
+        data = Serialize(msg_to_send);
         //Sends the first ping or message to the server
         try
         {
-            server.Send(Encoding.ASCII.GetBytes(ping));
+            client.Send(data);
             //Debug.Log("Send  client ping ");
         } catch(SocketException e)
         {
@@ -98,15 +122,15 @@ public class ClientTCP : ClientBase
             QueueMainThreadFunction(SendingError);
         }
 
+        wh.WaitOne();
         int recv;
         //Recieves the first message from the server & waits for 500ms
         try
         {
-            recv = server.Receive(data);
+            recv = client.Receive(data);
             Debug.Log("Recieved  Client" + Encoding.ASCII.GetString(data, 0, recv));
             Action Recieved = () => { logControl.LogText(Encoding.ASCII.GetString(data, 0, recv), Color.black); };
             QueueMainThreadFunction(Recieved);
-            Thread.Sleep(500);
         }
         catch(SystemException e)
         {
@@ -115,76 +139,116 @@ public class ClientTCP : ClientBase
             QueueMainThreadFunction(RecievingError);
         }
         
-        count++;
-        while (count < 5)
+        
+
+       
+    }
+
+
+    byte[] Serialize(string message)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(client_name);
+        writer.Write(message);
+        return stream.GetBuffer();
+    }
+
+    Message Deserialize(byte[] data)
+    {
+        Message msg = new Message();
+        MemoryStream stream = new MemoryStream(data);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        msg.name_ = reader.ReadString();
+        msg.message = reader.ReadString();
+        return msg;
+    }
+
+   
+
+
+    public void NewMessageToSend(string s)
+    {
+        Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
+        QueueMainThreadFunction(MsgSended);
+        Send(client, s);
+        inputField_text.Select();
+        inputField_text.text = "";
+    }
+
+    public void SetClientName(string s)
+    {
+        client_name = s;
+    }
+
+    private  void Send(Socket client, String msg)
+    {
+        // Convert the string data to byte data using ASCII encoding.  
+        byte[] byteData = Serialize(msg);
+        // Begin sending the data to the remote device.  
+        client.BeginSend(byteData, 0, byteData.Length, 0,
+            new AsyncCallback(SendCallback), client);
+    }
+
+    private static void SendCallback(IAsyncResult ar)
+    {
+        try
         {
-            try //Sends message to server
-            {
-                count++;
-                server.Send(Encoding.ASCII.GetBytes(ping));
-                //Debug.Log("Send client ping");
-            }
-            catch(SystemException e)
-            {
-                Debug.LogWarning("Client Couldn't send message to server " + e);
-                Action SendError = () => { logControl.LogText("Unable to send" + e.ToString(), Color.black); };
-                QueueMainThreadFunction(SendError);
-                break;
-            }
+            // Retrieve the socket from the state object.  
+            Socket client = (Socket)ar.AsyncState;
 
+            // Complete sending the data to the remote device.  
+            int bytesSent = client.EndSend(ar);
+            Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
-            data = new byte[1024];
-            try //Recieves message from server & waits for 500ms
-            {
-                recv = server.Receive(data);
-                Debug.Log("Recived client " + Encoding.ASCII.GetString(data, 0, recv)); //Crashes here in the last update
-                Action Recieved_ = () => { logControl.LogText(Encoding.ASCII.GetString(data, 0, recv), Color.black); };
-                QueueMainThreadFunction(Recieved_);
-                Thread.Sleep(500);
-            }
-            catch (SystemException e)
-            {
-                Debug.LogWarning("Couldn't recieve from server " + e);
-                Action RecievedError_ = () => { logControl.LogText("Couldn't recieve from server " + e, Color.black); };
-                QueueMainThreadFunction(RecievedError_);
-            }
-
+            // Signal that all bytes have been sent.  
+            sendDone.Set();
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+    }
 
+    public void ExitClient()
+    {
+        //Disconnecting
         Debug.Log("Disconnecting From server");
         Action Disconnecting = () => { logControl.LogText("Disconnecting from server", Color.black); };
         QueueMainThreadFunction(Disconnecting);
 
         try
         {
-            server.Shutdown(SocketShutdown.Both);
+            client.Shutdown(SocketShutdown.Both);
         }
-        catch(SystemException e)
+        catch (SystemException e)
         {
-            Debug.LogWarning("Couldn't shutdown the server, socket already closed " +e);
+            Debug.LogWarning("Couldn't shutdown the server, socket already closed " + e);
         }
 
-        server.Close();
-        sockets_q.Dequeue();
+
+        try
+        {
+            client.Close();
+        }
+        catch (SystemException e)
+        {
+            Debug.Log("Couldn't Close socket" + e);
+        }
         Action CloseSocket = () => { logControl.LogText("Socket Closed", Color.black); };
         QueueMainThreadFunction(CloseSocket);
     }
-
     void CloseApp()
     {
-        while (temp_threads.Count > 0)
+
+        try
         {
-            try
-            {
-                sockets_q.Dequeue().Close();
-            }
-            catch (SystemException e)
-            {
-                Debug.Log("Couldn't Close socket" + e);
-            }
-            if (temp_threads.Peek().IsAlive)
-                temp_threads.Dequeue().Abort();
-            else temp_threads.Dequeue();
+            client.Close();
+        }
+        catch (SystemException e)
+        {
+            Debug.Log("Couldn't Close socket" + e);
         }
 
     }
