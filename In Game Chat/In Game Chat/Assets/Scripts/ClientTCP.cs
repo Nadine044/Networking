@@ -14,9 +14,29 @@ public class Message
     public string message;
     public string finalofmsg;
 }
+
 public class ClientTCP : ClientBase
 {
+    #region Client_Socket_OBJ
+    public class ClientOBJ
+    {
+        // Size of receive buffer.  
+        public const int BufferSize = 1024;
 
+        // Receive buffer.  
+        public byte[] buffer = new byte[BufferSize];
+
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
+
+        // Client socket.
+        public Socket socket = null;
+
+        public bool endC = false;
+    }
+    #endregion
+
+    #region Class_Variables
     [SerializeField]
     InputField inputField_text;
 
@@ -24,19 +44,19 @@ public class ClientTCP : ClientBase
     string client_name = string.Empty;
 
     Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-    IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
+    IPEndPoint ipep;
 
 
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
     bool connected = false; //TODO CHANGE THIS, use another method
     private static ManualResetEvent connectDone = new ManualResetEvent(false);
-
+    #endregion
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
-
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
     }
 
     public void StartClient()
@@ -133,8 +153,7 @@ public class ClientTCP : ClientBase
             Debug.LogWarning(e);
         }
 
-        StateObject state = new StateObject();
-        state.workSocket = client;
+
         //recieving loop
 
         //while (!leave)
@@ -153,19 +172,21 @@ public class ClientTCP : ClientBase
         //        Debug.LogWarning(e);
         //    }
         //}
-        while (!state.endC)
+        ClientOBJ obj = new ClientOBJ();
+        obj.socket = client;
+        while (true)
         {
             recieveDone.Reset();
 
-            client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
+            client.BeginReceive(obj.buffer, 0, ClientOBJ.BufferSize, 0,
+                new AsyncCallback(ReadCallback), obj);
 
-            if (state.endC)
+            if (obj.endC)
                 break;
 
             recieveDone.WaitOne();
 
-        }
+    }
 
         try
         {
@@ -202,10 +223,10 @@ public class ClientTCP : ClientBase
     {
         string content = string.Empty;
 
-        StateObject state = (StateObject)ar.AsyncState;
+        ClientOBJ state = (ClientOBJ)ar.AsyncState;
 
     
-        Socket handler = state.workSocket;
+        Socket handler = state.socket;
         int bytesRead = 0 ;
 
         bytesRead = handler.EndReceive(ar); //Peta AQUIII
@@ -289,7 +310,7 @@ public class ClientTCP : ClientBase
         client_name = s;
     }
 
-    private  void Send(Socket client, String msg)
+    private  void Send(Socket client, string msg)
     {
         // Convert the string data to byte data using ASCII encoding.  
         byte[] byteData = Serialize(msg);
@@ -299,7 +320,7 @@ public class ClientTCP : ClientBase
             new AsyncCallback(SendCallback), client);
     }
 
-    private static void SendCallback(IAsyncResult ar)
+    private  void SendCallback(IAsyncResult ar)
     {
         
 
@@ -308,7 +329,11 @@ public class ClientTCP : ClientBase
 
             // Complete sending the data to the remote device.  
             int bytesSent = client.EndSend(ar);
-            Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+            Debug.Log(bytesSent + "bytes sent to server");
+            Action Disconnecting = () => { logControl.LogText(bytesSent.ToString() + "bytes sent to server", Color.black); };
+            QueueMainThreadFunction(Disconnecting);
+        
+
 
             // Signal that all bytes have been sent.          
 
