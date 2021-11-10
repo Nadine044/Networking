@@ -27,6 +27,15 @@ public class StateObject
 }
 public class ServerTCP : ServerBase
 {
+    //TODO use the User class to properly delete threads from list, assing color, etc
+    #region UserClass
+    class User
+    {
+        public Color username_color = Color.black;
+        public Thread user_thread;
+        public string name = string.Empty;
+    }
+    #endregion
     // Start is called before the first frame update
     readonly int maxClients = 3;
 
@@ -35,7 +44,7 @@ public class ServerTCP : ServerBase
 
 
     bool listening = true;
-    Queue<Thread> thread_queue = new Queue<Thread>();
+    List<Thread> thread_list = new List<Thread>();
 
     private static EventWaitHandle wh = new AutoResetEvent(false);
 
@@ -47,6 +56,7 @@ public class ServerTCP : ServerBase
     ConcurrentQueue<Socket> socket_queue = new ConcurrentQueue<Socket>();
     void Start()
     {
+        //Application.quitting += CloseApp;
         GetComponent<ServerProgram>().closingAppEvent.AddListener(CloseApp);
     }
 
@@ -69,18 +79,13 @@ public class ServerTCP : ServerBase
             someFunc();
         }
 
-        //Temporal to end server thread
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            wh.Set();
-        }
     }
 
 
     void Server()
     {
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 27000);
+        ipep = new IPEndPoint(IPAddress.Any, 27001);
 
         listener.Bind(ipep);
         listener.Listen(maxClients);
@@ -92,6 +97,10 @@ public class ServerTCP : ServerBase
         while (listening) //TODO Keep listening while the server is not full or if has been full but the number of clients has decreased
         {
             wh.Reset();
+
+            if (!listening)
+                break;
+
             listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
             wh.WaitOne();
         }
@@ -115,14 +124,20 @@ public class ServerTCP : ServerBase
         // Signal the main thread to continue.  
 
         // Get the socket that handles the client request.  
+        if (!listening)
+        {
+            wh.Set();
+            return;
+        }
+
         Socket listener = (Socket)ar.AsyncState;
         Socket handler = listener.EndAccept(ar);
 
-
+        //CRASH When closes server application --> check 
 
         Thread t = new Thread(HandleClient);
         t.Start(handler);
-        thread_queue.Enqueue(t);
+        thread_list.Add(t);
 
         wh.Set();
 
@@ -155,9 +170,10 @@ public class ServerTCP : ServerBase
            // break;
         }
 
+        Debug.Log("closing handler");
         handler.Close();
 
-
+         
     }
     public  void ReadCallback(IAsyncResult ar)
     {
@@ -228,56 +244,39 @@ public class ServerTCP : ServerBase
         }
         else
         {
-            string disconnecting_user_name;
+            //Here pasess a lot of times sometimes with the same user //TO FIX
+            string disconnecting_user_name="";
             users.TryGetValue(state.workSocket, out disconnecting_user_name);
             users.Remove(state.workSocket);
+
+            byte[] b = Encoding.ASCII.GetBytes("User " + disconnecting_user_name + " disconnected");
+            //Send message to all other clients that someone has disconnected
+            foreach (KeyValuePair<Socket, string> entry in users)
+            {
+                    Send(entry.Key, b);              
+            }
+
             Action RecieveMsg = () => { logControl.LogText("User " +disconnecting_user_name + " disconnected", Color.black); };
             QueueMainThreadFunction(RecieveMsg);
+
+            //close socket with client
             state.workSocket.Close();
 
-            //try
-            //{
-            //}
-            //catch (SocketException e)
-            //{
-            //    Debug.LogWarning("handler socket already closed" + e);
-            //}
 
             Debug.Log("Something Happened, didnt recieved any bytes");
             state.endC = true;
+
+            //Remove thread from list
+            thread_list.Remove(Thread.CurrentThread);
+
+            //
             Thread.CurrentThread.Abort();
-            //recieveDone.Set();
-            //We have to exit the uper thread!!!
+
         }
         
 
 
-        //else //Client is disconnected
-        //{
-        //    string tmp_name = "";
-        //    foreach(KeyValuePair<Socket,string> entry in users )
-        //    {
-        //        if (entry.Key == handler)
-        //        {
-        //            tmp_name = entry.Value;
-        //            break;
-        //        }
 
-        //    }
-        //    users.Remove(handler);
-
-        //    Action RecieveMsg = () => { logControl.LogText("User" +tmp_name + "diconnected", Color.black); };
-        //    QueueMainThreadFunction(RecieveMsg);
-        //    try {
-        //        handler.Close();
-        //    }
-        //    catch (SocketException e)
-        //    {
-        //        Debug.LogWarning("handler socket already closed" + e);
-        //    }
-
-        //    Thread.CurrentThread.Abort();
-        //    }
     }
 
     private static void Send(Socket handler, byte[] data)
@@ -362,26 +361,16 @@ public class ServerTCP : ServerBase
     }
     void CloseApp()
     {
-
-        while(thread_queue.Count>0 && !thread_queue.Peek().IsAlive)
+        //abort all the threads
+        foreach(Thread t in thread_list)
         {
-
-
-            //try
-            //{
-            //    Socket s;
-            //    socket_queue.TryDequeue(out s);
-            //    s.Close();
-            //}
-            //catch(SocketException e)
-            //{
-            //    Debug.LogWarning("Socket already closed");
-            //}
-
-
-            thread_queue.Peek().Abort();
+            t.Abort();
         }
 
+        //Empty the thread list
+        thread_list.Clear();
+
+        //close the main socket
         try
         {
             listener.Close();
@@ -391,58 +380,16 @@ public class ServerTCP : ServerBase
             Debug.Log("Couldn't Close socket while exiting info" + e);
         }
 
+
+        //TODO CHECK THIS
         if (temp_thread.ThreadState == ThreadState.Running)
             temp_thread.Abort();
 
 
         current_clients = 0;
-        listening = true;
+        listening = false;
+        wh.Set();
 
     }
 
-    //void ClientHandler(object c)
-    //{
-    //    Socket client = (Socket)c;
-    //    byte[] data = new byte[1024];
-    //    client.Receive(data); //blocking
-    //    Message msg = Deserialize(data);
-
-    //    if (!users.ContainsKey(client)) //Chekc if there is already added the client to dictionary
-    //        users.Add(client, msg.name_);
-
-    //    Action Recieved_first = () => { logControl.LogText(msg.name_ + msg.message, Color.black); };
-    //    QueueMainThreadFunction(Recieved_first);
-
-    //    //Send to other clients
-    //    foreach (KeyValuePair<Socket, string> entry in users)
-    //    {
-    //        if (entry.Key != client)
-    //        {
-    //            Send(entry.Key, data);
-    //        }
-
-    //    }
-    //    bool leaving = false;
-    //    int recv;
-    //    //recieving loop
-    //    while (!leaving)
-    //    {
-    //        data = new byte[1024];
-    //        recv = client.Receive(data); //blocking
-    //        Message tmp_m = Deserialize(data);
-    //        Action Recieved_ = () => { logControl.LogText(tmp_m.name_ + tmp_m.message, Color.black); };
-    //        QueueMainThreadFunction(Recieved_);
-    //        foreach (KeyValuePair<Socket, string> entry in users)
-    //        {
-    //            if (entry.Key != client)
-    //            {
-    //                Send(entry.Key, data);
-    //            }
-
-    //        }
-
-    //    }
-
-    //    client.Close();
-    //}
 }

@@ -40,6 +40,8 @@ public class ServerProgram : MonoBehaviour
         {
             closingAppEvent.Invoke();
             Application.Quit();
+            //The applications doesn't closes
+            
 
         }
     }

@@ -49,14 +49,13 @@ public class ClientTCP : ClientBase
 
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
-    bool connected = false; //TODO CHANGE THIS, use another method
     private static ManualResetEvent connectDone = new ManualResetEvent(false);
     #endregion
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27000);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27001);
     }
 
     public void StartClient()
@@ -91,58 +90,7 @@ public class ClientTCP : ClientBase
         IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
 
         byte[] data = new byte[1024];
-        //int count = 0;
 
-        int error_counter = 0;
-        //tries to connect all the time to the server until the client achieve it
-        //while (!connected)
-        //{
-        //    try
-        //    {
-        //        client.Connect(ipep);
-        //        connected = true;
-        //        Action Connected_Server = () => { logControl.LogText("connected to server", Color.black); };
-        //        QueueMainThreadFunction(Connected_Server);
-        //        Debug.Log("connected to server");
-
-        //       // client.BeginConnect(ipep,AsyncCall)
-        //    }
-        //    catch (SocketException e)
-        //    {
-        //        if (e.NativeErrorCode.Equals(10035))
-        //        {
-        //            Debug.LogWarning("Still Connected, but the Send would block");
-        //        }
-        //        else
-        //        {
-        //            Debug.LogWarning("Disconnected: error code "+ e.NativeErrorCode);
-        //        }
-        //        Debug.LogWarning("Unable to connect to server  " + e.ToString());
-        //        if (error_counter == 0)
-        //        {
-        //            Action ConnectionError = () => { logControl.LogText("Unable to connect to server  " + e.ToString(), Color.black); };
-        //            QueueMainThreadFunction(ConnectionError);
-        //            error_counter++;
-        //        }
-
-        //    }
-
-        //}
-
-        //FIRST MESSAGE, NEEDS TO CHANGE
-        // data = Serialize(msg_to_send);
-
-        ////Sends the first ping or message to the server
-        //try
-        //{
-        //    client.Send(data);
-        //    //Debug.Log("Send  client ping ");
-        //} catch(SocketException e)
-        //{
-        //    Debug.LogWarning(e.SocketErrorCode);
-        //    Action SendingError = () => { logControl.LogText("Unable to send " + e.ToString(), Color.black); };
-        //    QueueMainThreadFunction(SendingError);
-        //}
 
         //Send Connect Message to server
         client.BeginConnect(ipep, new AsyncCallback(ConnectCallback), client);
@@ -154,28 +102,15 @@ public class ClientTCP : ClientBase
         }
 
 
-        //recieving loop
 
-        //while (!leave)
-        //{
-
-        //    try
-        //    {
-        //        data = new byte[1024];
-        //        recv = client.Receive(data);
-        //        Message tmp_m = Deserialize(data);
-        //        Action Recieved_ = () => { logControl.LogText(tmp_m.name_ + tmp_m.message, Color.black); };
-        //        QueueMainThreadFunction(Recieved_);
-        //    }
-        //    catch (SocketException e)
-        //    {
-        //        Debug.LogWarning(e);
-        //    }
-        //}
+        //TODO EXIT LOOP
         ClientOBJ obj = new ClientOBJ();
         obj.socket = client;
-        while (true)
+
+        //Recieve loop
+        while (!obj.endC)
         {
+            //starting point once the message is recieved
             recieveDone.Reset();
 
             client.BeginReceive(obj.buffer, 0, ClientOBJ.BufferSize, 0,
@@ -184,10 +119,12 @@ public class ClientTCP : ClientBase
             if (obj.endC)
                 break;
 
+            //Until the recieved isnt resolved the loop will stop here
             recieveDone.WaitOne();
 
-    }
+        }
 
+        Debug.Log("Exit recieving loop");
         try
         {
             client.Shutdown(SocketShutdown.Both);
@@ -330,8 +267,7 @@ public class ClientTCP : ClientBase
             // Complete sending the data to the remote device.  
             int bytesSent = client.EndSend(ar);
             Debug.Log(bytesSent + "bytes sent to server");
-            Action Disconnecting = () => { logControl.LogText(bytesSent.ToString() + "bytes sent to server", Color.black); };
-            QueueMainThreadFunction(Disconnecting);
+
         
 
 
