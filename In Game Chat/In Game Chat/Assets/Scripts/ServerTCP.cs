@@ -9,22 +9,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.IO;
 
-public class StateObject
-{
-    // Size of receive buffer.  
-    public const int BufferSize = 1024;
 
-    // Receive buffer.  
-    public byte[] buffer = new byte[BufferSize];
-
-    // Received data string.
-    public StringBuilder sb = new StringBuilder();
-
-    // Client socket.
-    public Socket workSocket = null;
-
-    public bool endC = false;
-}
 public class ServerTCP : ServerBase
 {
     //TODO use the User class to properly delete threads from list, assing color, etc
@@ -34,8 +19,30 @@ public class ServerTCP : ServerBase
         public Color username_color = Color.black;
         public Thread user_thread;
         public string name = string.Empty;
+        public const int BufferSize = 1024;
+
+        // Receive buffer.  
+        public byte[] buffer = new byte[BufferSize];
+
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
+
+        // Client socket.
+        public Socket socket = null;
+
+        public bool endC = false;
+
+        public EventWaitHandle recieveDone = new ManualResetEvent(false);
+        KeyValuePair<int, string> colors_username;
     }
     #endregion
+
+    //RichTexts default string
+    //Example: We are <color = green>green</color> with envy
+    string r1 = "<color=";
+    string r2 = ">";
+    string r3 = "</color>";
+
     // Start is called before the first frame update
     readonly int maxClients = 3;
 
@@ -48,12 +55,13 @@ public class ServerTCP : ServerBase
 
     private static EventWaitHandle wh = new AutoResetEvent(false);
 
-    private static EventWaitHandle recieveDone = new ManualResetEvent(false);
+    //private static EventWaitHandle recieveDone = new ManualResetEvent(false);
 
     Socket client;
-    Dictionary<Socket,string> users = new Dictionary<Socket,string>();
+    Dictionary<Socket,string> users_dictionary = new Dictionary<Socket,string>();
     //In case of suddenly exiting the App
     ConcurrentQueue<Socket> socket_queue = new ConcurrentQueue<Socket>();
+    List<User> users_list = new List<User>();
     void Start()
     {
         //Application.quitting += CloseApp;
@@ -85,7 +93,7 @@ public class ServerTCP : ServerBase
     void Server()
     {
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 27001);
+        ipep = new IPEndPoint(IPAddress.Any, 27011);
 
         listener.Bind(ipep);
         listener.Listen(maxClients);
@@ -93,15 +101,23 @@ public class ServerTCP : ServerBase
 
         Action WaitingClient = () =>{logControl.LogText("waiting for a client", Color.black);};
         QueueMainThreadFunction(WaitingClient);
+
+
         //maybe do a loop here until a maximum capcity of clients has come
         while (listening) //TODO Keep listening while the server is not full or if has been full but the number of clients has decreased
         {
+            //Point where the EventWaitHandle restarts the execution
             wh.Reset();
 
+            //neded to exit the loop
             if (!listening)
                 break;
 
+            //Async accept incoming socket
             listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+            //listener.BeginAccept(null, 256, new AsyncCallback(AcceptCallback), listener);
+
+            //EventWaintHandle stops the execution of this thread until is changed from another thread
             wh.WaitOne();
         }
 
@@ -114,6 +130,7 @@ public class ServerTCP : ServerBase
         };
         QueueMainThreadFunction(ClosingServer);
 
+        //close listener socket
         listener.Close();
         Debug.Log("Closing server");
 
@@ -121,24 +138,59 @@ public class ServerTCP : ServerBase
     }
     public  void AcceptCallback(IAsyncResult ar)
     {
-        // Signal the main thread to continue.  
 
-        // Get the socket that handles the client request.  
+
+
+
         if (!listening)
         {
+            //Resume the EventWaitHandle to keep exit the recieving client loop
             wh.Set();
             return;
         }
 
+
+       //Cast the object callback to a socket
         Socket listener = (Socket)ar.AsyncState;
-        Socket handler = listener.EndAccept(ar);
 
-        //CRASH When closes server application --> check 
+        //TODO HOW TO GET MULTIPLE CONNECTIONS with bytes in client acceptance
+        //byte[] buffer;
+        //int bytesTransferred;
+        ////Asynchronously accepts an incoming connection attempt.
+        //Socket tmp_handler = listener.EndAccept(out buffer,out bytesTransferred,ar);
+        //string requesting_user_name = Encoding.ASCII.GetString(buffer, 0, bytesTransferred);
+        //Debug.Log(requesting_user_name);
 
-        Thread t = new Thread(HandleClient);
-        t.Start(handler);
-        thread_list.Add(t);
+        ////If the new user name matches some name of the current users its request is dennied;
+        //foreach (User u in users_list)
+        //{
+        //    if(requesting_user_name == u.name)
+        //    {
+        //        //TODO SEND A MSG BACK TO CLIENT SAYING WHY ACCES IS DENIED
+        //        Debug.Log("new user trying to connect with the name " + requesting_user_name + " that matches another client name");
+        //        tmp_handler.Close();
+        //        wh.Set();                              ---------
+        //        return;                                ---------
+        //    }                                          ---------
+        //}                                              ---------
+        //        user.socket = tmp_handler;             ---------
+        //.-------------------------------------------------------
+        //.-------------------------------------------------------
 
+
+        User user = new User();
+        //Asynchronously accepts an incoming connection attempt.
+        user.socket = listener.EndAccept(ar);
+        users_list.Add(user);
+
+        //Starts a thread to handle the incoming client
+        user.user_thread = new Thread(HandleClient);
+        user.user_thread.Start(user);
+
+        //Quarantine check later
+        thread_list.Add(user.user_thread);
+
+        //Resume the EventWaitHandle to keep recieving incoming clients in the Server() function 
         wh.Set();
 
     } //Keep Listening
@@ -146,62 +198,55 @@ public class ServerTCP : ServerBase
 
     void HandleClient(object c)
     {
-        Socket handler = (Socket)c;
+        User user = (User)c;
 
-        // Create the state object.  
-        StateObject state = new StateObject();
-        state.workSocket = handler;
-        while (!state.endC) //aixo peta
+
+        while (!user.endC) //aixo peta
         {
-            recieveDone.Reset();
-            if (state.endC)
+            //Point where the EventWaitHandle restarts the execution
+            user.recieveDone.Reset();
+
+            //to exit the loop
+            if (user.endC)
                 break;
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-               new AsyncCallback(ReadCallback), state);
-            //while (handler.Available == 0)
-            //{
-            //    Thread.Sleep(1);
-            //}
-            //CHECK THIS KEEP ALIVE SOCKET
+            //Async recieve bytes from the client
+            user.socket.BeginReceive(user.buffer, 0, User.BufferSize, 0,
+               new AsyncCallback(ReadCallback), user);
+
 
             //https://stackoverflow.com/questions/722240/instantly-detect-client-disconnection-from-server-socket
-            recieveDone.WaitOne();
-           // break;
+            user.recieveDone.WaitOne();
         }
 
         Debug.Log("closing handler");
-        handler.Close();
-
-         
+        user.socket.Close();
+        user = null;      
     }
     public  void ReadCallback(IAsyncResult ar)
     {
-        string content = string.Empty;
 
         // Retrieve the state object and the handler socket  
         // from the asynchronous state object.  
-        StateObject state = (StateObject)ar.AsyncState;
+        User user = (User)ar.AsyncState;
         
 
         // Read data from the client socket.
 
 
-        int bytesRead = state.workSocket.EndReceive(ar);
+        int bytesRead = user.socket.EndReceive(ar);
 
-        if(bytesRead ==0)
-        {
-            Debug.Log(state);
-        }
 
 
         if (bytesRead > 0)
         {
-            // There  might be more data, so store the data received so far.  
-            state.sb.Append(Encoding.ASCII.GetString(
-                state.buffer, 0, bytesRead));
 
-            content = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
+            // There  might be more data, so store the data received so far.  
+            user.sb.Append(Encoding.ASCII.GetString(
+                user.buffer, 0, bytesRead));//These may be wrong case we process twice the data the first in append second in deserialize
+
+            string content = string.Empty;
+            content = Encoding.ASCII.GetString(user.buffer, 0, bytesRead);
             Debug.Log(content);
 
 
@@ -211,10 +256,34 @@ public class ServerTCP : ServerBase
             if (content.IndexOf("__END") > -1)
             {
                 //Al data has been read 
-                Message msg = Deserialize(state.buffer);
+                Message msg = Deserialize(user.buffer);
 
-                if (!users.ContainsKey(state.workSocket)) //Chekc if there is already added the client to dictionary
-                    users.Add(state.workSocket, msg.name_);
+                //Temporal until we solve the beginconnect error ----------------------------
+                //---------------------------------------------------------------------------
+                if (user.name == string.Empty)
+                    user.name = msg.name_;
+                //Putamara
+
+                foreach(User u in users_list)
+                {
+                    if(u != user && u.name == user.name)
+                    {
+                        EventWaitHandle exit_server = new ManualResetEvent(false);
+
+                        byte[] bytesback = Encoding.ASCII.GetBytes("Name already used please restart client and change name");
+                        user.socket.BeginSend(bytesback, 0, bytesback.Length,0, new AsyncCallback(AccesDenied),user.socket);
+                        Debug.Log("Bye bye");
+                        user.socket.Close();
+                        user.endC = false;
+                        users_list.Remove(user);
+                        user.user_thread.Abort();
+                        user.recieveDone.Set();
+                    }
+                }
+                //TEMPORAL-------------------------------------------
+                //TEMPORAL-------------------------------------------
+                if (!users_dictionary.ContainsKey(user.socket)) //Chekc if there is already added the client to dictionary
+                    users_dictionary.Add(user.socket, msg.name_);
 
 
                 string s = msg.name_ + ": " + msg.message;
@@ -224,61 +293,60 @@ public class ServerTCP : ServerBase
                 QueueMainThreadFunction(RecieveMsg);
 
                 //Send message to the rest of clients
-                foreach (KeyValuePair<Socket, string> entry in users)
+                foreach (User u in users_list)
                 {
-                    if (entry.Key != state.workSocket)
+                    if(u != user)
                     {
-                        Send(entry.Key, state.buffer);
+                        Send(u.socket, user.buffer);
                     }
-
                 }
-                recieveDone.Set();
+                //maybe we have to empty the buffer here
+                user.recieveDone.Set();
+
             }
-            else
+            //keeps recieving the rest of the message
+            else 
             {
-                state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                user.socket.BeginReceive(user.buffer, 0, User.BufferSize, 0, new AsyncCallback(ReadCallback), user);
             }
-
-
 
         }
         else
         {
             //Here pasess a lot of times sometimes with the same user //TO FIX
-            string disconnecting_user_name="";
-            users.TryGetValue(state.workSocket, out disconnecting_user_name);
-            users.Remove(state.workSocket);
+            string disconnecting_user_name= user.name;
+            users_list.Remove(user);
 
             byte[] b = Encoding.ASCII.GetBytes("User " + disconnecting_user_name + " disconnected");
             //Send message to all other clients that someone has disconnected
-            foreach (KeyValuePair<Socket, string> entry in users)
+            
+            foreach(User u in users_list)
             {
-                    Send(entry.Key, b);              
+                Send(u.socket, b);
             }
+
 
             Action RecieveMsg = () => { logControl.LogText("User " +disconnecting_user_name + " disconnected", Color.black); };
             QueueMainThreadFunction(RecieveMsg);
 
             //close socket with client
-            state.workSocket.Close();
+            user.socket.Close();
 
 
             Debug.Log("Something Happened, didnt recieved any bytes");
-            state.endC = true;
+            user.endC = true;
 
             //Remove thread from list
-            thread_list.Remove(Thread.CurrentThread);
+           // thread_list.Remove(Thread.CurrentThread);
 
-            //
-            Thread.CurrentThread.Abort();
+            user.user_thread.Abort();
 
         }
-        
-
-
-
     }
 
+    void AccesDenied(IAsyncResult ar)
+    {
+    }
     private static void Send(Socket handler, byte[] data)
     {
         // Convert the string data to byte data using ASCII encoding.  
@@ -391,5 +459,29 @@ public class ServerTCP : ServerBase
         wh.Set();
 
     }
-
+    Dictionary<int, string> colors = new Dictionary<int, string>()
+    {
+        {1, "aqua"},
+        {2, "black"},
+        {3, "brown"},
+        {4, "cyan"},
+        {5, "darkblue"},
+        {6, "fuchsia"},
+        {7, "green"},
+        {8, "grey"},
+        {9, "lightblue"},
+        {10, "lime"},
+        {11, "magenta"},
+        {12, "maroon"},
+        {13, "navy"},
+        {14, "olive"},
+        {15, "orange"},
+        {16, "purple"},
+        {17, "purple"},
+        {18, "red"},
+        {19, "silver"},
+        {20, "teal"},
+        {21, "white"},
+        {22, "yellow"},
+    };
 }

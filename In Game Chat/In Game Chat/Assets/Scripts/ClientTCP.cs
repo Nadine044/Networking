@@ -55,7 +55,7 @@ public class ClientTCP : ClientBase
     public void Start() //We should create the several clients from here
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27001);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27011);
     }
 
     public void StartClient()
@@ -94,6 +94,7 @@ public class ClientTCP : ClientBase
 
         //Send Connect Message to server
         client.BeginConnect(ipep, new AsyncCallback(ConnectCallback), client);
+        
         connectDone.WaitOne();
         try { Send(client, msg_to_send); }
         catch (SystemException e)
@@ -144,8 +145,17 @@ public class ClientTCP : ClientBase
         try
         {
             Socket client_r = (Socket)ar.AsyncState;
+            //HERE IS THE ERROR, WE MUST PROPERLY ENDCONNECTION FOR NOW IF WE USE THIS METHOD SERVER WILL ONLY ACCEPT ONE CLIENT,
+            //Now we send with the connect request the user name data
+            //byte[] byteData = Encoding.ASCII.GetBytes(client_name);
+            //client_r.BeginSend(byteData, 0, byteData.Length, 0,
+            //new AsyncCallback(SendCallback), client_r);
+
             client.EndConnect(ar);
+
+            //Now the connect request ends
             Debug.Log("Socket connected to " + client_r.RemoteEndPoint.ToString());
+
 
             connectDone.Set();
         }
@@ -187,7 +197,7 @@ public class ClientTCP : ClientBase
             }
             else
             {
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                handler.BeginReceive(state.buffer, 0, ClientOBJ.BufferSize, 0, new AsyncCallback(ReadCallback), state);
 
             }
 
@@ -238,8 +248,8 @@ public class ClientTCP : ClientBase
         Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
         QueueMainThreadFunction(MsgSended);
         Send(client, s);
-        inputField_text.Select();
-        inputField_text.text = "";
+        //inputField_text.Select();
+        //inputField_text.text = "";
     }
 
     public void SetClientName(string s)
