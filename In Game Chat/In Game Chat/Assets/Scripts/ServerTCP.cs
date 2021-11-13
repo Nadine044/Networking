@@ -264,6 +264,7 @@ public class ServerTCP : ServerBase
                     user.name = msg.name_;
                 //Putamara
 
+
                 foreach(User u in users_list)
                 {
                     if(u != user && u.name == user.name)
@@ -282,8 +283,8 @@ public class ServerTCP : ServerBase
                 }
                 //TEMPORAL-------------------------------------------
                 //TEMPORAL-------------------------------------------
-                if (!users_dictionary.ContainsKey(user.socket)) //Chekc if there is already added the client to dictionary
-                    users_dictionary.Add(user.socket, msg.name_);
+                //if (!users_dictionary.ContainsKey(user.socket)) //Chekc if there is already added the client to dictionary
+                //    users_dictionary.Add(user.socket, msg.name_);
 
 
                 string s = msg.name_ + ": " + msg.message;
@@ -292,12 +293,15 @@ public class ServerTCP : ServerBase
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
                 QueueMainThreadFunction(RecieveMsg);
 
+
+                byte[] bytestoSend = Serialize(msg.message, user.name);
+
                 //Send message to the rest of clients
                 foreach (User u in users_list)
                 {
-                    if(u != user)
+                    if(u != user)//Check
                     {
-                        Send(u.socket, user.buffer);
+                        Send(u.socket, bytestoSend);
                     }
                 }
                 //maybe we have to empty the buffer here
@@ -405,6 +409,12 @@ public class ServerTCP : ServerBase
         BinaryWriter writer = new BinaryWriter(stream);
         writer.Write(client_name);
         writer.Write(message);
+        writer.Write(users_list.Count);
+        foreach (User u in users_list)
+        {
+                writer.Write(u.name);
+        }
+        
         writer.Write("__END");
         byte[] b = stream.GetBuffer();
         //writer.Close();
@@ -421,7 +431,13 @@ public class ServerTCP : ServerBase
         stream.Seek(0, SeekOrigin.Begin);
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
+        msg.n_users = reader.ReadInt32();
+        for(int i =0; i< msg.n_users; i++)
+        {
+            msg.current_users.Add(reader.ReadString());
+        }
         msg.finalofmsg = reader.ReadString();
+        Debug.Log(msg.n_users);
       //  reader.Close();
         stream.Close();
         //GC.SuppressFinalize(stream);

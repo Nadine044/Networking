@@ -10,9 +10,12 @@ using System.IO;
 using UnityEngine.UI;
 public class Message
 {
+    public string prefix;
     public string name_;
     public string message;
     public string finalofmsg;
+    public List<string> current_users = new List<string>();
+    public int n_users = 0;
 }
 
 public class ClientTCP : ClientBase
@@ -217,6 +220,12 @@ public class ClientTCP : ClientBase
         BinaryWriter writer = new BinaryWriter(stream);
         writer.Write(client_name);
         writer.Write(message);
+        //temporal
+        writer.Write(1);
+        for(int i= 0; i<1; i++)
+        {
+            writer.Write(client_name);
+        }
         writer.Write("__END"); //To check if the message is fully read
         byte[] b = stream.GetBuffer();
        // writer.Close();
@@ -231,9 +240,18 @@ public class ClientTCP : ClientBase
         MemoryStream stream = new MemoryStream(data);
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
+
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
+        msg.n_users = reader.ReadInt32();
+        for(int i =0;i< msg.n_users;i++)
+        {
+            msg.current_users.Add(reader.ReadString());
+        }
         msg.finalofmsg = reader.ReadString();
+
+        Debug.Log(msg.n_users);
+
         //reader.Close();
         stream.Close();
         //GC.SuppressFinalize(stream);
@@ -245,11 +263,53 @@ public class ClientTCP : ClientBase
 
     public void NewMessageToSend(string s)
     {
+        //Check what is it
+
+        //check here https://www.delftstack.com/howto/csharp/csharp-find-in-string/ for a more polite way
+
+        string tmp = string.Empty;
+        //Analyze string & check if there are some prefixes there
+        for (int i=0; i<s.Length; i++)
+        {
+            tmp += s[i];
+
+            switch (s)
+            {
+                case "/help":
+                    HelpCommand();
+                    return;
+                case "/ban":
+                    return;
+                case "/color_list":
+                    return;
+                case "/whisper":
+                    return;
+                case "/changeName":
+                    return;
+                //DO STUFF
+            }
+        }
+
+
+
         Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
         QueueMainThreadFunction(MsgSended);
         Send(client, s);
-        //inputField_text.Select();
-        //inputField_text.text = "";
+        inputField_text.Select();
+        inputField_text.text = "";
+    }
+    void BanCommand()
+    {
+
+    }
+
+    void HelpCommand()
+    {
+        foreach(KeyValuePair<int,string> c in commands)
+        {
+            Action Commandhelper = () => { logControl.LogText(c.Value, Color.grey); };
+            QueueMainThreadFunction(Commandhelper);
+        }
     }
 
     public void SetClientName(string s)
@@ -326,4 +386,13 @@ public class ClientTCP : ClientBase
         }
 
     }
+
+    Dictionary<int, string> commands = new Dictionary<int, string>()
+    {
+        {1, "/ban"},
+        {2, "/color_list"},
+        {3, "/list"},
+        {4,"/whisper" },
+        {5,"/changename"}
+    };
 }
