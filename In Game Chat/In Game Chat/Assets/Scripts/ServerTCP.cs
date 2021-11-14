@@ -91,7 +91,7 @@ public class ServerTCP : ServerBase
     void Server()
     {
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 27011);
+        ipep = new IPEndPoint(IPAddress.Any, 26012);
 
         listener.Bind(ipep);
         listener.Listen(maxClients);
@@ -223,6 +223,8 @@ public class ServerTCP : ServerBase
         user.socket.Close();
         user = null;      
     }
+
+
     public  void ReadCallback(IAsyncResult ar)
     {
 
@@ -359,7 +361,36 @@ public class ServerTCP : ServerBase
             case "BAN":
                 BanUser(msg.message, msg.name_);
                 break;
+            case "WHISPER":
+                WhisperUser(msg.message, msg.name_);
+                break;
         }
+    }
+
+    private void WhisperUser(string message, string name_)
+    {
+        string[] words = message.Split(' ');
+
+        foreach (User u in users_list)
+        {
+            if (u.name == words[0] && u.name != name_)
+            {
+                string final_msg= string.Empty;
+                for(int i=1; i< words.Length; i++)
+                {
+                    final_msg += words[i] + " ";
+                }
+
+
+                //Whisper to user
+                byte[] b = Serialize(final_msg, name_, "WHISPER");
+                Send(u.socket, b);
+                Action WhsMsg = () => { logControl.LogText(name_+" (whispered) " + final_msg + " to " + u.name, Color.grey); };
+                QueueMainThreadFunction(WhsMsg);
+                break;
+            }
+        }
+
     }
 
     private void BanUser(string message, string name_)

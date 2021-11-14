@@ -58,8 +58,8 @@ public class ClientTCP : ClientBase
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
-        GetComponent<ClientProgram>().closingAppEvent.AddListener(CloseApp);
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 27011);
+        GetComponent<ClientProgram>().closingAppEvent.AddListener(ExitClient);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26012);
     }
 
     public void StartClient()
@@ -194,6 +194,12 @@ public class ClientTCP : ClientBase
             {
                 Message msg = Deserialize(state.buffer);
 
+                //handle incoming commands from other users
+                if(msg.prefix != "MSG")
+                {
+                    CommandHandler(msg);
+                    recieveDone.Set();
+                }
                 string s = msg.name_ + ": " + msg.message;
 
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
@@ -229,6 +235,8 @@ public class ClientTCP : ClientBase
             client.Close();
         }
     }
+
+
 
     byte[] Serialize(string message,string prefix)
     {
@@ -361,7 +369,14 @@ public class ClientTCP : ClientBase
             inputField_text.text = "";
             return;
         }
-        
+        if (s.StartsWith("/private"))
+        {
+            WhisperCommand(s);
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
+        }
+
 
 
 
@@ -371,10 +386,49 @@ public class ClientTCP : ClientBase
         inputField_text.Select();
         inputField_text.text = "";
     }
+
+    #region Commands
+    private void CommandHandler(Message msg)
+    {
+        switch (msg.prefix)
+        {
+            case "WHISPER":
+                string s = msg.name_ + ": (whisper) " + msg.message;
+
+                Action RecieveMsg = () => { logControl.LogText(s, Color.grey); };
+                QueueMainThreadFunction(RecieveMsg);
+                break;
+        }
+    }
+    private void WhisperCommand(string s)
+    {
+        //divide the string from spaces into substrings
+        string[] words = s.Split(' ');      
+
+        if (words.Length >= 3)
+        {
+            //Maybe while iteratin this the handler threads modifys the list and has some excection
+            for (int i = 0; i < users_log.secondaryList.Count; i++)
+            {
+                if (users_log.secondaryList[i] == words[1])
+                {
+                    string whisper_string= string.Empty;
+                    for (int j =1; j < words.Length; j++)
+                    {
+                        whisper_string += words[j] + ' ';
+                    }
+                    //Send whisper message to server
+                    Send(client, whisper_string, "WHISPER");
+
+                }
+            }
+        }
+        Action WHS_Msg = () => { logControl.LogText(s, Color.grey); };
+        QueueMainThreadFunction(WHS_Msg);
+    }
+
     void BanCommand(string s)
     {
-        //TEST THIS
-
         //divide the string from spaces into substrings
         string[] words = s.Split(' ');
 
@@ -400,6 +454,7 @@ public class ClientTCP : ClientBase
             QueueMainThreadFunction(Commandhelper);
         }
     }
+    #endregion
 
     public void SetClientName(string s)
     {
@@ -427,31 +482,24 @@ public class ClientTCP : ClientBase
 
     private  void SendCallback(IAsyncResult ar)
     {
-        
-
             // Retrieve the socket from the state object.  
             Socket client = (Socket)ar.AsyncState;
 
             // Complete sending the data to the remote device.  
             int bytesSent = client.EndSend(ar);
             Debug.Log(bytesSent + "bytes sent to server");
-
-        
-
-
-            // Signal that all bytes have been sent.          
-
     }
 
     public void ExitClient()
     {
-        //Disconnecting
-        Debug.Log("Disconnecting From server");
-        Action Disconnecting = () => { logControl.LogText("Disconnecting from server", Color.black); };
-        QueueMainThreadFunction(Disconnecting);
+
 
         try
         {
+            //Disconnecting
+            Debug.Log("Disconnecting From server");
+            Action Disconnecting = () => { logControl.LogText("Disconnecting from server", Color.black); };
+            QueueMainThreadFunction(Disconnecting);
             client.Shutdown(SocketShutdown.Both);
         }
         catch (SystemException e)
@@ -471,26 +519,14 @@ public class ClientTCP : ClientBase
         Action CloseSocket = () => { logControl.LogText("Socket Closed", Color.black); };
         QueueMainThreadFunction(CloseSocket);
     }
-    void CloseApp()
-    {
 
-        try
-        {
-            client.Close();
-        }
-        catch (SystemException e)
-        {
-            Debug.Log("Couldn't Close socket" + e);
-        }
-
-    }
 
     Dictionary<int, string> commands = new Dictionary<int, string>()
     {
         {1, "/ban"},
         {2, "/color_list"},
         {3, "/list"},
-        {4,"/whisper" },
+        {4,"/private" },
         {5,"/changename"},
         {6,"/mute" }
     };
