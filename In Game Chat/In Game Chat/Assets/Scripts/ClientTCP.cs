@@ -55,6 +55,7 @@ public class ClientTCP : ClientBase
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
     private static ManualResetEvent connectDone = new ManualResetEvent(false);
 
+    List<string> muted_users = new List<string>();
     Dictionary<int, string> commands = new Dictionary<int, string>()
     {
         {1, "/ban"},
@@ -240,21 +241,33 @@ public class ClientTCP : ClientBase
             state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
             content = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
 
+            //if its true the has reached the end of the data sent
             if (content.IndexOf("__END") > -1)
             {
                 Message msg = Deserialize(state.buffer);
+
+                //if the message is sended by a muted user the callback ends
+                foreach(string str in muted_users)
+                {
+                    if (str == msg.name_)
+                    {
+                        recieveDone.Set();
+                        return;
+                    }
+                }
 
                 //handle incoming commands from other users
                 if(msg.prefix != "MSG")
                 {
                     CommandHandler(msg);
                     recieveDone.Set();
+                    return;
                 }
-                string s = msg.name_ + ": " + msg.message;
 
+                //Creates a string with the message sendend and the user name and creates a textlog
+                string s = msg.name_ + ": " + msg.message;
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
                 QueueMainThreadFunction(RecieveMsg);
-
                 recieveDone.Set();
             }
             else
@@ -438,9 +451,28 @@ public class ClientTCP : ClientBase
             inputField_text.text = "";
             return;
         }
+        if (s.StartsWith("/mute"))
+        {
+            MuteCommand(s);
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
+        }
+        if (s.StartsWith("/unmute"))
+        {
+            UnMuteCommand(s);
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
+        }
+        if(s.StartsWith("/change_name"))
+        {
 
+        }
+        if(s.StartsWith("/change_color"))
+        {
 
-
+        }
 
         Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
         QueueMainThreadFunction(MsgSended);
@@ -483,6 +515,41 @@ public class ClientTCP : ClientBase
                 break;
         }
     }
+
+    private void UnMuteCommand(string s)
+    {
+        string[] words = s.Split(' ');
+        if (words.Length == 2)
+        {
+            for (int i = 0; i < users_log.secondaryList.Count; i++)
+            {
+                if (users_log.secondaryList[i] == words[1])
+                {
+                    muted_users.Remove(words[1]);
+                    Action UnMuteMsg = () => { logControl.LogText(words[1]+ " Unmuted", Color.grey); };
+                    QueueMainThreadFunction(UnMuteMsg);
+                    return;
+                }
+            }
+        }
+    }
+    private void MuteCommand(string s)
+    {
+        string[] words = s.Split(' ');
+        if(words.Length ==2)
+        {
+            for(int i =0; i < users_log.secondaryList.Count; i++)
+            {
+                if(users_log.secondaryList[i] == words[1])
+                {
+                    muted_users.Add(words[1]);
+                    Action MuteMsg = () => { logControl.LogText(words[1]+ " Muted", Color.grey); };
+                    QueueMainThreadFunction(MuteMsg);
+                }
+            }
+        }
+    }
+
     private void WhisperCommand(string s)
     {
         //divide the string from spaces into substrings
