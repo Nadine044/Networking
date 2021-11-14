@@ -22,6 +22,9 @@ public class ClientProgram : MonoBehaviour
     [SerializeField]
     GameObject warningPanel;
 
+    [SerializeField]
+    GameObject nameWarningPanel;
+
     public UnityEvent closingAppEvent;
     CLIENT_TYPE client_type = CLIENT_TYPE.NONE;
     // Start is called before the first frame update
@@ -51,9 +54,16 @@ public class ClientProgram : MonoBehaviour
 
     public void StartSingleTCPClient()
     {
+
         if(client_name == null)
         {
             warningPanel.SetActive(true);
+            return;
+        }
+
+        if (client_name.Contains(" "))
+        {
+            nameWarningPanel.SetActive(true);
             return;
         }
 

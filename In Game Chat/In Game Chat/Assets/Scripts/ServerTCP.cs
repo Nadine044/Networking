@@ -15,7 +15,7 @@ public class ServerTCP : ServerBase
     #region UserClass
     class User
     {
-        public Color username_color = Color.black;
+        public int username_color;
         public Thread user_thread;
         public string name = string.Empty;
         public const int BufferSize = 1024;
@@ -32,16 +32,12 @@ public class ServerTCP : ServerBase
         public bool end_connection = false;
 
         public EventWaitHandle recieveDone = new ManualResetEvent(false);
-        KeyValuePair<int, string> colors_username;
+        //public float[] rgb;
     }
     #endregion
 
     #region Variables
-    //RichTexts default string
-    //Example: We are <color = green>green</color> with envy
-    string r1 = "<color=";
-    string r2 = ">";
-    string r3 = "</color>";
+
 
     // Start is called before the first frame update
     readonly int maxClients = 3;
@@ -62,7 +58,7 @@ public class ServerTCP : ServerBase
     List<User> users_list = new List<User>();
 
 
-    Dictionary<int, string> colors = new Dictionary<int, string>()
+    public Dictionary<int, string> colors = new Dictionary<int, string>()
     {
         {1, "aqua"},
         {2, "black"},
@@ -155,7 +151,7 @@ public class ServerTCP : ServerBase
     void Server()
     {
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 26012);
+        ipep = new IPEndPoint(IPAddress.Any, 26002);
 
         listener.Bind(ipep);
         listener.Listen(maxClients);
@@ -283,7 +279,10 @@ public class ServerTCP : ServerBase
         user.socket = listener.EndAccept(ar);
         users_list.Add(user);
 
+        //user.rgb = rgb;
+        //here we assign color
         byte[] b = Serialize("welcome to the server", "Server", "MSG");
+
         Send(user.socket, b);
         //Starts a thread to handle the incoming client
         user.user_thread = new Thread(HandleClient);
@@ -337,6 +336,7 @@ public class ServerTCP : ServerBase
                 if (user.name == string.Empty)
                     user.name = msg.name_;
 
+                //checks if there is already a user with the same name
                 foreach(User u in users_list)
                 {
                     if(u != user && u.name == user.name)
@@ -368,12 +368,12 @@ public class ServerTCP : ServerBase
                 }
 
                 string s = msg.name_ + ": " + msg.message;
-
+               // Color color = new Color(msg.rgb[0], msg.rgb[1], msg.rgb[2]);
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
                 QueueMainThreadFunction(RecieveMsg);
 
 
-                byte[] bytestoSend = Serialize(msg.message, user.name,"MSG");
+                byte[] bytestoSend = Serialize(msg.message, user.name,"MSG"/*,user.rgb*/);
 
                 //Send message to the rest of clients
                 foreach (User u in users_list)
@@ -399,7 +399,7 @@ public class ServerTCP : ServerBase
             //Here pasess a lot of times sometimes with the same user //TO FIX
             users_list.Remove(user);
 
-            byte[] b = Serialize("User " + user.name + " disconnected", user.name,"MSG");
+            byte[] b = Serialize("User " + user.name + " disconnected", user.name,"MSG"/*,user.rgb*/);
             
             //Send message to all other clients that someone has disconnected
             foreach (User u in users_list)
@@ -458,15 +458,45 @@ public class ServerTCP : ServerBase
         switch(msg.prefix)
         {
             case "BAN":
-                BanUser(msg.message, msg.name_);
+                BanUser(msg.message, msg.name_/*,msg.rgb*/);
                 break;
             case "WHISPER":
-                WhisperUser(msg.message, msg.name_);
+                WhisperUser(msg.message, msg.name_/*,msg.rgb*/);
+                break;
+            case "NAME_CHANGE":
+                UserChangeName(msg.message, msg.name_/*,msg.rgb*/);
                 break;
         }
     }
 
-    private void WhisperUser(string message, string name_)
+    private void UserChangeName(string old_name, string new_name)
+    {
+        //foreach(User u in users_list)
+        //{
+        //    if(u.name == old_name)
+        //    {
+        //        logControl.ChangeLogName(new_name, old_name);
+        //        u.name = new_name;
+        //        //break;
+        //    }
+        //}
+
+        Debug.Log("somethings is happening");
+        byte[] b = Serialize(new_name, old_name,"NAME_CHANGE"/*,rgb*/);
+        //Tell the other users that one client has changed name
+        foreach(User u in users_list)
+        {
+            if(u.name != new_name)
+            {
+                Send(u.socket, b);
+            }
+        }
+
+        Action ChangeNameFunc = () => { logControl.LogText(old_name+" changed name to: " + new_name, Color.grey); };
+        QueueMainThreadFunction(ChangeNameFunc);
+    }
+
+    private void WhisperUser(string message, string name_/*,float[] color*/)
     {
         string[] words = message.Split(' ');
 
@@ -482,7 +512,7 @@ public class ServerTCP : ServerBase
 
 
                 //Whisper to user
-                byte[] b = Serialize(final_msg, name_, "WHISPER");
+                byte[] b = Serialize(final_msg, name_, "WHISPER"/*,color*/);
                 Send(u.socket, b);
                 Action WhsMsg = () => { logControl.LogText(name_+" (whispered) " + final_msg + " to " + u.name, Color.grey); };
                 QueueMainThreadFunction(WhsMsg);
@@ -492,7 +522,7 @@ public class ServerTCP : ServerBase
 
     }
 
-    private void BanUser(string message, string name_)
+    private void BanUser(string message, string name_/*,float[] color*/)
     {
         User user = null;
         foreach (User u in users_list)
@@ -508,7 +538,7 @@ public class ServerTCP : ServerBase
         {
             users_list.Remove(user);
 
-            byte[] b = Serialize(user.name + " has been kicked out by " + name_, "Server", "MSG");
+            byte[] b = Serialize(user.name + " has been kicked out by " + name_, "Server", "MSG"/*,color*/);
             foreach(User u in users_list)
             {
                 Send(u.socket, b);
@@ -528,13 +558,16 @@ public class ServerTCP : ServerBase
     #endregion
 
     #region Serialize Functions
-    byte[] Serialize(string message,string client_name,string prefix)
+    byte[] Serialize(string message,string client_name,string prefix/*,float[] rgb*/)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
         writer.Write(prefix);
         writer.Write(client_name);
         writer.Write(message);
+        //writer.Write(rgb[0]);
+        //writer.Write(rgb[1]);
+        //writer.Write(rgb[2]);
         writer.Write(users_list.Count);
         foreach (User u in users_list)
         {
@@ -558,6 +591,9 @@ public class ServerTCP : ServerBase
         msg.prefix = reader.ReadString();
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
+        //msg.rgb[0] = reader.ReadSingle();
+        //msg.rgb[1] = reader.ReadSingle();
+        //msg.rgb[2] = reader.ReadSingle();
         msg.n_users = reader.ReadInt32();
         for(int i =0; i< msg.n_users; i++)
         {

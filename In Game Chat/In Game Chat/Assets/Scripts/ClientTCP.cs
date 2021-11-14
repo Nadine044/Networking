@@ -18,6 +18,8 @@ public class Message
     public string finalofmsg;
     public List<string> current_users = new List<string>();
     public int n_users = 0;
+   // public float[] rgb;
+   // public int color_n;
 }
 
 public class ClientTCP : ClientBase
@@ -45,8 +47,13 @@ public class ClientTCP : ClientBase
     [SerializeField]
     InputField inputField_text;
 
+    [SerializeField]
+    Text name_text;
+
     string msg_to_send = string.Empty;
     string client_name = string.Empty;
+
+    //Color current_color = Color.black;
 
     Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     IPEndPoint ipep;
@@ -59,12 +66,14 @@ public class ClientTCP : ClientBase
     Dictionary<int, string> commands = new Dictionary<int, string>()
     {
         {1, "/ban"},
-        {2, "/color_list"},
-        {3, "/list"},
-        {4,"/private" },
-        {5,"/changename"},
-        {6,"/mute" }
+        {2,"/changeColor" },
+        {3, "/colorList"},
+        {4,"/whisper" },
+        {5,"/changeName"},
+        {6,"/mute" },
+        {7,"/unmute" }
     };
+
     #endregion
 
     #region MainThread
@@ -72,7 +81,7 @@ public class ClientTCP : ClientBase
     public void Start() //We should create the several clients from here
     {
         GetComponent<ClientProgram>().closingAppEvent.AddListener(ExitClient);
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26012);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26002);
     }
 
     public void StartClient()
@@ -97,13 +106,14 @@ public class ClientTCP : ClientBase
             //Now run it;
             someFunc?.Invoke();
         }
-        if (Input.GetKeyDown(KeyCode.S))
-            client.Close();
+
     }
 
     public void SetClientName(string s)
     {
         client_name = s;
+        name_text.text = client_name;
+
     }
     public void ExitClient()
     {
@@ -247,7 +257,7 @@ public class ClientTCP : ClientBase
                 Message msg = Deserialize(state.buffer);
 
                 //if the message is sended by a muted user the callback ends
-                foreach(string str in muted_users)
+                foreach (string str in muted_users)
                 {
                     if (str == msg.name_)
                     {
@@ -265,7 +275,12 @@ public class ClientTCP : ClientBase
                 }
 
                 //Creates a string with the message sendend and the user name and creates a textlog
+
+                //Color name_color = new Color(msg.rgb[0], msg.rgb[1],msg.rgb[2]);
+                //current_color = name_color;
                 string s = msg.name_ + ": " + msg.message;
+                //We are <color=green>green</color> with envy
+
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
                 QueueMainThreadFunction(RecieveMsg);
                 recieveDone.Set();
@@ -318,6 +333,11 @@ public class ClientTCP : ClientBase
         writer.Write(prefix);
         writer.Write(client_name);
         writer.Write(message);
+        //writer.Write(current_color.r);
+        //writer.Write(current_color.g);
+        //writer.Write(current_color.b);
+
+        //writer.Write(username_color_int);
         //temporal
         writer.Write(1);
         for(int i= 0; i<1; i++)
@@ -342,6 +362,9 @@ public class ClientTCP : ClientBase
         msg.prefix = reader.ReadString();
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
+        //msg.rgb[0] = reader.ReadSingle();
+        //msg.rgb[1] = reader.ReadSingle();
+        //msg.rgb[2] = reader.ReadSingle();
         msg.n_users = reader.ReadInt32();
         for(int i =0;i< msg.n_users;i++)
         {
@@ -396,40 +419,6 @@ public class ClientTCP : ClientBase
 
     public void NewMessageToSend(string s)
     {
-        //Check what is it
-
-        //check here https://www.delftstack.com/howto/csharp/csharp-find-in-string/ for a more polite way
-
-        string tmp = string.Empty;
-
-        //if (s.StartsWith("/"))
-        //{
-        //    //  s.StartsWith
-        //    //Analyze string & check if there are some prefixes there
-        //    for (int i = 0; i < s.Length; i++)
-        //    {
-        //        tmp += s[i];
-
-        //        switch (s)
-        //        {
-        //            case "/help":
-        //                HelpCommand();
-        //                return;
-        //            case "/ban":
-        //                //BanCommand();
-        //                return;
-        //            case "/color_list":
-        //                return;
-        //            case "/whisper":
-        //                return;
-        //            case "/changeName":
-        //                return;
-        //                //DO STUFF
-        //        }
-        //    }
-        //}
-
-
         if(s.StartsWith("/help"))
         {
             HelpCommand();
@@ -444,7 +433,7 @@ public class ClientTCP : ClientBase
             inputField_text.text = "";
             return;
         }
-        if (s.StartsWith("/private"))
+        if (s.StartsWith("/whisper"))
         {
             WhisperCommand(s);
             inputField_text.Select();
@@ -465,21 +454,27 @@ public class ClientTCP : ClientBase
             inputField_text.text = "";
             return;
         }
-        if(s.StartsWith("/change_name"))
+        if(s.StartsWith("/changeName"))
+        {
+            ChangeNameCommand(s);
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
+        }
+        if(s.StartsWith("/changeColor"))
         {
 
         }
-        if(s.StartsWith("/change_color"))
-        {
 
-        }
 
+        //if there is no command detected the program proceeds as a normal message
         Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
         QueueMainThreadFunction(MsgSended);
         Send(client, s,"MSG");
         inputField_text.Select();
         inputField_text.text = "";
     }
+
 
     private void Send(Socket client, string msg, string prefix)
     {
@@ -513,12 +508,54 @@ public class ClientTCP : ClientBase
                 Action RecieveMsg = () => { logControl.LogText(s, Color.grey); };
                 QueueMainThreadFunction(RecieveMsg);
                 break;
+
+            case "NAME_CHANGE":
+
+                //msg.name refers to the old user name  and msg.message refers to the user new name
+                for (int i = 0; i < users_log.secondaryList.Count; i++)
+                {
+                    //Change old client name to new client name
+                    if (users_log.secondaryList[i] == msg.name_)
+                    {
+                        users_log.ReplaceItem(msg.message, msg.name_);
+                        logControl.ChangeLogName(msg.message, msg.name_);
+                        break;
+                    }
+                }
+                break;
+
+        }
+    }
+
+    private void ChangeNameCommand(string s)
+    {
+        string[] words = s.Split(' ');
+        string tmp_old_name = client_name;
+        //command & new name
+        if(words.Length ==2)
+        {
+            for(int i =0; i < users_log.secondaryList.Count; i++)
+            {
+                if (users_log.secondaryList[i] != words[1])
+                {
+                    users_log.ReplaceItem(words[1], client_name);
+
+                    //changes old log name to new one
+                    logControl.ChangeLogName(words[1], client_name);
+                    client_name = words[1];
+                    name_text.text = client_name;
+                    Send(client, tmp_old_name, "NAME_CHANGE");
+                    break;
+                }
+            }
         }
     }
 
     private void UnMuteCommand(string s)
     {
         string[] words = s.Split(' ');
+
+        //command & username
         if (words.Length == 2)
         {
             for (int i = 0; i < users_log.secondaryList.Count; i++)
@@ -536,7 +573,9 @@ public class ClientTCP : ClientBase
     private void MuteCommand(string s)
     {
         string[] words = s.Split(' ');
-        if(words.Length ==2)
+
+        //command & username
+        if (words.Length ==2)
         {
             for(int i =0; i < users_log.secondaryList.Count; i++)
             {
@@ -605,7 +644,6 @@ public class ClientTCP : ClientBase
         }
     }
     #endregion
-
 
 
 }

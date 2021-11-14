@@ -11,7 +11,7 @@ public class TextLogControl : MonoBehaviour
 
     public List<GameObject> textItems = new List<GameObject>();
 
-    //to compare only
+    //to compare only in client commands
     public List<string> secondaryList = new List<string>();
 
     public void LogText(string  newTextString,Color newColor)
@@ -56,5 +56,53 @@ public class TextLogControl : MonoBehaviour
             Destroy(itemtoremove);
         }
 
+    }
+
+
+    public void ChangeLogName(string new_name,string old_name)
+    {
+        //string[] words = old_name.Split(':');
+
+        foreach(GameObject g in textItems)
+        {
+            if(g.GetComponent<Text>().text.StartsWith(old_name))
+            {
+                string[] words =  g.GetComponent<Text>().text.Split(':');
+                string new_string = new_name + words[1];
+                g.GetComponent<Text>().text = new_string;
+
+            }
+        }
+    }
+
+    public void ReplaceItem(string new_name, string old_name)
+    {
+        //Check if the name already exists
+        foreach(GameObject g in textItems)
+        {
+            if(g.GetComponent<Text>().text == new_name)
+            {
+                return;
+            }
+        }
+
+        //replace names
+        foreach (GameObject g in textItems)
+        {
+            if (g.GetComponent<Text>().text == old_name)
+            {
+                g.GetComponent<Text>().text = new_name;
+                break;
+            }
+        }
+
+        //For serialize
+        for (int i = 0; i < secondaryList.Count; i++)
+        {
+            if (secondaryList[i] == old_name)
+            {
+                secondaryList[i] = new_name;
+            }
+        }
     }
 }
