@@ -54,7 +54,19 @@ public class ClientTCP : ClientBase
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
     private static ManualResetEvent connectDone = new ManualResetEvent(false);
+
+    Dictionary<int, string> commands = new Dictionary<int, string>()
+    {
+        {1, "/ban"},
+        {2, "/color_list"},
+        {3, "/list"},
+        {4,"/private" },
+        {5,"/changename"},
+        {6,"/mute" }
+    };
     #endregion
+
+    #region MainThread
     // Start is called before the first frame update
     public void Start() //We should create the several clients from here
     {
@@ -88,6 +100,42 @@ public class ClientTCP : ClientBase
             client.Close();
     }
 
+    public void SetClientName(string s)
+    {
+        client_name = s;
+    }
+    public void ExitClient()
+    {
+
+
+        try
+        {
+            //Disconnecting
+            Debug.Log("Disconnecting From server");
+            Action Disconnecting = () => { logControl.LogText("Disconnecting from server", Color.black); };
+            QueueMainThreadFunction(Disconnecting);
+            client.Shutdown(SocketShutdown.Both);
+        }
+        catch (SystemException e)
+        {
+            Debug.LogWarning("Couldn't shutdown the server, socket already closed " + e);
+        }
+
+
+        try
+        {
+            client.Close();
+        }
+        catch (SystemException e)
+        {
+            Debug.Log("Couldn't Close socket" + e);
+        }
+        Action CloseSocket = () => { logControl.LogText("Socket Closed", Color.black); };
+        QueueMainThreadFunction(CloseSocket);
+    }
+    #endregion
+
+    #region ClientHandler
     void Client()
     {
 
@@ -145,7 +193,9 @@ public class ClientTCP : ClientBase
 
 
     }
+    #endregion
 
+    #region Callbacks
     void ConnectCallback(IAsyncResult ar)
     {
         try
@@ -236,8 +286,18 @@ public class ClientTCP : ClientBase
         }
     }
 
+    private void SendCallback(IAsyncResult ar)
+    {
+        // Retrieve the socket from the state object.  
+        Socket client = (Socket)ar.AsyncState;
 
+        // Complete sending the data to the remote device.  
+        int bytesSent = client.EndSend(ar);
+        Debug.Log(bytesSent + "bytes sent to server");
+    }
+    #endregion
 
+    #region Serialize Functions
     byte[] Serialize(string message,string prefix)
     {
         MemoryStream stream = new MemoryStream();
@@ -289,7 +349,6 @@ public class ClientTCP : ClientBase
         return msg;
     }
 
-   
     void CheckUsersLog(List<string> current_active_users_list)
     {
 
@@ -297,7 +356,7 @@ public class ClientTCP : ClientBase
         List<string> to_delete_users = users_log.secondaryList.Except(current_active_users_list).ToList();
 
         //Old users are deleted to the users log
-        foreach(string s in to_delete_users)
+        foreach (string s in to_delete_users)
         {
             users_log.DeleteItem(s);
             Debug.Log("Deleted user " + s);
@@ -307,7 +366,7 @@ public class ClientTCP : ClientBase
         List<string> firstNotSecond = current_active_users_list.Except(users_log.secondaryList).ToList();
 
         //New users are added to the users log
-        foreach(string s in firstNotSecond)
+        foreach (string s in firstNotSecond)
         {
             users_log.LogText(s, Color.black);
             Debug.Log("Added user " + s);
@@ -318,6 +377,9 @@ public class ClientTCP : ClientBase
         //users_log.textItems
 
     }
+    #endregion
+
+    #region SendMessage
 
     public void NewMessageToSend(string s)
     {
@@ -386,6 +448,27 @@ public class ClientTCP : ClientBase
         inputField_text.Select();
         inputField_text.text = "";
     }
+
+    private void Send(Socket client, string msg, string prefix)
+    {
+        try
+        {
+            // Convert the string data to byte data using ASCII encoding.  
+            byte[] byteData = Serialize(msg, prefix);
+            // Begin sending the data to the remote device.  
+            // client.Send(byteData);
+            client.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(SendCallback), client);
+        }
+        catch (SystemException e)
+        {
+            Debug.Log(e);
+            Action ConnectionLost = () => { logControl.LogText("Conection with the server Lost, please restart client", Color.grey); };
+            QueueMainThreadFunction(ConnectionLost);
+        }
+    }
+
+    #endregion
 
     #region Commands
     private void CommandHandler(Message msg)
@@ -456,78 +539,6 @@ public class ClientTCP : ClientBase
     }
     #endregion
 
-    public void SetClientName(string s)
-    {
-        client_name = s;
-    }
-
-    private  void Send(Socket client, string msg,string prefix)
-    {
-        try
-        {
-            // Convert the string data to byte data using ASCII encoding.  
-            byte[] byteData = Serialize(msg, prefix);
-            // Begin sending the data to the remote device.  
-            // client.Send(byteData);
-            client.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), client);
-        }
-        catch(SystemException e)
-        {
-            Debug.Log(e);
-            Action ConnectionLost = () => { logControl.LogText("Conection with the server Lost, please restart client", Color.grey); };
-            QueueMainThreadFunction(ConnectionLost);
-        }
-    }
-
-    private  void SendCallback(IAsyncResult ar)
-    {
-            // Retrieve the socket from the state object.  
-            Socket client = (Socket)ar.AsyncState;
-
-            // Complete sending the data to the remote device.  
-            int bytesSent = client.EndSend(ar);
-            Debug.Log(bytesSent + "bytes sent to server");
-    }
-
-    public void ExitClient()
-    {
 
 
-        try
-        {
-            //Disconnecting
-            Debug.Log("Disconnecting From server");
-            Action Disconnecting = () => { logControl.LogText("Disconnecting from server", Color.black); };
-            QueueMainThreadFunction(Disconnecting);
-            client.Shutdown(SocketShutdown.Both);
-        }
-        catch (SystemException e)
-        {
-            Debug.LogWarning("Couldn't shutdown the server, socket already closed " + e);
-        }
-
-
-        try
-        {
-            client.Close();
-        }
-        catch (SystemException e)
-        {
-            Debug.Log("Couldn't Close socket" + e);
-        }
-        Action CloseSocket = () => { logControl.LogText("Socket Closed", Color.black); };
-        QueueMainThreadFunction(CloseSocket);
-    }
-
-
-    Dictionary<int, string> commands = new Dictionary<int, string>()
-    {
-        {1, "/ban"},
-        {2, "/color_list"},
-        {3, "/list"},
-        {4,"/private" },
-        {5,"/changename"},
-        {6,"/mute" }
-    };
 }

@@ -12,7 +12,6 @@ using System.IO;
 
 public class ServerTCP : ServerBase
 {
-    //TODO use the User class to properly delete threads from list, assing color, etc
     #region UserClass
     class User
     {
@@ -37,6 +36,7 @@ public class ServerTCP : ServerBase
     }
     #endregion
 
+    #region Variables
     //RichTexts default string
     //Example: We are <color = green>green</color> with envy
     string r1 = "<color=";
@@ -60,6 +60,36 @@ public class ServerTCP : ServerBase
     //In case of suddenly exiting the App
     ConcurrentQueue<Socket> socket_queue = new ConcurrentQueue<Socket>();
     List<User> users_list = new List<User>();
+
+
+    Dictionary<int, string> colors = new Dictionary<int, string>()
+    {
+        {1, "aqua"},
+        {2, "black"},
+        {3, "brown"},
+        {4, "cyan"},
+        {5, "darkblue"},
+        {6, "fuchsia"},
+        {7, "green"},
+        {8, "grey"},
+        {9, "lightblue"},
+        {10, "lime"},
+        {11, "magenta"},
+        {12, "maroon"},
+        {13, "navy"},
+        {14, "olive"},
+        {15, "orange"},
+        {16, "purple"},
+        {17, "purple"},
+        {18, "red"},
+        {19, "silver"},
+        {20, "teal"},
+        {21, "white"},
+        {22, "yellow"},
+    };
+    #endregion
+
+    #region Main Thread Functions
     void Start()
     {
         //Application.quitting += CloseApp;
@@ -87,7 +117,41 @@ public class ServerTCP : ServerBase
 
     }
 
+    void CloseApp()
+    {
+        //abort all the threads
+        foreach (Thread t in thread_list)
+        {
+            t.Abort();
+        }
 
+        //Empty the thread list
+        thread_list.Clear();
+
+        //close the main socket
+        try
+        {
+            listener.Close();
+        }
+        catch (SocketException e)
+        {
+            Debug.Log("Couldn't Close socket while exiting info" + e);
+        }
+
+
+        //TODO CHECK THIS
+        if (temp_thread.ThreadState == ThreadState.Running)
+            temp_thread.Abort();
+
+
+        current_clients = 0;
+        listening = false;
+        wh.Set();
+
+    }
+    #endregion
+
+    #region Threads Functions
     void Server()
     {
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -134,12 +198,51 @@ public class ServerTCP : ServerBase
 
 
     }
-    public  void AcceptCallback(IAsyncResult ar)
+   
+    void HandleClient(object c)
     {
+        User user = (User)c;
 
 
+        while (!user.end_connection) //aixo peta
+        {
+            //Point where the EventWaitHandle restarts the execution
+            user.recieveDone.Reset();
+
+            //to exit the loop
+            if (user.end_connection)
+                break;
+
+            //Async recieve bytes from the client
+            user.socket.BeginReceive(user.buffer, 0, User.BufferSize, 0,
+               new AsyncCallback(ReadCallback), user);
 
 
+            //https://stackoverflow.com/questions/722240/instantly-detect-client-disconnection-from-server-socket
+            user.recieveDone.WaitOne();
+        }
+
+        Debug.Log("closing handler");
+        user.socket.Close();
+        user = null;      
+    }
+
+    private static void Send(Socket handler, byte[] data)
+    {
+        // Convert the string data to byte data using ASCII encoding.  
+
+
+        // Begin sending the data to the remote device.  
+        handler.BeginSend(data, 0, data.Length, 0,
+            new AsyncCallback(SendCallback), handler);
+
+        //handler.Send(data);
+    }
+    #endregion
+
+    #region Callbacks
+    public void AcceptCallback(IAsyncResult ar)
+    {
         if (!listening)
         {
             //Resume the EventWaitHandle to keep exit the recieving client loop
@@ -147,8 +250,7 @@ public class ServerTCP : ServerBase
             return;
         }
 
-
-       //Cast the object callback to a socket
+        //Cast the object callback to a socket
         Socket listener = (Socket)ar.AsyncState;
 
         //TODO HOW TO GET MULTIPLE CONNECTIONS with bytes in client acceptance
@@ -181,7 +283,7 @@ public class ServerTCP : ServerBase
         user.socket = listener.EndAccept(ar);
         users_list.Add(user);
 
-        byte[] b = Serialize("welcome to the server","Server","MSG");
+        byte[] b = Serialize("welcome to the server", "Server", "MSG");
         Send(user.socket, b);
         //Starts a thread to handle the incoming client
         user.user_thread = new Thread(HandleClient);
@@ -193,37 +295,7 @@ public class ServerTCP : ServerBase
         //Resume the EventWaitHandle to keep recieving incoming clients in the Server() function 
         wh.Set();
 
-    } 
-
-
-    void HandleClient(object c)
-    {
-        User user = (User)c;
-
-
-        while (!user.end_connection) //aixo peta
-        {
-            //Point where the EventWaitHandle restarts the execution
-            user.recieveDone.Reset();
-
-            //to exit the loop
-            if (user.end_connection)
-                break;
-
-            //Async recieve bytes from the client
-            user.socket.BeginReceive(user.buffer, 0, User.BufferSize, 0,
-               new AsyncCallback(ReadCallback), user);
-
-
-            //https://stackoverflow.com/questions/722240/instantly-detect-client-disconnection-from-server-socket
-            user.recieveDone.WaitOne();
-        }
-
-        Debug.Log("closing handler");
-        user.socket.Close();
-        user = null;      
     }
-
 
     public  void ReadCallback(IAsyncResult ar)
     {
@@ -354,6 +426,33 @@ public class ServerTCP : ServerBase
         }
     }
 
+    private static void SendCallback(IAsyncResult ar)
+    {
+        Debug.Log("Here");
+        try
+        {
+            // Retrieve the socket from the state object.  
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.  
+            int bytesSent = handler.EndSend(ar);
+            Debug.Log("Sent " + bytesSent + " bytes to client.");
+
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+    }
+
+    void AccesDenied(IAsyncResult ar)
+    {
+    }
+
+    #endregion
+
+    #region Commands
     private void CommandHandler(Message msg)
     {
         switch(msg.prefix)
@@ -426,61 +525,9 @@ public class ServerTCP : ServerBase
         }
     }
 
-    void AccesDenied(IAsyncResult ar)
-    {
-    }
-    private static void Send(Socket handler, byte[] data)
-    {
-        // Convert the string data to byte data using ASCII encoding.  
+    #endregion
 
-
-        // Begin sending the data to the remote device.  
-        handler.BeginSend(data, 0, data.Length, 0,
-            new AsyncCallback(SendCallback), handler);
-
-        //handler.Send(data);
-    }
-
-    private static void Send(Socket handler, String data)
-    {
-        // Convert the string data to byte data using ASCII encoding.  
-        byte[] byteData = Encoding.ASCII.GetBytes(data);
-
-        // Begin sending the data to the remote device.  
-        try
-        {
-            handler.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), handler);
-        }
-        catch(SystemException e)
-        {
-            Debug.LogWarning(e);
-        }
-    }
-    private static void SendCallback(IAsyncResult ar)
-    {
-        Debug.Log("Here");
-        try
-        {
-            // Retrieve the socket from the state object.  
-            Socket handler = (Socket)ar.AsyncState;
-
-            // Complete sending the data to the remote device.  
-            int bytesSent = handler.EndSend(ar);
-           Debug.Log("Sent " + bytesSent +" bytes to client.");
-
-
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
-    }
-
-
-
-
-
+    #region Serialize Functions
     byte[] Serialize(string message,string client_name,string prefix)
     {
         MemoryStream stream = new MemoryStream();
@@ -523,61 +570,8 @@ public class ServerTCP : ServerBase
         //GC.SuppressFinalize(stream);
         return msg;
     }
-    void CloseApp()
-    {
-        //abort all the threads
-        foreach(Thread t in thread_list)
-        {
-            t.Abort();
-        }
 
-        //Empty the thread list
-        thread_list.Clear();
-
-        //close the main socket
-        try
-        {
-            listener.Close();
-        }
-        catch (SocketException e)
-        {
-            Debug.Log("Couldn't Close socket while exiting info" + e);
-        }
+    #endregion
 
 
-        //TODO CHECK THIS
-        if (temp_thread.ThreadState == ThreadState.Running)
-            temp_thread.Abort();
-
-
-        current_clients = 0;
-        listening = false;
-        wh.Set();
-
-    }
-    Dictionary<int, string> colors = new Dictionary<int, string>()
-    {
-        {1, "aqua"},
-        {2, "black"},
-        {3, "brown"},
-        {4, "cyan"},
-        {5, "darkblue"},
-        {6, "fuchsia"},
-        {7, "green"},
-        {8, "grey"},
-        {9, "lightblue"},
-        {10, "lime"},
-        {11, "magenta"},
-        {12, "maroon"},
-        {13, "navy"},
-        {14, "olive"},
-        {15, "orange"},
-        {16, "purple"},
-        {17, "purple"},
-        {18, "red"},
-        {19, "silver"},
-        {20, "teal"},
-        {21, "white"},
-        {22, "yellow"},
-    };
 }
