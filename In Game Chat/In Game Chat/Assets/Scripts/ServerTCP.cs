@@ -471,15 +471,15 @@ public class ServerTCP : ServerBase
 
     private void UserChangeName(string old_name, string new_name)
     {
-        //foreach(User u in users_list)
-        //{
-        //    if(u.name == old_name)
-        //    {
-        //        logControl.ChangeLogName(new_name, old_name);
-        //        u.name = new_name;
-        //        //break;
-        //    }
-        //}
+        foreach (User u in users_list)
+        {
+            if (u.name == old_name)
+            {
+                logControl.ChangeLogName(new_name, old_name);
+                u.name = new_name;
+                //break;
+            }
+        }
 
         Debug.Log("somethings is happening");
         byte[] b = Serialize(new_name, old_name,"NAME_CHANGE"/*,rgb*/);
