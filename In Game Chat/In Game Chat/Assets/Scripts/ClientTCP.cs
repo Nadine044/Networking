@@ -461,10 +461,10 @@ public class ClientTCP : ClientBase
             inputField_text.text = "";
             return;
         }
-        if(s.StartsWith("/changeColor"))
-        {
+        //if(s.StartsWith("/changeColor"))
+        //{
 
-        }
+        //}
 
 
         //if there is no command detected the program proceeds as a normal message
