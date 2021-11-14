@@ -13,6 +13,9 @@ public class ClientBase : MonoBehaviour
     [SerializeField]
     protected TextLogControl logControl;
 
+    [SerializeField]
+    protected TextLogControl users_log;
+
     protected void StartThreadingFunction(Action someFunction)
     {
         Thread t = new Thread(someFunction.Invoke);

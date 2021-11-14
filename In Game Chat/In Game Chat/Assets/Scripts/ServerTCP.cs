@@ -30,7 +30,7 @@ public class ServerTCP : ServerBase
         // Client socket.
         public Socket socket = null;
 
-        public bool endC = false;
+        public bool end_connection = false;
 
         public EventWaitHandle recieveDone = new ManualResetEvent(false);
         KeyValuePair<int, string> colors_username;
@@ -57,8 +57,6 @@ public class ServerTCP : ServerBase
 
     //private static EventWaitHandle recieveDone = new ManualResetEvent(false);
 
-    Socket client;
-    Dictionary<Socket,string> users_dictionary = new Dictionary<Socket,string>();
     //In case of suddenly exiting the App
     ConcurrentQueue<Socket> socket_queue = new ConcurrentQueue<Socket>();
     List<User> users_list = new List<User>();
@@ -183,6 +181,8 @@ public class ServerTCP : ServerBase
         user.socket = listener.EndAccept(ar);
         users_list.Add(user);
 
+        byte[] b = Serialize("welcome to the server","Server","MSG");
+        Send(user.socket, b);
         //Starts a thread to handle the incoming client
         user.user_thread = new Thread(HandleClient);
         user.user_thread.Start(user);
@@ -193,7 +193,7 @@ public class ServerTCP : ServerBase
         //Resume the EventWaitHandle to keep recieving incoming clients in the Server() function 
         wh.Set();
 
-    } //Keep Listening
+    } 
 
 
     void HandleClient(object c)
@@ -201,13 +201,13 @@ public class ServerTCP : ServerBase
         User user = (User)c;
 
 
-        while (!user.endC) //aixo peta
+        while (!user.end_connection) //aixo peta
         {
             //Point where the EventWaitHandle restarts the execution
             user.recieveDone.Reset();
 
             //to exit the loop
-            if (user.endC)
+            if (user.end_connection)
                 break;
 
             //Async recieve bytes from the client
@@ -252,7 +252,7 @@ public class ServerTCP : ServerBase
 
 
 
-
+            // Check for end-of-file tag. If it is not there, read more data.  
             if (content.IndexOf("__END") > -1)
             {
                 //Al data has been read 
@@ -262,8 +262,6 @@ public class ServerTCP : ServerBase
                 //---------------------------------------------------------------------------
                 if (user.name == string.Empty)
                     user.name = msg.name_;
-                //Putamara
-
 
                 foreach(User u in users_list)
                 {
@@ -275,7 +273,7 @@ public class ServerTCP : ServerBase
                         user.socket.BeginSend(bytesback, 0, bytesback.Length,0, new AsyncCallback(AccesDenied),user.socket);
                         Debug.Log("Bye bye");
                         user.socket.Close();
-                        user.endC = false;
+                        user.end_connection = false;
                         users_list.Remove(user);
                         user.user_thread.Abort();
                         user.recieveDone.Set();
@@ -287,14 +285,21 @@ public class ServerTCP : ServerBase
                 //    users_dictionary.Add(user.socket, msg.name_);
 
 
+                //Check for commands
+                if (msg.prefix != "MSG")
+                {
+                    CommandHandler(msg);
+                    user.recieveDone.Set();
+                    return;
+                }
+
                 string s = msg.name_ + ": " + msg.message;
-                // Check for end-of-file tag. If it is not there, read
-                // more data.  
+
                 Action RecieveMsg = () => { logControl.LogText(s, Color.black); };
                 QueueMainThreadFunction(RecieveMsg);
 
 
-                byte[] bytestoSend = Serialize(msg.message, user.name);
+                byte[] bytestoSend = Serialize(msg.message, user.name,"MSG");
 
                 //Send message to the rest of clients
                 foreach (User u in users_list)
@@ -318,19 +323,18 @@ public class ServerTCP : ServerBase
         else
         {
             //Here pasess a lot of times sometimes with the same user //TO FIX
-            string disconnecting_user_name= user.name;
             users_list.Remove(user);
 
-            byte[] b = Encoding.ASCII.GetBytes("User " + disconnecting_user_name + " disconnected");
-            //Send message to all other clients that someone has disconnected
+            byte[] b = Serialize("User " + user.name + " disconnected", user.name,"MSG");
             
-            foreach(User u in users_list)
+            //Send message to all other clients that someone has disconnected
+            foreach (User u in users_list)
             {
                 Send(u.socket, b);
             }
 
 
-            Action RecieveMsg = () => { logControl.LogText("User " +disconnecting_user_name + " disconnected", Color.black); };
+            Action RecieveMsg = () => { logControl.LogText("User " +user.name + " disconnected", Color.black); };
             QueueMainThreadFunction(RecieveMsg);
 
             //close socket with client
@@ -338,13 +342,56 @@ public class ServerTCP : ServerBase
 
 
             Debug.Log("Something Happened, didnt recieved any bytes");
-            user.endC = true;
+            user.end_connection = true;
 
             //Remove thread from list
            // thread_list.Remove(Thread.CurrentThread);
 
             user.user_thread.Abort();
 
+        }
+    }
+
+    private void CommandHandler(Message msg)
+    {
+        switch(msg.prefix)
+        {
+            case "BAN":
+                BanUser(msg.message, msg.name_);
+                break;
+        }
+    }
+
+    private void BanUser(string message, string name_)
+    {
+        User user = null;
+        foreach (User u in users_list)
+        {
+            if (u.name == message && u.name != name_)
+            {
+                //Ban user
+                user = u;
+                break;
+            }
+        }
+        if(user!=null)
+        {
+            users_list.Remove(user);
+
+            byte[] b = Serialize(user.name + " has been kicked out by " + name_, "Server", "MSG");
+            foreach(User u in users_list)
+            {
+                Send(u.socket, b);
+            }
+
+            user.socket.Close();
+
+            Action RecieveMsg = () => { logControl.LogText(user.name + " has been kicked out by " + name_, Color.black); };
+            QueueMainThreadFunction(RecieveMsg);
+
+            user.end_connection = true;
+
+            //user.user_thread.Abort();
         }
     }
 
@@ -403,10 +450,11 @@ public class ServerTCP : ServerBase
 
 
 
-    byte[] Serialize(string message,string client_name)
+    byte[] Serialize(string message,string client_name,string prefix)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(prefix);
         writer.Write(client_name);
         writer.Write(message);
         writer.Write(users_list.Count);
@@ -429,6 +477,7 @@ public class ServerTCP : ServerBase
         MemoryStream stream = new MemoryStream(data);
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
+        msg.prefix = reader.ReadString();
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
         msg.n_users = reader.ReadInt32();

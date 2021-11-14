@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading;
 using System.IO;
 using UnityEngine.UI;
+using System.Linq;
+
 public class Message
 {
     public string prefix;
@@ -48,7 +50,6 @@ public class ClientTCP : ClientBase
 
     Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     IPEndPoint ipep;
-
 
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
@@ -99,7 +100,7 @@ public class ClientTCP : ClientBase
         client.BeginConnect(ipep, new AsyncCallback(ConnectCallback), client);
         
         connectDone.WaitOne();
-        try { Send(client, msg_to_send); }
+        try { Send(client, msg_to_send,"MSG"); }
         catch (SystemException e)
         {
             Debug.LogWarning(e);
@@ -117,11 +118,13 @@ public class ClientTCP : ClientBase
             //starting point once the message is recieved
             recieveDone.Reset();
 
+            if (obj.endC)
+                break;
+
             client.BeginReceive(obj.buffer, 0, ClientOBJ.BufferSize, 0,
                 new AsyncCallback(ReadCallback), obj);
 
-            if (obj.endC)
-                break;
+
 
             //Until the recieved isnt resolved the loop will stop here
             recieveDone.WaitOne();
@@ -211,13 +214,27 @@ public class ClientTCP : ClientBase
             Action ServerDisconnect = () => { logControl.LogText("The server has shutet down", Color.black); };
             QueueMainThreadFunction(ServerDisconnect);
             state.endC = true;
+
+
+            Debug.Log("Exit recieving loop");
+            try
+            {
+                client.Shutdown(SocketShutdown.Both);
+            }
+            catch (SocketException e)
+            {
+                Debug.Log("Couldnt shutdown server" + e);
+            }
+
+            client.Close();
         }
     }
 
-    byte[] Serialize(string message)
+    byte[] Serialize(string message,string prefix)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(prefix);
         writer.Write(client_name);
         writer.Write(message);
         //temporal
@@ -241,6 +258,7 @@ public class ClientTCP : ClientBase
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
+        msg.prefix = reader.ReadString();
         msg.name_ = reader.ReadString();
         msg.message = reader.ReadString();
         msg.n_users = reader.ReadInt32();
@@ -248,6 +266,11 @@ public class ClientTCP : ClientBase
         {
             msg.current_users.Add(reader.ReadString());
         }
+
+        //UpdateUsersLog
+        Action UpdateUsersLog = () => {CheckUsersLog(msg.current_users);};
+        QueueMainThreadFunction(UpdateUsersLog);
+
         msg.finalofmsg = reader.ReadString();
 
         Debug.Log(msg.n_users);
@@ -259,7 +282,34 @@ public class ClientTCP : ClientBase
     }
 
    
+    void CheckUsersLog(List<string> current_active_users_list)
+    {
 
+        //list where the elements of users_log.secondaryList aren't in the current_active_users_list 
+        List<string> to_delete_users = users_log.secondaryList.Except(current_active_users_list).ToList();
+
+        //Old users are deleted to the users log
+        foreach(string s in to_delete_users)
+        {
+            users_log.DeleteItem(s);
+            Debug.Log("Deleted user " + s);
+        }
+
+        //list where the elements of the first list aren't in the second
+        List<string> firstNotSecond = current_active_users_list.Except(users_log.secondaryList).ToList();
+
+        //New users are added to the users log
+        foreach(string s in firstNotSecond)
+        {
+            users_log.LogText(s, Color.black);
+            Debug.Log("Added user " + s);
+
+        }
+
+
+        //users_log.textItems
+
+    }
 
     public void NewMessageToSend(string s)
     {
@@ -268,39 +318,78 @@ public class ClientTCP : ClientBase
         //check here https://www.delftstack.com/howto/csharp/csharp-find-in-string/ for a more polite way
 
         string tmp = string.Empty;
-        //Analyze string & check if there are some prefixes there
-        for (int i=0; i<s.Length; i++)
-        {
-            tmp += s[i];
 
-            switch (s)
-            {
-                case "/help":
-                    HelpCommand();
-                    return;
-                case "/ban":
-                    return;
-                case "/color_list":
-                    return;
-                case "/whisper":
-                    return;
-                case "/changeName":
-                    return;
-                //DO STUFF
-            }
+        //if (s.StartsWith("/"))
+        //{
+        //    //  s.StartsWith
+        //    //Analyze string & check if there are some prefixes there
+        //    for (int i = 0; i < s.Length; i++)
+        //    {
+        //        tmp += s[i];
+
+        //        switch (s)
+        //        {
+        //            case "/help":
+        //                HelpCommand();
+        //                return;
+        //            case "/ban":
+        //                //BanCommand();
+        //                return;
+        //            case "/color_list":
+        //                return;
+        //            case "/whisper":
+        //                return;
+        //            case "/changeName":
+        //                return;
+        //                //DO STUFF
+        //        }
+        //    }
+        //}
+
+
+        if(s.StartsWith("/help"))
+        {
+            HelpCommand();
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
         }
+        if(s.StartsWith("/ban"))
+        {
+            BanCommand(s);
+            inputField_text.Select();
+            inputField_text.text = "";
+            return;
+        }
+        
 
 
 
         Action MsgSended = () => { logControl.LogText(client_name + ": " + s, Color.black); };
         QueueMainThreadFunction(MsgSended);
-        Send(client, s);
+        Send(client, s,"MSG");
         inputField_text.Select();
         inputField_text.text = "";
     }
-    void BanCommand()
+    void BanCommand(string s)
     {
+        //TEST THIS
 
+        //divide the string from spaces into substrings
+        string[] words = s.Split(' ');
+
+        if (words.Length >= 2)
+        {
+            //Maybe while iteratin this the handler threads modifys the list and has some excection
+            for (int i = 0; i < users_log.secondaryList.Count; i++)
+            {
+                if (users_log.secondaryList[i] == words[1])
+                {
+                    //Send bann message to server
+                    Send(client, words[1], "BAN");
+                }
+            }
+        }
     }
 
     void HelpCommand()
@@ -317,14 +406,23 @@ public class ClientTCP : ClientBase
         client_name = s;
     }
 
-    private  void Send(Socket client, string msg)
+    private  void Send(Socket client, string msg,string prefix)
     {
-        // Convert the string data to byte data using ASCII encoding.  
-        byte[] byteData = Serialize(msg);
-        // Begin sending the data to the remote device.  
-       // client.Send(byteData);
-        client.BeginSend(byteData, 0, byteData.Length, 0,
-            new AsyncCallback(SendCallback), client);
+        try
+        {
+            // Convert the string data to byte data using ASCII encoding.  
+            byte[] byteData = Serialize(msg, prefix);
+            // Begin sending the data to the remote device.  
+            // client.Send(byteData);
+            client.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(SendCallback), client);
+        }
+        catch(SystemException e)
+        {
+            Debug.Log(e);
+            Action ConnectionLost = () => { logControl.LogText("Conection with the server Lost, please restart client", Color.grey); };
+            QueueMainThreadFunction(ConnectionLost);
+        }
     }
 
     private  void SendCallback(IAsyncResult ar)
@@ -393,6 +491,7 @@ public class ClientTCP : ClientBase
         {2, "/color_list"},
         {3, "/list"},
         {4,"/whisper" },
-        {5,"/changename"}
+        {5,"/changename"},
+        {6,"/mute" }
     };
 }
