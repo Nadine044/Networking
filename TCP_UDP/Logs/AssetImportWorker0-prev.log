@@ -15,11 +15,11 @@ D:/UPC/Xarxes/Networking/TCP_UDP
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-57642
+61245
 Successfully changed project path to: D:/UPC/Xarxes/Networking/TCP_UDP
 D:/UPC/Xarxes/Networking/TCP_UDP
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 70.65 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 70.36 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.2.1f1 (270dd8c3da1c)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.2.1f1/Editor/Data/Resources/UnitySubsystems
@@ -35,477 +35,203 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.2.1f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.2.1f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.2.1f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56412
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56072
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.2.1f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001933 seconds.
+Registered in 0.001881 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 71.47 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 69.19 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.196 seconds
+- Completed reload, in  1.126 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.004807 seconds.
+Registered in 0.004836 seconds.
 Begin MonoManager ReloadAssembly
 Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
 Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 1.02 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Invoked RoslynAnalysisRunner static constructor.
 RoslynAnalysisRunner will not be running.
 RoslynAnalysisRunner has terminated.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.046 seconds
+- Completed reload, in  0.998 seconds
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
-Refreshing native plugins compatible for Editor in 0.55 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 2948 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 104.3 MB.
 System memory in use after: 104.5 MB.
 
 Unloading 22 unused Assets to reduce memory usage. Loaded Objects now: 3380.
-Total: 2.357300 ms (FindLiveObjects: 0.384000 ms CreateObjectMapping: 0.183600 ms MarkObjects: 1.706900 ms  DeleteObjects: 0.081900 ms)
+Total: 2.285500 ms (FindLiveObjects: 0.308500 ms CreateObjectMapping: 0.259000 ms MarkObjects: 1.658400 ms  DeleteObjects: 0.058700 ms)
 
 ========================================================================
 Received Import Request.
-  path: Assets/Scenes/Server.unity
-  artifactKey: Guid(caa69dc092d44634dbf8e2bd50d2e86e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scenes/Server.unity using Guid(caa69dc092d44634dbf8e2bd50d2e86e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '008d21787b330bb01be2b3985256db24') in 0.039013 seconds
-  Import took 0.043914 seconds .
-
-========================================================================
-Received Prepare
-Refreshing native plugins compatible for Editor in 3.77 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 46.5 MB.
-System memory in use after: 46.7 MB.
-
-Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 3380.
-Total: 3.331900 ms (FindLiveObjects: 0.573100 ms CreateObjectMapping: 0.279600 ms MarkObjects: 2.439700 ms  DeleteObjects: 0.016500 ms)
+  path: Assets/Scripts/ServerUDP.cs
+  artifactKey: Guid(70985bc0f5c6b5443a9245ebf72457ad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ServerUDP.cs using Guid(70985bc0f5c6b5443a9245ebf72457ad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3eb9f08be2326802cb39345deeb8145a') in 0.036779 seconds
+  Import took 0.041641 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 135.433270 seconds.
-  path: Assets/Scenes/Client.unity
-  artifactKey: Guid(bbf782b258846ab4cbf579d93ff0d6e6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scenes/Client.unity using Guid(bbf782b258846ab4cbf579d93ff0d6e6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '56124afe135aa71109eb7368dd805415') in 0.020745 seconds
-  Import took 0.025813 seconds .
+  Time since last request: 0.007410 seconds.
+  path: Assets/UI Images
+  artifactKey: Guid(3f4c3677b9499e94cb6883ae164f8cf1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images using Guid(3f4c3677b9499e94cb6883ae164f8cf1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '12cb71fd7951ac4d03a44d3aa5ddf492') in 0.006770 seconds
+  Import took 0.011760 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005931 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.54 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.215 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.54 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 104.6 MB.
-System memory in use after: 104.9 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3383.
-Total: 6.138100 ms (FindLiveObjects: 0.566800 ms CreateObjectMapping: 0.335500 ms MarkObjects: 5.203400 ms  DeleteObjects: 0.030900 ms)
+Received Import Request.
+  Time since last request: 0.043347 seconds.
+  path: Assets/Scripts/ClientUDP.cs
+  artifactKey: Guid(493c4d7009da3df42a5f84543e96b8b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ClientUDP.cs using Guid(493c4d7009da3df42a5f84543e96b8b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3ade7e5db731d7988e4616a03a364fed') in 0.005600 seconds
+  Import took 0.009888 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004771 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.029 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.63 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 104.9 MB.
-System memory in use after: 105.1 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3386.
-Total: 2.593000 ms (FindLiveObjects: 0.341500 ms CreateObjectMapping: 0.188600 ms MarkObjects: 2.001600 ms  DeleteObjects: 0.060000 ms)
+Received Import Request.
+  Time since last request: 0.131829 seconds.
+  path: Assets/UI Images/menu1.png
+  artifactKey: Guid(7aa62253379740a41a916530dcdb9ce7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/menu1.png using Guid(7aa62253379740a41a916530dcdb9ce7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '64c1baff6163b8954d7fde9cd0f9fb8e') in 0.215196 seconds
+  Import took 0.219575 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005388 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  0.958 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.54 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.1 MB.
-System memory in use after: 105.3 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3389.
-Total: 2.186900 ms (FindLiveObjects: 0.262600 ms CreateObjectMapping: 0.144700 ms MarkObjects: 1.760100 ms  DeleteObjects: 0.018700 ms)
+Received Import Request.
+  Time since last request: 0.033103 seconds.
+  path: Assets/UI Images/menu2.2.png
+  artifactKey: Guid(24771c945c14ba442b54071e7ee07467) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/menu2.2.png using Guid(24771c945c14ba442b54071e7ee07467) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e47c08ffd32e5d4c5432638c1f6f871e') in 0.013304 seconds
+  Import took 0.017469 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.006527 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.61 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.187 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.60 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.2 MB.
-System memory in use after: 105.4 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3392.
-Total: 2.038600 ms (FindLiveObjects: 0.265500 ms CreateObjectMapping: 0.143100 ms MarkObjects: 1.589400 ms  DeleteObjects: 0.039700 ms)
+Received Import Request.
+  Time since last request: 0.028497 seconds.
+  path: Assets/Scripts/ClientTCP.cs
+  artifactKey: Guid(c689a57a8bd78f745a90c579ce7fa1a6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ClientTCP.cs using Guid(c689a57a8bd78f745a90c579ce7fa1a6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9cde1e640273d71bdaf96d0e8ca30f1d') in 0.005060 seconds
+  Import took 0.009233 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.007904 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.52 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.135 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.58 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.5 MB.
-System memory in use after: 105.7 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3395.
-Total: 2.910600 ms (FindLiveObjects: 0.462400 ms CreateObjectMapping: 0.186300 ms MarkObjects: 2.213600 ms  DeleteObjects: 0.046800 ms)
+Received Import Request.
+  Time since last request: 0.050188 seconds.
+  path: Assets/Scripts/ClientBase.cs
+  artifactKey: Guid(0fa462ae1f97df54fac1e850c80d1f6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ClientBase.cs using Guid(0fa462ae1f97df54fac1e850c80d1f6c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '97c2c1bd07fb462bbf16408d08df76fa') in 0.005002 seconds
+  Import took 0.009111 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005400 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.52 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.045 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.58 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.7 MB.
-System memory in use after: 105.9 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3398.
-Total: 3.402300 ms (FindLiveObjects: 0.627900 ms CreateObjectMapping: 0.269200 ms MarkObjects: 2.477300 ms  DeleteObjects: 0.026300 ms)
+Received Import Request.
+  Time since last request: 0.005863 seconds.
+  path: Assets/Scripts/TextLogControl.cs
+  artifactKey: Guid(ba3e047c953a6664b83150ae1d3178d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/TextLogControl.cs using Guid(ba3e047c953a6664b83150ae1d3178d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1a58cf25f12f2c9cbcb703755d5e05a3') in 0.005296 seconds
+  Import took 0.009439 seconds .
 
 ========================================================================
-Received Prepare
-Refreshing native plugins compatible for Editor in 4.37 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 48.1 MB.
-System memory in use after: 48.3 MB.
-
-Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 3398.
-Total: 3.142000 ms (FindLiveObjects: 0.317300 ms CreateObjectMapping: 0.136400 ms MarkObjects: 2.644200 ms  DeleteObjects: 0.042700 ms)
+Received Import Request.
+  Time since last request: 0.117842 seconds.
+  path: Assets/Scripts/ClientProgram.cs
+  artifactKey: Guid(2380816ecb756bd40a43f2681a6374e2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ClientProgram.cs using Guid(2380816ecb756bd40a43f2681a6374e2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '53bad377aa34a71adfd5b88cdd68548f') in 0.005138 seconds
+  Import took 0.017774 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005459 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.67 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.176 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.53 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 106.0 MB.
-System memory in use after: 106.3 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3401.
-Total: 2.349300 ms (FindLiveObjects: 0.410000 ms CreateObjectMapping: 0.197800 ms MarkObjects: 1.721700 ms  DeleteObjects: 0.018200 ms)
+Received Import Request.
+  Time since last request: 0.043076 seconds.
+  path: Assets/UI Images/menu3.png
+  artifactKey: Guid(ca6e05d39b3632d439ac25ce140a1388) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/menu3.png using Guid(ca6e05d39b3632d439ac25ce140a1388) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7f00ade49bd2601cd4d072b56645b216') in 0.024195 seconds
+  Import took 0.028679 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004825 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.52 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  0.964 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.60 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 106.2 MB.
-System memory in use after: 106.4 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3404.
-Total: 2.323600 ms (FindLiveObjects: 0.325200 ms CreateObjectMapping: 0.226800 ms MarkObjects: 1.750000 ms  DeleteObjects: 0.020200 ms)
+Received Import Request.
+  Time since last request: 0.033623 seconds.
+  path: Assets/Scripts/ServerTCP.cs
+  artifactKey: Guid(a83a8419506f3cf4d8a7b9409cacb194) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ServerTCP.cs using Guid(a83a8419506f3cf4d8a7b9409cacb194) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd63ad3d24dab7ed3525f248ba41f6ccf') in 0.005526 seconds
+  Import took 0.010009 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.004823 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.52 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  0.991 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.57 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.4 MB.
-System memory in use after: 105.6 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3407.
-Total: 2.444400 ms (FindLiveObjects: 0.293400 ms CreateObjectMapping: 0.184600 ms MarkObjects: 1.947100 ms  DeleteObjects: 0.018100 ms)
+Received Import Request.
+  Time since last request: 0.021464 seconds.
+  path: Assets/Fonts/venus-rising-rg.otf
+  artifactKey: Guid(38ac5c53e89ae594c92e8aff0a7e86e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Fonts/venus-rising-rg.otf using Guid(38ac5c53e89ae594c92e8aff0a7e86e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2490dc6e4e03c0da030ae24a179fb397') in 0.055685 seconds
+  Import took 0.062710 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005793 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  0.940 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.57 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.6 MB.
-System memory in use after: 105.8 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3410.
-Total: 2.423200 ms (FindLiveObjects: 0.283600 ms CreateObjectMapping: 0.137800 ms MarkObjects: 1.953800 ms  DeleteObjects: 0.046100 ms)
+Received Import Request.
+  Time since last request: 0.054288 seconds.
+  path: Assets/Scripts/ServerBase.cs
+  artifactKey: Guid(9c31e6cf76bf29f4cb07a124af729ca2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ServerBase.cs using Guid(9c31e6cf76bf29f4cb07a124af729ca2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1b1c65109cfdf83303ef9e61b7410604') in 0.020751 seconds
+  Import took 0.034152 seconds .
 
 ========================================================================
-Received Prepare
-Refreshing native plugins compatible for Editor in 4.00 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 48.1 MB.
-System memory in use after: 48.3 MB.
-
-Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 3410.
-Total: 2.172600 ms (FindLiveObjects: 0.271400 ms CreateObjectMapping: 0.144300 ms MarkObjects: 1.739000 ms  DeleteObjects: 0.016900 ms)
+Received Import Request.
+  Time since last request: 0.010046 seconds.
+  path: Assets/Scripts/TextLogItem.cs
+  artifactKey: Guid(779fd656753d7bb409629aea5eaf48f1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/TextLogItem.cs using Guid(779fd656753d7bb409629aea5eaf48f1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bbdefa828ea0da3821ee6b9712bb288c') in 0.006496 seconds
+  Import took 0.011947 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.006986 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.54 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.222 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.55 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 106.0 MB.
-System memory in use after: 106.2 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3413.
-Total: 2.510500 ms (FindLiveObjects: 0.334100 ms CreateObjectMapping: 0.166900 ms MarkObjects: 1.976400 ms  DeleteObjects: 0.031600 ms)
+Received Import Request.
+  Time since last request: 0.022972 seconds.
+  path: Assets/Scripts/ServerProgram.cs
+  artifactKey: Guid(b406e6f9ddb0fdf41846719523740b37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ServerProgram.cs using Guid(b406e6f9ddb0fdf41846719523740b37) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0509595a2a060139a8d3e964177ec579') in 0.005044 seconds
+  Import took 0.009145 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005382 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.54 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.289 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.78 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 106.1 MB.
-System memory in use after: 106.4 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3416.
-Total: 2.712800 ms (FindLiveObjects: 0.371200 ms CreateObjectMapping: 0.242700 ms MarkObjects: 2.072800 ms  DeleteObjects: 0.024300 ms)
+Received Import Request.
+  Time since last request: 0.042826 seconds.
+  path: Assets/UI Images/menu2.png
+  artifactKey: Guid(a50826de4ac06c94bad91dd948e5ea15) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/menu2.png using Guid(a50826de4ac06c94bad91dd948e5ea15) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '849ee0340749c4518bae24a771cde4ef') in 0.031992 seconds
+  Import took 0.038666 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.005025 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.51 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  0.970 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.64 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 106.2 MB.
-System memory in use after: 106.5 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3419.
-Total: 3.234700 ms (FindLiveObjects: 0.443400 ms CreateObjectMapping: 0.216500 ms MarkObjects: 2.548600 ms  DeleteObjects: 0.024800 ms)
+Received Import Request.
+  Time since last request: 0.035184 seconds.
+  path: Assets/UI Images/wallpaperbetter.jpg
+  artifactKey: Guid(e912ff343746d6740b42de08f1a5c319) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/wallpaperbetter.jpg using Guid(e912ff343746d6740b42de08f1a5c319) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a375ca62ce32bea92b1fdc06909e51d1') in 0.015835 seconds
+  Import took 0.020519 seconds .
 
 ========================================================================
-Received Prepare
-Refreshing native plugins compatible for Editor in 3.96 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 15 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 47.8 MB.
-System memory in use after: 48.0 MB.
-
-Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 3419.
-Total: 2.425300 ms (FindLiveObjects: 0.333400 ms CreateObjectMapping: 0.148200 ms MarkObjects: 1.919600 ms  DeleteObjects: 0.022200 ms)
+Received Import Request.
+  Time since last request: 0.005965 seconds.
+  path: Assets/UI Images/Background 1.mat
+  artifactKey: Guid(d6de00ad02e032f4b9a7865af605e7dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/Background 1.mat using Guid(d6de00ad02e032f4b9a7865af605e7dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '33cd5a15e9626148ca4d7762dd46f483') in 0.014833 seconds
+  Import took 0.018986 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.007846 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.67 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.272 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.52 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.7 MB.
-System memory in use after: 105.9 MB.
-
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3422.
-Total: 2.239100 ms (FindLiveObjects: 0.296200 ms CreateObjectMapping: 0.226800 ms MarkObjects: 1.694300 ms  DeleteObjects: 0.020300 ms)
+Received Import Request.
+  Time since last request: 0.033407 seconds.
+  path: Assets/UI Images/Background.mat
+  artifactKey: Guid(8d80b45352268204b8b40f26cbb3ee4b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/Background.mat using Guid(8d80b45352268204b8b40f26cbb3ee4b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2a01d8a2110e21e7cd5acbfd40715f86') in 0.011780 seconds
+  Import took 0.016017 seconds .
 
 ========================================================================
-Received Prepare
-Registering precompiled user dll's ...
-Registered in 0.006401 seconds.
-Begin MonoManager ReloadAssembly
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
-Symbol file LoadedFromMemory doesn't match image D:\UPC\Xarxes\Networking\TCP_UDP\Library\PackageCache\com.unity.visualscripting@1.6.1\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.55 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Invoked RoslynAnalysisRunner static constructor.
-RoslynAnalysisRunner will not be running.
-RoslynAnalysisRunner has terminated.
-Mono: successfully reloaded assembly
-- Completed reload, in  1.161 seconds
-Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.68 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2942 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 105.9 MB.
-System memory in use after: 106.1 MB.
+Received Import Request.
+  Time since last request: 0.046446 seconds.
+  path: Assets/UI Images/wallpaperbetter_Server.jpg
+  artifactKey: Guid(bbb24fa133e0914458870b7aaf6d080c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Images/wallpaperbetter_Server.jpg using Guid(bbb24fa133e0914458870b7aaf6d080c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '07aa768bc6d7a077b4bf33d516f24b05') in 0.019170 seconds
+  Import took 0.023953 seconds .
 
-Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3425.
-Total: 2.305800 ms (FindLiveObjects: 0.297700 ms CreateObjectMapping: 0.156900 ms MarkObjects: 1.831400 ms  DeleteObjects: 0.018300 ms)
-
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
