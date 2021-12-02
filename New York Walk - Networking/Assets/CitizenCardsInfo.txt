@@ -1,0 +1,52 @@
+﻿{
+  "citizens": [
+    {
+      "citizen": "Cabbie",
+      "pickUp": "Cathedral Church of St. John the Divine",
+      "destiny": "Brooklyn Bridge",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Kid",
+      "pickUp": "Municipal Building",
+      "destiny": "Levain Bakery - Harlem",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Receptionist",
+      "pickUp": "Lincoln Centre",
+      "destiny": "Chrysler Building",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Pizza dude",
+      "pickUp": "Abyssinian Baptist Church",
+      "destiny": "Trinity Church",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Grandma",
+      "pickUp": "Times Square",
+      "destiny": "Central Park",
+      "difficulty": 1
+    },
+    {
+      "citizen": "Historian",
+      "pickUp": "Radio City Music Hall",
+      "destiny": "Natural History Museum",
+      "difficulty": 1
+    },
+    {
+      "citizen": "Watcher",
+      "pickUp": "Madison Square Garden",
+      "destiny": "Grand Central Terminal",
+      "difficulty": 1
+    },
+    {
+      "citizen": "Economist",
+      "pickUp": "Apollo Theater",
+      "destiny": "Wall Street",
+      "difficulty": 2
+    }
+  ]
+}
