@@ -5,7 +5,9 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
-    private int randomNumber;
+    public int randomNumber;
+
+    CitizenMaterial citizensMaterials;
 
     public struct Card
     {
@@ -33,7 +35,7 @@ public class Player : MonoBehaviour
 
     public void ObtainCitizenCard(Card randomCard, List<int> randomNumbers)
     {
-        randomNumber = Random.RandomRange(0, 8);
+        randomNumber = Random.RandomRange(0, 3);
 
         if (!randomNumbers.Contains(randomNumber))
         {
@@ -45,13 +47,11 @@ public class Player : MonoBehaviour
             randomCard.difficulty = player_cards.playableCitizenList.citizens[randomNumber].difficulty;
 
             Debug.Log(randomCard.citizen);
-            Debug.Log(randomCard.pickUp);
-            Debug.Log(randomCard.destiny);
-            Debug.Log(randomCard.difficulty);
+            //Debug.Log(randomCard.pickUp);
+            //Debug.Log(randomCard.destiny);
+            //Debug.Log(randomCard.difficulty);
         }
         else
             ObtainCitizenCard(randomCard, randomNumbers);
     }
-
-    
 }

@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
 
     public List<int> randomNumbers;
 
+    CitizenMaterial cardMaterial;
+
 
     // Start is called before the first frame update
     void Start()
@@ -28,13 +30,13 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player1.ObtainCitizenCard(player1.card1, randomNumbers);
-            player2.ObtainCitizenCard(player2.card1, randomNumbers);
+            //player2.ObtainCitizenCard(player2.card1, randomNumbers);
 
             player1.ObtainCitizenCard(player1.card2, randomNumbers);
-            player2.ObtainCitizenCard(player2.card2, randomNumbers);
+            //player2.ObtainCitizenCard(player2.card2, randomNumbers);
 
             player1.ObtainCitizenCard(player1.card3, randomNumbers);
-            player2.ObtainCitizenCard(player2.card3, randomNumbers);
+            //player2.ObtainCitizenCard(player2.card3, randomNumbers);
         }
         //Click cards to select order 1 2 3 function
 
