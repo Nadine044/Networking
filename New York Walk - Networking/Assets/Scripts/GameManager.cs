@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     public Player player2;
 
     public List<int> randomNumbers;
-
-    CitizenMaterial cardMaterial;
+    public List<CitizenMaterial> GerardCitizensMaterialList = new List<CitizenMaterial>();
 
     //we define the board as an array of gameobjects 
     public GameObject[] array_positions;
@@ -34,12 +33,15 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player1.ObtainCitizenCard(player1.card1, randomNumbers);
+            GerardCitizensMaterialList[0].AssignMaterial(randomNumbers[0]);
             //player2.ObtainCitizenCard(player2.card1, randomNumbers);
 
             player1.ObtainCitizenCard(player1.card2, randomNumbers);
+            GerardCitizensMaterialList[1].AssignMaterial(randomNumbers[1]);
             //player2.ObtainCitizenCard(player2.card2, randomNumbers);
 
             player1.ObtainCitizenCard(player1.card3, randomNumbers);
+            GerardCitizensMaterialList[2].AssignMaterial(randomNumbers[2]);
             //player2.ObtainCitizenCard(player2.card3, randomNumbers);
         }
         //Click cards to select order 1 2 3 function

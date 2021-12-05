@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
-    public int randomNumber;
+    public int randomNumberGenerated;
 
     CitizenMaterial citizensMaterials;
 
@@ -160,16 +160,16 @@ public class Player : MonoBehaviour
 
     public void ObtainCitizenCard(Card randomCard, List<int> randomNumbers)
     {
-        randomNumber = Random.RandomRange(0, 3);
+        randomNumberGenerated = Random.RandomRange(0, 3);
 
-        if (!randomNumbers.Contains(randomNumber))
+        if (!randomNumbers.Contains(randomNumberGenerated))
         {
-            randomNumbers.Add(randomNumber);
+            randomNumbers.Add(randomNumberGenerated);
 
-            randomCard.citizen = player_cards.playableCitizenList.citizens[randomNumber].citizen;
-            randomCard.pickUp = player_cards.playableCitizenList.citizens[randomNumber].pickUp;
-            randomCard.destiny = player_cards.playableCitizenList.citizens[randomNumber].destiny;
-            randomCard.difficulty = player_cards.playableCitizenList.citizens[randomNumber].difficulty;
+            randomCard.citizen = player_cards.playableCitizenList.citizens[randomNumberGenerated].citizen;
+            randomCard.pickUp = player_cards.playableCitizenList.citizens[randomNumberGenerated].pickUp;
+            randomCard.destiny = player_cards.playableCitizenList.citizens[randomNumberGenerated].destiny;
+            randomCard.difficulty = player_cards.playableCitizenList.citizens[randomNumberGenerated].difficulty;
 
             Debug.Log(randomCard.citizen);
             //Debug.Log(randomCard.pickUp);

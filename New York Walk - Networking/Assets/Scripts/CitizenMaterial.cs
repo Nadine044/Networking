@@ -20,15 +20,14 @@ public class CitizenMaterial : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
-            AssignMaterial();
+
     }
 
-    public void AssignMaterial()
+    public void AssignMaterial(int getRandomNumber)
     {
         foreach(var Item in materialList)
         {
-            if (Item.name == player.player_cards.playableCitizenList.citizens[player.randomNumber].citizen)
+            if (Item.name == player.player_cards.playableCitizenList.citizens[getRandomNumber].citizen)
             {
                 rend.sharedMaterial = Item;
                 Debug.Log(Item.name);
