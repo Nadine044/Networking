@@ -11,11 +11,15 @@ public class GameManager : MonoBehaviour
 
     CitizenMaterial cardMaterial;
 
+    //we define the board as an array of gameobjects 
+    public GameObject[] array_positions;
+
+    public static GameManager _instance { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        _instance = this;
     }
 
     // Update is called once per frame
