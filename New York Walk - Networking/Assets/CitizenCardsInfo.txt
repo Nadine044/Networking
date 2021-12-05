@@ -19,7 +19,7 @@
       "difficulty": 2
     },
     {
-      "citizen": "Pizza dude",
+      "citizen": "PizzaGuy",
       "pickUp": "Abyssinian Baptist Church",
       "destiny": "Trinity Church",
       "difficulty": 2
@@ -37,7 +37,7 @@
       "difficulty": 1
     },
     {
-      "citizen": "Watcher",
+      "citizen": "Watchmaker",
       "pickUp": "Madison Square Garden",
       "destiny": "Grand Central Terminal",
       "difficulty": 1

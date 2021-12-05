@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
 
     public void ObtainCitizenCard(Card randomCard, List<int> randomNumbers)
     {
-        randomNumberGenerated = Random.RandomRange(0, 3);
+        randomNumberGenerated = Random.RandomRange(0, 8);
 
         if (!randomNumbers.Contains(randomNumberGenerated))
         {

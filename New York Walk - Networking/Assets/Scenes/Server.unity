@@ -172,8 +172,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   materialList:
   - {fileID: 2100000, guid: 0bd4a6c0b2d338f4ea7031394158ba00, type: 2}
+  - {fileID: 2100000, guid: 11e4d4619e21fea44b77ff4f0f03cb2a, type: 2}
+  - {fileID: 2100000, guid: 7f0eb98b709255e41a489206be28a327, type: 2}
+  - {fileID: 2100000, guid: 0f20da2d938477043bc23eb05a3673fe, type: 2}
   - {fileID: 2100000, guid: f0a77f22e7735954591fdf64a21bd013, type: 2}
+  - {fileID: 2100000, guid: 6aca47ad193a6f04bb59ef2ef7545973, type: 2}
   - {fileID: 2100000, guid: 24786eed02669cc45ae4877aacd94264, type: 2}
+  - {fileID: 2100000, guid: 67d3de595d7d77e49801500c78b96235, type: 2}
   player: {fileID: 1661397771}
 --- !u!1 &107130758
 GameObject:
@@ -612,8 +617,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   materialList:
   - {fileID: 2100000, guid: 0bd4a6c0b2d338f4ea7031394158ba00, type: 2}
+  - {fileID: 2100000, guid: 11e4d4619e21fea44b77ff4f0f03cb2a, type: 2}
+  - {fileID: 2100000, guid: 7f0eb98b709255e41a489206be28a327, type: 2}
+  - {fileID: 2100000, guid: 0f20da2d938477043bc23eb05a3673fe, type: 2}
   - {fileID: 2100000, guid: f0a77f22e7735954591fdf64a21bd013, type: 2}
+  - {fileID: 2100000, guid: 6aca47ad193a6f04bb59ef2ef7545973, type: 2}
   - {fileID: 2100000, guid: 24786eed02669cc45ae4877aacd94264, type: 2}
+  - {fileID: 2100000, guid: 67d3de595d7d77e49801500c78b96235, type: 2}
   player: {fileID: 1661397771}
 --- !u!23 &649639181
 MeshRenderer:
@@ -750,13 +760,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.6230557, y: -0.06754457, z: 0.013559903, w: 0.7791376}
+  m_LocalPosition: {x: 0, y: 5.86, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 76.587, y: -22.39, z: -15.769}
 --- !u!1 &746250847
 GameObject:
   m_ObjectHideFlags: 0
@@ -1157,8 +1167,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   materialList:
   - {fileID: 2100000, guid: 0bd4a6c0b2d338f4ea7031394158ba00, type: 2}
+  - {fileID: 2100000, guid: 11e4d4619e21fea44b77ff4f0f03cb2a, type: 2}
+  - {fileID: 2100000, guid: 7f0eb98b709255e41a489206be28a327, type: 2}
+  - {fileID: 2100000, guid: 0f20da2d938477043bc23eb05a3673fe, type: 2}
   - {fileID: 2100000, guid: f0a77f22e7735954591fdf64a21bd013, type: 2}
+  - {fileID: 2100000, guid: 6aca47ad193a6f04bb59ef2ef7545973, type: 2}
   - {fileID: 2100000, guid: 24786eed02669cc45ae4877aacd94264, type: 2}
+  - {fileID: 2100000, guid: 67d3de595d7d77e49801500c78b96235, type: 2}
   player: {fileID: 1661397771}
 --- !u!23 &1438533043
 MeshRenderer:
@@ -1508,6 +1523,22 @@ PrefabInstance:
       propertyPath: array_positions.Array.data[24]
       value: 
       objectReference: {fileID: 309168083}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: GerardCitizensMaterialList.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: GerardCitizensMaterialList.Array.data[0]
+      value: 
+      objectReference: {fileID: 80190866}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: GerardCitizensMaterialList.Array.data[1]
+      value: 
+      objectReference: {fileID: 1438533042}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: GerardCitizensMaterialList.Array.data[2]
+      value: 
+      objectReference: {fileID: 649639180}
     - target: {fileID: 1714825400235630189, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: m_Name
       value: GameManager
@@ -1544,7 +1575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
-  randomNumber: 0
+  randomNumberGenerated: 0
   citizen_token: {fileID: 368659028}
 --- !u!4 &1661397772
 Transform:
@@ -1590,7 +1621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
-  randomNumber: 0
+  randomNumberGenerated: 0
   citizen_token: {fileID: 0}
 --- !u!4 &1699150045
 Transform:
