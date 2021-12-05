@@ -22,18 +22,27 @@ public class Player : MonoBehaviour
     public Card card3;
 
     //Modo guarro quick, después ya se estructurará mejor
-    int[] board_pos = new int[25];
+    int[] board = new int[25];
     public GameObject citizen_token;
-    bool input_active = true;
+    bool input_active = false;
     int current_board_pos;
+    bool first_time = true;
+    [HideInInspector]
+    public int client_n = 0;
+    [HideInInspector]
+    public int turn_type = 0;
+    public static Player _instance { get; private set; }
+
+
+    GameObject enemys_token = null;
     // Start is called before the first frame update
     void Start()
     {
-
+        _instance = this;
         //set al positions empty
         for(int i =0; i < 25; i++)
         {
-            board_pos[i] = 0;
+            board[i] = 0;
         }
 
         SetBoardPos(0);
@@ -71,7 +80,7 @@ public class Player : MonoBehaviour
     {
         //In the case its not reversed.. the reversed way will be converted in the server script
         int tmp = current_board_pos +5;
-        if(tmp > board_pos.Length -1)
+        if(tmp > board.Length -1)
         {
             Debug.Log("position out of board, you can't go up more");
 
@@ -79,9 +88,14 @@ public class Player : MonoBehaviour
         else
         {
             //clean the prevous board pos
-            board_pos[current_board_pos] = 0;
-
+            if (board[tmp] != 0) //means there is something there
+                return;
+            //clean the prevous board pos
+            board[current_board_pos] = 0;
             SetBoardPos(tmp);
+            input_active = false;
+            NetworkingClient._instance.SendPackage();
+            //Here invoke event to send package to server
         }
     }
 
@@ -95,9 +109,14 @@ public class Player : MonoBehaviour
         }
         else
         {
+            if (board[tmp] != 0) //means there is something there
+                return;
             //clean the prevous board pos
-            board_pos[current_board_pos] = 0;
+            board[current_board_pos] = 0;
             SetBoardPos(tmp);
+            input_active = false;
+            NetworkingClient._instance.SendPackage();
+            //Here invoke event to send package to server
         }
     }
     void Go_LEFT()
@@ -120,8 +139,13 @@ public class Player : MonoBehaviour
                 Debug.Log("position out of board, you can't go left anymore");
                 break;
             default:
-                board_pos[current_board_pos] = 0;
+                if (board[current_board_pos + 1] != 0)//there is something there
+                    return;
+
+                board[current_board_pos] = 0;
                 SetBoardPos(current_board_pos + 1);
+                input_active = false;
+                NetworkingClient._instance.SendPackage();
                 break;
         }
     }
@@ -145,8 +169,12 @@ public class Player : MonoBehaviour
                 Debug.Log("position out of board, you can't go right anymore");
                 break;
             default:
-                board_pos[current_board_pos] = 0;
+                if (board[current_board_pos - 1] != 0)//there is something there
+                    return;
+                board[current_board_pos] = 0;
                 SetBoardPos(current_board_pos - 1);
+                input_active = false;
+                NetworkingClient._instance.SendPackage();
                 break;
         }
     }
@@ -154,7 +182,9 @@ public class Player : MonoBehaviour
     {
         citizen_token.transform.position = GameManager._instance.array_positions[array_pos].transform.position;
         current_board_pos = array_pos;
-        board_pos[array_pos] = 1; //1 in the array means the citizen is there
+
+        
+        board[array_pos] = client_n; //1 in the array means the citizen is there 2 means the citizen 2 is here, etc
     }
 
 
@@ -178,5 +208,73 @@ public class Player : MonoBehaviour
         }
         else
             ObtainCitizenCard(randomCard, randomNumbers);
+    }
+
+    public int[] GetBoard()
+    {
+        return board;
+    }
+
+
+    public void RecieveUpdateFromServer(int client_type,int turnstep,int[] new_board)
+    {
+        client_n = client_type;
+        turn_type = turnstep;
+        board = new_board;
+
+        if (turn_type == 1)
+            input_active = true;
+
+        if(client_n ==2)
+        {
+
+            //now spawn the other players token
+            if (first_time)
+            {
+                board[current_board_pos] = 0;
+                SetBoardPos(4);
+                enemys_token = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                enemys_token.transform.position = GameManager._instance.array_positions[0].transform.position;
+                board[4] = 1;
+                first_time = false;
+            }
+
+            else
+            {
+                for(int i =0; i < board.Length; i++)
+                {
+                    if(board[i]==1) //the new enemy token_position
+                    {
+                        enemys_token.transform.position = GameManager._instance.array_positions[i].transform.position;
+                        //board[i] = 1;
+                    }
+                }
+            }
+        }
+
+        else if(client_n == 1)
+        {
+            //keep the current pos
+            if(first_time)
+            {
+                enemys_token = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                enemys_token.transform.position = GameManager._instance.array_positions[4].transform.position;
+                board[4] = 2;
+                first_time = false;
+            }
+            else
+            {
+                for(int i =0; i < board.Length; i++)
+                {
+                    if (board[i] == 2) //the new enemy token_position
+                    {
+                        enemys_token.transform.position = GameManager._instance.array_positions[i].transform.position;
+                      //  board[i] = 2;
+                    }
+                }
+            }
+        }
+        turn_type = 2;
+        //now have to say that if client type is 2 our cube follows the 2 on the array
     }
 }
