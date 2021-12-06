@@ -35,7 +35,11 @@ public class NetworkingClient : Networking
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            CloseConnection();
+            Application.Quit();
+        }
     }
 
     void ConnectCallback(IAsyncResult ar)
@@ -86,13 +90,13 @@ public class NetworkingClient : Networking
             int[] board_tmp = package.board_array;
             Debug.Log(package.msg_to_log);
 
-            Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
+           // Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
 
-            //Action UpdatePlayer = () =>
-            //{
-            //    Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
-            //};
-            //QueueMainThreadFunction(UpdatePlayer);
+            Action UpdatePlayer = () =>
+            {
+                Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
+            };
+            QueueMainThreadFunction(UpdatePlayer);
 
             //not thread safe
 

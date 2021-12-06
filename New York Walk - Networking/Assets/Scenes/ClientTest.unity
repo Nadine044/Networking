@@ -1619,7 +1619,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
   randomNumberGenerated: 0
-  citizen_token: {fileID: 368659028}
+  token1: {fileID: 368659028}
+  current_board_pos: 0
   client_n: 0
   turn_type: 0
 --- !u!4 &1661397772
@@ -1667,7 +1668,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
   randomNumberGenerated: 0
-  citizen_token: {fileID: 0}
+  token1: {fileID: 0}
+  current_board_pos: 0
   client_n: 0
   turn_type: 0
 --- !u!4 &1699150045

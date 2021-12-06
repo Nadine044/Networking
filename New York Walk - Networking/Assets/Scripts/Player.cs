@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     int[] board = new int[25];
     public GameObject token1;
     bool input_active = false;
-    int current_board_pos;
+    public int current_board_pos;
     bool first_time = true;
     [HideInInspector]
     public int client_n = 0;
