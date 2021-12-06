@@ -52,7 +52,6 @@ public class NetworkingServer : Networking
             socket.BeginAccept(new AsyncCallback(ConnectCallback), socket);
             current_clients++;
         }
-
     }
 
     void CloseConnection()
@@ -85,7 +84,9 @@ public class NetworkingServer : Networking
 
     void SetUpTurns()
     {
-        int tmp = UnityEngine.Random.Range(0, 1);
+        var rand = new System.Random();
+        int tmp = rand.Next(0, 2);
+        //int tmp = UnityEngine.Random.Range(0, 1);
 
         board[0] = 1; //client 1
         board[4] = 2; //client 2;
@@ -93,7 +94,7 @@ public class NetworkingServer : Networking
         if (tmp == 0)
         {
             client_list[0].client_type = 1;
-            client_list[2].client_type = 2;
+            client_list[1].client_type = 2;
             byte[] b1 = Serialize(1, "your turn",board, client_list[0].client_type); //client 1
             SendPackage(b1, client_list[0].client_socket);
             byte[] b2 = Serialize(2, "not your turn",board, client_list[1].client_type);//client 2
@@ -102,7 +103,7 @@ public class NetworkingServer : Networking
         else if(tmp ==1)
         {
             client_list[0].client_type = 2;
-            client_list[0].client_type = 1;
+            client_list[1].client_type = 1;
             byte[] b1 = Serialize(1, "your turn",board, client_list[0].client_type); //client 2
             SendPackage(b1, client_list[1].client_socket);
             byte[] b2 = Serialize(2, "not your turn",board, client_list[1].client_type);//client 1

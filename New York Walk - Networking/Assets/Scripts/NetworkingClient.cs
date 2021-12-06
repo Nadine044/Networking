@@ -4,6 +4,7 @@ using System.Net;
 using UnityEngine;
 using System;
 using System.Threading;
+using System.Net.Sockets;
 
 public class NetworkingClient : Networking
 {
@@ -18,6 +19,7 @@ public class NetworkingClient : Networking
     // Start is called before the first frame update
     void Start()
     {
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         _instance = this;
         ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26002);
         StartThreadingFunction(ConnectToServer);
@@ -83,11 +85,14 @@ public class NetworkingClient : Networking
             int turnstep = package.index;
             int[] board_tmp = package.board_array;
             Debug.Log(package.msg_to_log);
-            Action UpdatePlayer = () =>
-            {
-                Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
-            };
-            QueueMainThreadFunction(UpdatePlayer);
+
+            Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
+
+            //Action UpdatePlayer = () =>
+            //{
+            //    Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
+            //};
+            //QueueMainThreadFunction(UpdatePlayer);
 
             //not thread safe
 

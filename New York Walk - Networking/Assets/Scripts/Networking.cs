@@ -48,10 +48,17 @@ public class Networking : MonoBehaviour
         functionsToRunInMainThread.Enqueue(someFunction);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
-        
+        while (functionsToRunInMainThread.Count > 0)
+        {
+            //Grab the first/oldest function in the list
+            Action someFunc;
+            functionsToRunInMainThread.TryDequeue(out someFunc);
+
+            //Now run it;
+            someFunc();
+        }
     }
     //index
     //0 = wait for the other player
@@ -82,6 +89,7 @@ public class Networking : MonoBehaviour
         stream.Seek(0, SeekOrigin.Begin);
         package.index = reader.ReadInt32();
         package.msg_to_log = reader.ReadString();
+        Debug.Log(package.msg_to_log);
         for (int i = 0; i < 25; i++)
         {
             package.board_array[i] = reader.ReadInt32();
