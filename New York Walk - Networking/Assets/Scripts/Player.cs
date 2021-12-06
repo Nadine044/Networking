@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    public GameObject citizen_token;
+    public GameObject token1;
     bool input_active = false;
     int current_board_pos;
     bool first_time = true;
