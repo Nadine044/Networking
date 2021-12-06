@@ -185,6 +185,26 @@ public class Player : MonoBehaviour
         board[array_pos] = client_n; //1 in the array means the citizen is there 2 means the citizen 2 is here, etc
     }
 
+    public void SetTokenPos(List<GameObject> squares, Player player)
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        string colliderName;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            colliderName = hit.collider.name;
+            foreach (var Item in squares)
+            {
+                if (Item.name == colliderName)
+                {
+                    player.token1.transform.position = Item.transform.position;
+                    //get current pos on board too
+                }
+            }
+        }
+    }
+
 
     public void ObtainCitizenCard(Card randomCard, List<int> randomNumbers)
     {

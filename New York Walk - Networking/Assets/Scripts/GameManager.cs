@@ -30,56 +30,60 @@ public class GameManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    //void Update()
-    //{
-    //    //Music plays :D
-    //    //Before enter a game, put your Player Name
+    void Update()
+    {
+        //Music plays :D
+        //Before enter a game, put your Player Name
 
-    //    //Start Game UI
+        //Start Game UI
 
-    //    //Get Cards Function (random 3 cards)
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        player1.ObtainCitizenCard(player1.card1, randomNumbers);
-    //        player_cards[0].AssignMaterial(randomNumbers[0]);
-    //        //player2.ObtainCitizenCard(player2.card1, randomNumbers);
+        //Get Cards Function (random 3 cards)
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            player1.ObtainCitizenCard(player1.card1, randomNumbers);
+            player_cards[0].AssignMaterial(randomNumbers[0]);
+            //player2.ObtainCitizenCard(player2.card1, randomNumbers);
 
-    //        player1.ObtainCitizenCard(player1.card2, randomNumbers);
-    //        player_cards[1].AssignMaterial(randomNumbers[1]);
-    //        //player2.ObtainCitizenCard(player2.card2, randomNumbers);
+            //player1.ObtainCitizenCard(player1.card2, randomNumbers);
+            //player_cards[1].AssignMaterial(randomNumbers[1]);
+            //player2.ObtainCitizenCard(player2.card2, randomNumbers);
 
-    //        player1.ObtainCitizenCard(player1.card3, randomNumbers);
-    //        player_cards[2].AssignMaterial(randomNumbers[2]);
-    //        //player2.ObtainCitizenCard(player2.card3, randomNumbers);
-    //    }
+            //player1.ObtainCitizenCard(player1.card3, randomNumbers);
+            //player_cards[2].AssignMaterial(randomNumbers[2]);
+            //player2.ObtainCitizenCard(player2.card3, randomNumbers);
+        }
+
+        //PLACE TOKEN ON BOARD
+        if (Input.GetMouseButtonDown(0))
+            player1.SetTokenPos(boardSquares, player1);
 
 
-    //    //CHECK PICK-UP
-    //    if (!pickUpArrived)
-    //    {
-    //        if (boardSquares[player1.current_board_pos].name == player1.card1.pickUp)
-    //        {
-    //            Debug.Log("OBJECT PICKED!!");
-    //            pickUpArrived = true;
-    //            hasObject = true;
-    //        }
-    //    }
+        //CHECK PICK-UP
+        if (!pickUpArrived)
+        {
+            if (boardSquares[player1.current_board_pos].name == player1.card1.pickUp)
+            {
+                Debug.Log("OBJECT PICKED!!");
+                pickUpArrived = true;
+                hasObject = true;
+            }
+        }
 
-    //    //CHECK DESTINY
-    //    if (!destinyArrived && hasObject)
-    //    {
-    //        if (boardSquares[player1.current_board_pos].name == player1.card1.destiny)
-    //        {
-    //            Debug.Log("DESTINY ARRIVED!!");
-    //            destinyArrived = true;
-    //        }
-    //    }
-            
+        //CHECK DESTINY
+        if (!destinyArrived && hasObject)
+        {
+            if (boardSquares[player1.current_board_pos].name == player1.card1.destiny)
+            {
+                Debug.Log("DESTINY ARRIVED!!");
+                destinyArrived = true;
+            }
+        }
 
-    //    //Click cards to select order 1 2 3 function
 
-    //    //!!!!  Put citizens on the board (turn based)  !!!!
-    //}
+        //Click cards to select order 1 2 3 function
 
-    
+        //!!!!  Put citizens on the board (turn based)  !!!!
+    }
+
+
 }

@@ -132,6 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 50641757}
+  - component: {fileID: 50641758}
   m_Layer: 0
   m_Name: Municipal Building
   m_TagString: Untagged
@@ -147,12 +148,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 50641756}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.29, y: -0.453, z: -0}
+  m_LocalPosition: {x: -2.266, y: -0.444, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &50641758
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50641756}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &80190862 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -4151352799506212149, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
@@ -235,6 +249,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 116750221}
+  - component: {fileID: 116750222}
   m_Layer: 0
   m_Name: Grand Central Terminal
   m_TagString: Untagged
@@ -250,12 +265,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116750220}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.3, y: 0.141, z: 0}
+  m_LocalPosition: {x: -2.276, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &116750222
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116750220}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &147119290
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,6 +293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 147119291}
+  - component: {fileID: 147119292}
   m_Layer: 0
   m_Name: Morningside University
   m_TagString: Untagged
@@ -280,12 +309,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 147119290}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.36, y: 0.358, z: 0}
+  m_LocalPosition: {x: 3.923, y: 0.448, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &147119292
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147119290}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &166436016
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,8 +337,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 166436017}
+  - component: {fileID: 166436018}
   m_Layer: 0
-  m_Name: Guggenheim Museum
+  m_Name: The Solomon R.Guggenheim Museum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -310,12 +353,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 166436016}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.96, y: 0.363, z: 0}
+  m_LocalPosition: {x: -2.27, y: 0.45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &166436018
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166436016}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &189588202
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,8 +381,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 189588203}
+  - component: {fileID: 189588204}
   m_Layer: 0
-  m_Name: Kevain Bakery-Harlem
+  m_Name: Levain Bakery - Harlem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -340,12 +397,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 189588202}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.3, y: 0.638, z: 0}
+  m_LocalPosition: {x: 1.854, y: 0.744, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &189588204
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189588202}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &309168083
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,8 +425,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 309168084}
+  - component: {fileID: 309168085}
   m_Layer: 0
-  m_Name: Cathedral Church
+  m_Name: Cathedral Church of St.John the Divine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,12 +441,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 309168083}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.44, y: 0.673, z: 0}
+  m_LocalPosition: {x: 3.919, y: 0.745, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &309168085
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309168083}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1001 &323261964
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -389,15 +473,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11.01
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.04
+      value: 3.11
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.89
+      value: -10.59
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -549,6 +633,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 596037029}
+  - component: {fileID: 596037030}
   m_Layer: 0
   m_Name: Wall Street
   m_TagString: Untagged
@@ -564,12 +649,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 596037028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.18, y: -0.45, z: -0}
+  m_LocalPosition: {x: -0.212, y: -0.441, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &596037030
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596037028}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &649639178
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,6 +874,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 746250848}
+  - component: {fileID: 746250849}
   m_Layer: 0
   m_Name: Radio City Music Hall
   m_TagString: Untagged
@@ -791,12 +890,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 746250847}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.21, y: -0.154, z: -0}
+  m_LocalPosition: {x: -2.274, y: -0.145, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &746250849
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746250847}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &772760427
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,6 +918,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 772760428}
+  - component: {fileID: 772760429}
   m_Layer: 0
   m_Name: Chrysler Building
   m_TagString: Untagged
@@ -821,12 +934,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772760427}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.35, y: 0.137, z: 0}
+  m_LocalPosition: {x: -4.342, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &772760429
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772760427}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &846643007
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,8 +962,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 846643008}
+  - component: {fileID: 846643009}
   m_Layer: 0
-  m_Name: StuyVesant High School
+  m_Name: Stuyvesant High School
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -851,12 +978,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 846643007}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.96, y: -0.154, z: -0}
+  m_LocalPosition: {x: 3.92, y: -0.147, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &846643009
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846643007}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &883324184
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,6 +1006,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 883324185}
+  - component: {fileID: 883324186}
   m_Layer: 0
   m_Name: Apollo Theatre
   m_TagString: Untagged
@@ -881,12 +1022,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883324184}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.31, y: 0.66, z: 0}
+  m_LocalPosition: {x: -0.203, y: 0.745, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &883324186
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883324184}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,6 +1133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1107707773}
+  - component: {fileID: 1107707774}
   m_Layer: 0
   m_Name: Natural HIstory Museum
   m_TagString: Untagged
@@ -994,12 +1149,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1107707772}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.35, y: 0.345, z: 0}
+  m_LocalPosition: {x: 1.849, y: 0.45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1107707774
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107707772}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1123860299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,6 +1177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1123860300}
+  - component: {fileID: 1123860301}
   m_Layer: 0
   m_Name: Lincoln Centre
   m_TagString: Untagged
@@ -1024,12 +1193,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1123860299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.98, y: 0.144, z: 0}
+  m_LocalPosition: {x: 3.924, y: 0.152, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1123860301
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123860299}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1131890209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1039,6 +1221,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1131890210}
+  - component: {fileID: 1131890211}
   m_Layer: 0
   m_Name: Battery Park
   m_TagString: Untagged
@@ -1054,12 +1237,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1131890209}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.94, y: -0.456, z: -0}
+  m_LocalPosition: {x: 1.861, y: -0.441, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1131890211
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131890209}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1277465578
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,8 +1308,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1339844193}
+  - component: {fileID: 1339844194}
   m_Layer: 0
-  m_Name: Schornburg Center
+  m_Name: The Schomburg Center for Research in Black Culture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1127,12 +1324,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1339844192}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.8, y: 0.638, z: 0}
+  m_LocalPosition: {x: -2.266, y: 0.745, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1339844194
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339844192}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1411579738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,6 +1352,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1411579739}
+  - component: {fileID: 1411579740}
   m_Layer: 0
   m_Name: Madison Square Garden
   m_TagString: Untagged
@@ -1157,12 +1368,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1411579738}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.89, y: 0.147, z: 0}
+  m_LocalPosition: {x: 1.858, y: 0.151, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1411579740
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411579738}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1438533040
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,6 +1500,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1500967821}
+  - component: {fileID: 1500967822}
   m_Layer: 0
   m_Name: Empire State Building
   m_TagString: Untagged
@@ -1297,6 +1522,19 @@ Transform:
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1500967822
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500967820}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1539950643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1306,8 +1544,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1539950644}
+  - component: {fileID: 1539950645}
   m_Layer: 0
-  m_Name: Abyssinian Baptist Chruch
+  m_Name: Abyssinian Baptist Church
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1321,12 +1560,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1539950643}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.89, y: 0.656, z: 0}
+  m_LocalPosition: {x: -4.336, y: 0.744, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1539950645
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539950643}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1550473290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1336,6 +1588,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1550473291}
+  - component: {fileID: 1550473292}
   m_Layer: 0
   m_Name: Brooklyn Bridge
   m_TagString: Untagged
@@ -1351,12 +1604,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550473290}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.4, y: -0.443, z: -0}
+  m_LocalPosition: {x: -4.328, y: -0.443, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1550473292
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550473290}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1577236861
 GameObject:
   m_ObjectHideFlags: 0
@@ -1366,8 +1632,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1577236862}
+  - component: {fileID: 1577236863}
   m_Layer: 0
-  m_Name: Police Department East Side
+  m_Name: Police Department - Upper East Side
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1381,12 +1648,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1577236861}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.36, y: 0.448, z: 0}
+  m_LocalPosition: {x: -4.336, y: 0.448, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1577236863
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577236861}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1001 &1638503068
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1451,9 +1731,57 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 80190866}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.size
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: materialList.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[0]
+      value: 
+      objectReference: {fileID: 1550473290}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[1]
+      value: 
+      objectReference: {fileID: 50641756}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[2]
+      value: 
+      objectReference: {fileID: 596037028}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[3]
+      value: 
+      objectReference: {fileID: 1131890209}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[4]
+      value: 
+      objectReference: {fileID: 1808513552}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[5]
+      value: 
+      objectReference: {fileID: 1829237092}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[6]
+      value: 
+      objectReference: {fileID: 746250847}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[7]
+      value: 
+      objectReference: {fileID: 1891089101}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[8]
+      value: 
+      objectReference: {fileID: 2134356400}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[9]
+      value: 
+      objectReference: {fileID: 846643007}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: materialList.Array.data[0]
       value: 
@@ -1466,6 +1794,78 @@ PrefabInstance:
       propertyPath: materialList.Array.data[2]
       value: 
       objectReference: {fileID: 649639180}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[0]
+      value: 
+      objectReference: {fileID: 80190866}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[1]
+      value: 
+      objectReference: {fileID: 1438533042}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[2]
+      value: 
+      objectReference: {fileID: 649639180}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[10]
+      value: 
+      objectReference: {fileID: 772760427}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[11]
+      value: 
+      objectReference: {fileID: 116750220}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[12]
+      value: 
+      objectReference: {fileID: 1500967820}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[13]
+      value: 
+      objectReference: {fileID: 1411579738}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[14]
+      value: 
+      objectReference: {fileID: 1123860299}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[15]
+      value: 
+      objectReference: {fileID: 1577236861}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[16]
+      value: 
+      objectReference: {fileID: 166436016}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[17]
+      value: 
+      objectReference: {fileID: 1914295813}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[18]
+      value: 
+      objectReference: {fileID: 1107707772}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[19]
+      value: 
+      objectReference: {fileID: 147119290}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[20]
+      value: 
+      objectReference: {fileID: 1539950643}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[21]
+      value: 
+      objectReference: {fileID: 1339844192}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[22]
+      value: 
+      objectReference: {fileID: 883324184}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[23]
+      value: 
+      objectReference: {fileID: 189588202}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[24]
+      value: 
+      objectReference: {fileID: 309168083}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: array_positions.Array.data[0]
       value: 
@@ -1695,6 +2095,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1808513553}
+  - component: {fileID: 1808513554}
   m_Layer: 0
   m_Name: Trinity Church
   m_TagString: Untagged
@@ -1710,12 +2111,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1808513552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.02, y: -0.456, z: -0}
+  m_LocalPosition: {x: 3.917, y: -0.443, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1808513554
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808513552}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1829237092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1725,6 +2139,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1829237093}
+  - component: {fileID: 1829237094}
   m_Layer: 0
   m_Name: Manhattan Bridge
   m_TagString: Untagged
@@ -1740,12 +2155,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1829237092}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.37, y: -0.161, z: -0}
+  m_LocalPosition: {x: -4.33, y: -0.146, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1829237094
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829237092}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1891089101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1755,6 +2183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1891089102}
+  - component: {fileID: 1891089103}
   m_Layer: 0
   m_Name: Times Square
   m_TagString: Untagged
@@ -1770,12 +2199,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891089101}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.18, y: -0.16, z: -0}
+  m_LocalPosition: {x: -0.212, y: -0.147, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1891089103
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891089101}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!1 &1914295813
 GameObject:
   m_ObjectHideFlags: 0
@@ -1785,6 +2227,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1914295814}
+  - component: {fileID: 1914295815}
   m_Layer: 0
   m_Name: Central Park
   m_TagString: Untagged
@@ -1800,12 +2243,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1914295813}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.23, y: 0.354, z: 0}
+  m_LocalPosition: {x: -0.207, y: 0.45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1914295815
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914295813}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!4 &2002340585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
@@ -1820,6 +2276,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2134356401}
+  - component: {fileID: 2134356402}
   m_Layer: 0
   m_Name: Foley Square
   m_TagString: Untagged
@@ -1835,12 +2292,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2134356400}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.91, y: -0.141, z: -0}
+  m_LocalPosition: {x: 1.846, y: -0.145, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7782348086645080386}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2134356402
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134356400}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7340504, y: 0.23499748, z: 0.26379898}
+  m_Center: {x: 0.19551897, y: -0.040849198, z: 0.055528406}
 --- !u!4 &543450653699334637
 Transform:
   m_ObjectHideFlags: 0
