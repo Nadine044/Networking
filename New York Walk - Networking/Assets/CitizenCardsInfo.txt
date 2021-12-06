@@ -47,6 +47,6 @@
       "pickUp": "Apollo Theater",
       "destiny": "Wall Street",
       "difficulty": 2
-    }
+    },
   ]
 }
