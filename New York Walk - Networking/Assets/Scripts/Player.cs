@@ -7,9 +7,7 @@ public class Player : MonoBehaviour
     public JSONReader player_cards;
     public int randomNumberGenerated;
 
-    CitizenMaterial citizensMaterials;
-
-    public struct Card
+    public class Card
     {
         public string citizen;
         public string pickUp;
@@ -17,11 +15,11 @@ public class Player : MonoBehaviour
         public int difficulty;
     }
 
-    public Card card1;
-    public Card card2;
-    public Card card3;
+    public Card card1 = new Card();
+    public Card card2 = new Card();
+    public Card card3 = new Card();
 
-    //Modo guarro quick, después ya se estructurará mejor
+    //Modo guarro quick, despuï¿½s ya se estructurarï¿½ mejor
     int[] board = new int[25];
     public GameObject citizen_token;
     bool input_active = false;
@@ -180,7 +178,7 @@ public class Player : MonoBehaviour
     }
     void SetBoardPos(int array_pos)
     {
-        citizen_token.transform.position = GameManager._instance.array_positions[array_pos].transform.position;
+        token1.transform.position = GameManager._instance.array_positions[array_pos].transform.position;
         current_board_pos = array_pos;
 
         

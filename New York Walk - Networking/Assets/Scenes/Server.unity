@@ -326,7 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 189588203}
   m_Layer: 0
-  m_Name: Kevain Bakery-Harlem
+  m_Name: Levain Bakery - Harlem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -980,7 +980,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1107707773}
   m_Layer: 0
-  m_Name: Natural HIstory Museum
+  m_Name: Natural History Museum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1408,9 +1408,57 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 80190866}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.size
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: materialList.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[0]
+      value: 
+      objectReference: {fileID: 1550473290}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[1]
+      value: 
+      objectReference: {fileID: 50641756}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[2]
+      value: 
+      objectReference: {fileID: 596037028}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[3]
+      value: 
+      objectReference: {fileID: 1131890209}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[4]
+      value: 
+      objectReference: {fileID: 1808513552}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[5]
+      value: 
+      objectReference: {fileID: 1829237092}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[6]
+      value: 
+      objectReference: {fileID: 746250847}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[7]
+      value: 
+      objectReference: {fileID: 1891089101}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[8]
+      value: 
+      objectReference: {fileID: 2134356400}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[9]
+      value: 
+      objectReference: {fileID: 846643007}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: materialList.Array.data[0]
       value: 
@@ -1423,6 +1471,78 @@ PrefabInstance:
       propertyPath: materialList.Array.data[2]
       value: 
       objectReference: {fileID: 649639180}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[0]
+      value: 
+      objectReference: {fileID: 80190866}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[1]
+      value: 
+      objectReference: {fileID: 1438533042}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: player_cards.Array.data[2]
+      value: 
+      objectReference: {fileID: 649639180}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[10]
+      value: 
+      objectReference: {fileID: 772760427}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[11]
+      value: 
+      objectReference: {fileID: 116750220}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[12]
+      value: 
+      objectReference: {fileID: 1500967820}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[13]
+      value: 
+      objectReference: {fileID: 1411579738}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[14]
+      value: 
+      objectReference: {fileID: 1123860299}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[15]
+      value: 
+      objectReference: {fileID: 1577236861}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[16]
+      value: 
+      objectReference: {fileID: 166436016}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[17]
+      value: 
+      objectReference: {fileID: 1914295813}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[18]
+      value: 
+      objectReference: {fileID: 1107707772}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[19]
+      value: 
+      objectReference: {fileID: 147119290}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[20]
+      value: 
+      objectReference: {fileID: 1539950643}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[21]
+      value: 
+      objectReference: {fileID: 1339844192}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[22]
+      value: 
+      objectReference: {fileID: 883324184}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[23]
+      value: 
+      objectReference: {fileID: 189588202}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: boardSquares.Array.data[24]
+      value: 
+      objectReference: {fileID: 309168083}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: array_positions.Array.data[0]
       value: 
@@ -1576,7 +1696,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
   randomNumberGenerated: 0
-  citizen_token: {fileID: 368659028}
+  token1: {fileID: 368659028}
+  current_board_pos: 0
 --- !u!4 &1661397772
 Transform:
   m_ObjectHideFlags: 0
@@ -1622,7 +1743,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
   randomNumberGenerated: 0
-  citizen_token: {fileID: 0}
+  token1: {fileID: 0}
+  current_board_pos: 0
 --- !u!4 &1699150045
 Transform:
   m_ObjectHideFlags: 0
