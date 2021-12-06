@@ -1,27 +1,39 @@
 ﻿{
   "citizens": [
     {
+      "citizen": "Actress",
+      "pickUp": "Wall Street",
+      "destiny": "Apollo Theater",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Anthropologist",
+      "pickUp": "Battery Park",
+      "destiny": "The Schomburg Center for Research in Black Culture",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Artist",
+      "pickUp": "Foley Square",
+      "destiny": "The Solomon R.Guggenheim Museum",
+      "difficulty": 1
+    },
+    {
       "citizen": "Cabbie",
       "pickUp": "Cathedral Church of St. John the Divine",
       "destiny": "Brooklyn Bridge",
       "difficulty": 2
     },
     {
-      "citizen": "Kid",
-      "pickUp": "Municipal Building",
-      "destiny": "Levain Bakery - Harlem",
-      "difficulty": 2
+      "citizen": "Coach",
+      "pickUp": "Grand Central Terminal",
+      "destiny": "Madison Square Garden",
+      "difficulty": 1
     },
     {
-      "citizen": "Receptionist",
-      "pickUp": "Lincoln Centre",
-      "destiny": "Chrysler Building",
-      "difficulty": 2
-    },
-    {
-      "citizen": "PizzaGuy",
-      "pickUp": "Abyssinian Baptist Church",
-      "destiny": "Trinity Church",
+      "citizen": "Economist",
+      "pickUp": "Apollo Theater",
+      "destiny": "Wall Street",
       "difficulty": 2
     },
     {
@@ -31,22 +43,106 @@
       "difficulty": 1
     },
     {
+      "citizen": "Grandpa",
+      "pickUp": "Trinity Church",
+      "destiny": "Abyssinian Baptist Church",
+      "difficulty": 2
+    },
+    {
       "citizen": "Historian",
       "pickUp": "Radio City Music Hall",
       "destiny": "Natural History Museum",
       "difficulty": 1
     },
     {
+      "citizen": "Journalist",
+      "pickUp": "Central Park",
+      "destiny": "Times Square",
+      "difficulty": 1
+    },
+    {
+      "citizen": "Kid",
+      "pickUp": "Municipal Building",
+      "destiny": "Levain Bakery - Harlem",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Pianist",
+      "pickUp": "Natural HIstory Museum",
+      "destiny": "Radio City Music Hall",
+      "difficulty": 1
+    },
+    {
+      "citizen": "PizzaGuy",
+      "pickUp": "Abyssinian Baptist Church",
+      "destiny": "Trinity Church",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Policeman",
+      "pickUp": "Stuyvesant High School",
+      "destiny": "Police Department - Upper East Side",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Politician",
+      "pickUp": "Chrysler Building",
+      "destiny": "Lincoln Center",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Priest",
+      "pickUp": "Brooklyn Bridge",
+      "destiny": "Cathedral Church of St.John the Divine",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Professor",
+      "pickUp": "Manhattan Bridge",
+      "destiny": "Morningside University",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Receptionist",
+      "pickUp": "Lincoln Centre",
+      "destiny": "Chrysler Building",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Robot",
+      "pickUp": "The Schomburg Center for Research in Black Culture",
+      "destiny": "Battery Park",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Secretary",
+      "pickUp": "Levain Bakery - Harlem",
+      "destiny": "Municipal Building",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Student",
+      "pickUp": "Police Department - Upper East Side",
+      "destiny": "Stuyvesant High School",
+      "difficulty": 2
+    },
+    {
+      "citizen": "Tourist Guide",
+      "pickUp": "The Solomon R.Guggenheim Museum",
+      "destiny": "Foley Square",
+      "difficulty": 1
+    },
+    {
+      "citizen": "Truck Driver",
+      "pickUp": "Morningside University",
+      "destiny": "Manhattan Bridge",
+      "difficulty": 2
+    },
+    {
       "citizen": "Watchmaker",
       "pickUp": "Madison Square Garden",
       "destiny": "Grand Central Terminal",
       "difficulty": 1
-    },
-    {
-      "citizen": "Economist",
-      "pickUp": "Apollo Theater",
-      "destiny": "Wall Street",
-      "difficulty": 2
     }
   ]
 }

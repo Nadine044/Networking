@@ -44,12 +44,12 @@ public class GameManager : MonoBehaviour
             player_cards[0].AssignMaterial(randomNumbers[0]);
             //player2.ObtainCitizenCard(player2.card1, randomNumbers);
 
-            //player1.ObtainCitizenCard(player1.card2, randomNumbers);
-            //player_cards[1].AssignMaterial(randomNumbers[1]);
+            player1.ObtainCitizenCard(player1.card2, randomNumbers);
+            player_cards[1].AssignMaterial(randomNumbers[1]);
             //player2.ObtainCitizenCard(player2.card2, randomNumbers);
 
-            //player1.ObtainCitizenCard(player1.card3, randomNumbers);
-            //player_cards[2].AssignMaterial(randomNumbers[2]);
+            player1.ObtainCitizenCard(player1.card3, randomNumbers);
+            player_cards[2].AssignMaterial(randomNumbers[2]);
             //player2.ObtainCitizenCard(player2.card3, randomNumbers);
         }
 
