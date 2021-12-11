@@ -84,7 +84,6 @@ public class NetworkingClient : Networking
         {
             Package package = Deserialize(obj.buffer);
 
-            int client_n = package.client;
             int turnstep = package.index;
             int[] board_tmp = package.board_array;
             Debug.Log(package.msg_to_log);
@@ -93,7 +92,7 @@ public class NetworkingClient : Networking
 
             Action UpdatePlayer = () =>
             {
-                Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
+                Player._instance.RecieveUpdateFromServer( turnstep, board_tmp,package.card);
             };
             QueueMainThreadFunction(UpdatePlayer);
 
@@ -112,9 +111,9 @@ public class NetworkingClient : Networking
     }
 
 
-    public void SendPackage()
+    public void SendPackage()//TODO
     {
-        byte[] b = Serialize(2, "new move done",Player._instance.GetBoard(), Player._instance.client_n);
+        byte[] b = Serialize(2, "new move done", Player._instance.GetBoard(),false,-1);
         socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
     }
 

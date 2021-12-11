@@ -29,6 +29,11 @@ public class GameManager : MonoBehaviour
         hasObject = false;
     }
 
+    public void SetMaterial(int num,int material_n)
+    {
+        player_cards[num].AssignMaterial(material_n);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -37,25 +42,6 @@ public class GameManager : MonoBehaviour
 
         //Start Game UI
 
-        //Get Cards Function (random 3 cards)
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            player1.ObtainCitizenCard(player1.card1, randomNumbers);
-            player_cards[0].AssignMaterial(randomNumbers[0]);
-            //player2.ObtainCitizenCard(player2.card1, randomNumbers);
-
-            player1.ObtainCitizenCard(player1.card2, randomNumbers);
-            player_cards[1].AssignMaterial(randomNumbers[1]);
-            //player2.ObtainCitizenCard(player2.card2, randomNumbers);
-
-            player1.ObtainCitizenCard(player1.card3, randomNumbers);
-            player_cards[2].AssignMaterial(randomNumbers[2]);
-            //player2.ObtainCitizenCard(player2.card3, randomNumbers);
-        }
-
-        //PLACE TOKEN ON BOARD
-        if (Input.GetMouseButtonDown(0))
-            player1.SetTokenPos(boardSquares, player1);
 
 
         //CHECK PICK-UP

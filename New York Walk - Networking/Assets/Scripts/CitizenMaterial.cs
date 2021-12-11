@@ -23,11 +23,11 @@ public class CitizenMaterial : MonoBehaviour
 
     }
 
-    public void AssignMaterial(int getRandomNumber)
+    public void AssignMaterial(int material_n)
     {
         foreach(var Item in materialList)
         {
-            if (Item.name == player.player_cards.playableCitizenList.citizens[getRandomNumber].citizen)
+            if (Item.name == player.player_cards.playableCitizenList.citizens[material_n].citizen)
             {
                 rend.sharedMaterial = Item;
                 Debug.Log(Item.name);

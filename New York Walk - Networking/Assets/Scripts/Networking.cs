@@ -15,7 +15,8 @@ public class Networking : MonoBehaviour
         public int index;
         public string msg_to_log;
         public int[] board_array = new int[25];
-        public int client;
+        public bool turn;
+        public int card;
     }
     public class OBJ
     {
@@ -62,9 +63,11 @@ public class Networking : MonoBehaviour
     }
     //index
     //0 = wait for the other player
-    //1 = your turn
-    //2 = other players turn
-    protected byte[] Serialize(int index, string msg_to_log, int[] board_array,int client)
+    //1 = your turn //setting up the game
+    //2 = turn done  //setting up the game
+    //3 = your turn// Game already setted
+    //4 = turn done //Game already setted
+    protected byte[] Serialize(int index, string msg_to_log, int[] board_array,bool turn,int card_type)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -72,7 +75,7 @@ public class Networking : MonoBehaviour
         writer.Write(index);
         writer.Write(msg_to_log);
 
-
+        writer.Write(turn);
         switch(index)
         {
             case 0: //initializing game
@@ -80,7 +83,6 @@ public class Networking : MonoBehaviour
                 {
                     writer.Write(board_array[i]);
                 }
-                writer.Write(client);
 
                 break;
             case 1:
@@ -88,14 +90,13 @@ public class Networking : MonoBehaviour
                 {
                     writer.Write(board_array[i]);
                 }
-                writer.Write(client);
+                writer.Write(card_type);
                 break;
             case 2:
                 for (int i = 0; i < board_array.Length; i++)
                 {
                     writer.Write(board_array[i]);
                 }
-                writer.Write(client);
                 break;
         }
 
@@ -110,7 +111,7 @@ public class Networking : MonoBehaviour
         stream.Seek(0, SeekOrigin.Begin);
         package.index = reader.ReadInt32();
         package.msg_to_log = reader.ReadString();
-
+        package.turn = reader.ReadBoolean();
         switch(package.index)
         {
             case 0: //initializing game
@@ -124,14 +125,13 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
-                package.client = reader.ReadInt32();
+                package.card = reader.ReadInt32();
                 break;
             case 2:
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
-                package.client = reader.ReadInt32();
                 break;
         }
         Debug.Log(package.msg_to_log);
