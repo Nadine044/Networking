@@ -18,6 +18,19 @@ public class NetworkingServer : Networking
         public EventWaitHandle recieveDone = new AutoResetEvent(false);
         public bool end_connexion = false;
         public int client_type = 0;
+       
+        //
+        public List<int> client_cards = new List<int>();
+        public List<Token> tokens_list = new List<Token>();
+
+        public class Token
+        {
+
+            public int identifier_n;
+            public int current_dst;
+            public int first_stop;
+            public int final_dst;
+        }
     }
 
     // Start is called before the first frame update
@@ -26,10 +39,18 @@ public class NetworkingServer : Networking
 
     List<Client> client_list = new List<Client>();
 
+    //CARDS
+    List<int> cards_n = new List<int>(); //each number is connected to a type of card
+
     //board
     int[] board = new int[25];
     void Start()
     {
+        for(int i =0; i<24;i++)
+        {
+            cards_n.Add(i);
+        }
+
         for(int i=0; i< 25; i++)
         {
             board[i] = 0;
@@ -60,7 +81,7 @@ public class NetworkingServer : Networking
         Debug.Log("Closing Server");
     }
 
-    private void ConnectCallback(IAsyncResult ar)
+    private void ConnectCallback(IAsyncResult ar) //here we must add the two clients & wait for clients response
     {
         //here we must check that the 2 clients are connected
         //if not we tell the other client that must wait and his input is disabled 
@@ -70,9 +91,11 @@ public class NetworkingServer : Networking
 
         client.client_socket = socket.EndAccept(ar);
 
-        byte[] b;
-        b = Serialize(0, "wait for the other player",board,0); //client =0 means its not decided who is who TEMPORAL
-        SendPackage(b, client.client_socket);
+
+        //TODO WAIT 4 ALL PLAYERS TO CONNECT
+
+        byte[] b = Serialize(0, "wait for the other player",board,0); //client =0 means its not decided who is who TEMPORAL
+        //SendPackage(b, client.client_socket);
 
         client.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(WelcomeCallback), client.client_socket);
 
@@ -82,8 +105,10 @@ public class NetworkingServer : Networking
     #endregion
 
 
-    void SetUpTurns()
+    void SetUpGame()
     {
+        //make a random to choose a card
+
         var rand = new System.Random();
         int tmp = rand.Next(0, 2);
         //int tmp = UnityEngine.Random.Range(0, 1);
@@ -183,8 +208,10 @@ public class NetworkingServer : Networking
 
     private void WelcomeCallback(IAsyncResult ar) //bit dirty, may be changed
     {
+
+
         if (client_list.Count == 2)
-            StartThreadingFunction(SetUpTurns);
+            StartThreadingFunction(SetUpGame);
     }
     private void SendCallback(IAsyncResult ar)
     {

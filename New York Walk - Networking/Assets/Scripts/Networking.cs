@@ -71,14 +71,35 @@ public class Networking : MonoBehaviour
 
         writer.Write(index);
         writer.Write(msg_to_log);
-        for (int i = 0; i < board_array.Length; i++)
-        {
-            writer.Write(board_array[i]);
-        }
-        writer.Write(client);
 
-        byte[] b = stream.GetBuffer();
-        return b;
+
+        switch(index)
+        {
+            case 0: //initializing game
+                for (int i = 0; i < board_array.Length; i++)
+                {
+                    writer.Write(board_array[i]);
+                }
+                writer.Write(client);
+
+                break;
+            case 1:
+                for (int i = 0; i < board_array.Length; i++)
+                {
+                    writer.Write(board_array[i]);
+                }
+                writer.Write(client);
+                break;
+            case 2:
+                for (int i = 0; i < board_array.Length; i++)
+                {
+                    writer.Write(board_array[i]);
+                }
+                writer.Write(client);
+                break;
+        }
+
+        return stream.GetBuffer();
     }
     protected Package Deserialize(byte[] data)
     {
@@ -89,12 +110,32 @@ public class Networking : MonoBehaviour
         stream.Seek(0, SeekOrigin.Begin);
         package.index = reader.ReadInt32();
         package.msg_to_log = reader.ReadString();
-        Debug.Log(package.msg_to_log);
-        for (int i = 0; i < 25; i++)
+
+        switch(package.index)
         {
-            package.board_array[i] = reader.ReadInt32();
+            case 0: //initializing game
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                break;
+            case 1:
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                package.client = reader.ReadInt32();
+                break;
+            case 2:
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                package.client = reader.ReadInt32();
+                break;
         }
-        package.client = reader.ReadInt32();
+        Debug.Log(package.msg_to_log);
+
 
         return package;
     }

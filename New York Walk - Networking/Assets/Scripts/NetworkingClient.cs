@@ -8,14 +8,13 @@ using System.Net.Sockets;
 
 public class NetworkingClient : Networking
 {
-
     public static NetworkingClient _instance { get; private set; }
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
 
     bool close_connection = false;
 
-    int client = 0;
+    //int client = 0;
     // Start is called before the first frame update
     void Start()
     {
