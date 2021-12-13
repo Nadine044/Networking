@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
         public string pickUp;
         public string destiny;
         public int difficulty;
+        public int[] unavailableSquares;
     }
 
     public Card card1 = new Card();
@@ -153,6 +154,7 @@ public class Player : MonoBehaviour
         card.pickUp = player_cards.playableCitizenList.citizens[card_n].pickUp;
         card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
         card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
+        card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
 
         return card;
     }

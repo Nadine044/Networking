@@ -65,6 +65,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //CHECKING THAT JSON CAN READ THE ARRAY OF STARTING POSITIONS
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log(player1.player_cards.playableCitizenList.citizens[0].unavailableSquares[1]);
+        }
+
 
         //Click cards to select order 1 2 3 function
 
