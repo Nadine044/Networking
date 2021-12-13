@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
 
     int identifier_token_number = -1;
     int card_counter = 0;
+
     // Start is called before the first frame update
     
     void Start()
@@ -57,7 +58,15 @@ public class Player : MonoBehaviour
         {
             if(Input.GetMouseButton(0))
             {
-                SetTokenPos(GameManager._instance.boardSquares, current_token, identifier_token_number);
+                switch (turn_type)
+                {
+                    case 1:
+                        SetInitialTokenPos(GameManager._instance.boardSquares, current_token, identifier_token_number);
+                        break;
+                    case 3:
+                        SetTokenPos(GameManager._instance.boardSquares, current_token, identifier_token_number);
+                        break;
+                }
             }
 
         }
@@ -72,7 +81,7 @@ public class Player : MonoBehaviour
       //  board[array_pos] = client_n; //1 in the array means the citizen is there 2 means the citizen 2 is here, etc
     }
 
-    public void SetTokenPos(List<GameObject> squares, GameObject token,int identifier_n)
+    public void SetInitialTokenPos(List<GameObject> squares, GameObject token,int identifier_n)
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -94,6 +103,48 @@ public class Player : MonoBehaviour
                     token.transform.position = squares[i].transform.position; //moves the cube to the position
                     board[i] = identifier_n;
                     input_active = false;
+
+                    //Now we clean the restricted space //TODO better using linq funcs
+                    for(int j =0; i < board.Length -1; j++)
+                    {
+                        if (board[j] == -1)
+                            board[j] = 0;
+                    }
+                    NetworkingClient._instance.SendPackage();
+                    return;
+                }
+            }
+        }
+    }
+
+    //TODO CLEAN THE PREVIOUS TOKEN POSITION 
+    public void SetTokenPos(List<GameObject> squares, GameObject token, int identifier_n)
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        string colliderName;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            colliderName = hit.collider.name;
+            for (int i = 0; i < squares.Count; i++)
+            {
+                if (squares[i].name == colliderName)
+                {
+                    //first check if the position is already full
+                    if (board[i] != 0)
+                    {
+                        return;
+                    }
+
+                    //clean the previous position
+                    List<int> list_array = board.ToList();
+                    board[list_array.IndexOf(identifier_n)] =0;
+
+                    token.transform.position = squares[i].transform.position; //moves the cube to the position
+                    board[i] = identifier_n;
+                    input_active = false;
+
                     NetworkingClient._instance.SendPackage();
                     return;
                 }
@@ -138,12 +189,34 @@ public class Player : MonoBehaviour
             // place new token
             identifier_token_number = card;
             current_token = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            //now we make a restricted space to set the token through the card calss
+            CreateRestrictedSpace(n_card.unavailableSquares);
             input_active = true;
 
 
         }
 
 
+    }
+
+    void CreateRestrictedSpace(int[] noavailablepos)
+    {
+        int tmp_counter = 0;
+        for(int i =0; i < board.Length -1; i++)
+        {
+            //if the current square equals the first value of the restricted squares array it means we have to set 
+            //board[i] to a restricted space
+            if(i == noavailablepos[tmp_counter])
+            {
+                board[i] = -1;
+                //it means we are out of the array index
+                if (noavailablepos.Length < tmp_counter + 1)
+                    return;
+
+                tmp_counter++;
+            }
+        }
     }
 
     Card GetCitizenCardInfo(int card_n)

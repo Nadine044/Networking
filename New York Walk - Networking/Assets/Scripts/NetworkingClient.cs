@@ -39,6 +39,15 @@ public class NetworkingClient : Networking
             CloseConnection();
             Application.Quit();
         }
+        while (functionsToRunInMainThread.Count > 0)
+        {
+            //Grab the first/oldest function in the list
+            Action someFunc;
+            functionsToRunInMainThread.TryDequeue(out someFunc);
+
+            //Now run it;
+            someFunc();
+        }
     }
 
     void ConnectCallback(IAsyncResult ar)
@@ -79,7 +88,7 @@ public class NetworkingClient : Networking
         int bytesread = 0;
 
         bytesread = socket.EndReceive(ar);
-
+        //PETA QUAN TANQUEM CONEXIÓ TODO
         if(bytesread >0)
         {
             Package package = Deserialize(obj.buffer);

@@ -112,15 +112,25 @@ public class NetworkingServer : Networking
 
 
         //send the card to the other player
-        if (turn_counter < 6)
+
+
+
+        Action SetUpFunc = () =>
         {
-            client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
-        }
-        else if(turn_counter ==6)//now we change game phase, each player has 3 cards and has placed its token
-        {
-            //    Thread t = new Thread(OnUpdate);
-            //    t.Start(c);
-        }
+            if (turn_counter < 6)
+            {
+                client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
+            }
+            else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
+            {
+                //    Thread t = new Thread(OnUpdate);
+                //    t.Start(c);
+            }
+
+        };
+        QueueMainThreadFunction(SetUpFunc);
+
+
     }
 
     void OnSetUpCallback(IAsyncResult ar)
@@ -156,10 +166,21 @@ public class NetworkingServer : Networking
 
         //here we should chekc if the cards counter is already 6
         //we send the first card to the client
+
         byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
         turn_counter++;
 
         client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
+
+        //Action DecideTurnFunc = () =>
+        //{
+        //    byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
+        //    turn_counter++;
+
+        //    client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
+
+        //};
+        //QueueMainThreadFunction(DecideTurnFunc);
 
         //foreach (Client c in client_list)
         //{
@@ -236,7 +257,8 @@ public class NetworkingServer : Networking
 
 
         if (client_list.Count == 2)
-            StartThreadingFunction(DecideFirst);
+            DecideFirst();
+           // StartThreadingFunction(DecideFirst);
     }
     private void SendCallback(IAsyncResult ar)
     {
@@ -263,6 +285,15 @@ public class NetworkingServer : Networking
             }
             CloseConnection();
             Application.Quit();
+        }
+        while (functionsToRunInMainThread.Count > 0)
+        {
+            //Grab the first/oldest function in the list
+            Action someFunc;
+            functionsToRunInMainThread.TryDequeue(out someFunc);
+
+            //Now run it;
+            someFunc();
         }
     }
 }

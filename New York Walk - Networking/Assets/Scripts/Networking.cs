@@ -49,18 +49,18 @@ public class Networking : MonoBehaviour
         functionsToRunInMainThread.Enqueue(someFunction);
     }
 
-    private void LateUpdate()
-    {
-        while (functionsToRunInMainThread.Count > 0)
-        {
-            //Grab the first/oldest function in the list
-            Action someFunc;
-            functionsToRunInMainThread.TryDequeue(out someFunc);
+    //private void LateUpdate()
+    //{
+    //    while (functionsToRunInMainThread.Count > 0)
+    //    {
+    //        //Grab the first/oldest function in the list
+    //        Action someFunc;
+    //        functionsToRunInMainThread.TryDequeue(out someFunc);
 
-            //Now run it;
-            someFunc();
-        }
-    }
+    //        //Now run it;
+    //        someFunc();
+    //    }
+    //}
     //index
     //0 = wait for the other player
     //1 = your turn //setting up the game
