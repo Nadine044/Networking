@@ -113,22 +113,30 @@ public class NetworkingServer : Networking
 
         //send the card to the other player
 
-
-
-        Action SetUpFunc = () =>
+        if (turn_counter < 6)
         {
-            if (turn_counter < 6)
-            {
-                client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
-            }
-            else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
-            {
-                //    Thread t = new Thread(OnUpdate);
-                //    t.Start(c);
-            }
+            client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
+        }
+        else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
+        {
+            //    Thread t = new Thread(OnUpdate);
+            //    t.Start(c);
+        }
 
-        };
-        QueueMainThreadFunction(SetUpFunc);
+        //Action SetUpFunc = () =>
+        //{
+        //    if (turn_counter < 6)
+        //    {
+        //        client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
+        //    }
+        //    else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
+        //    {
+        //        //    Thread t = new Thread(OnUpdate);
+        //        //    t.Start(c);
+        //    }
+
+        //};
+        //QueueMainThreadFunction(SetUpFunc);
 
 
     }
@@ -160,27 +168,24 @@ public class NetworkingServer : Networking
     {
 
         //now we decide turns
-        var rand = new System.Random();
-        int tmp = rand.Next(0, 2);
+        //var rand = new System.Random();
+        //int tmp = rand.Next(0, 2);
 
 
         //here we should chekc if the cards counter is already 6
         //we send the first card to the client
 
-        byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
-        turn_counter++;
 
-        client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
+        Action DecideTurnFunc = () =>
+        {
+            int tmp = UnityEngine.Random.Range(0, 1);
+            byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
+            turn_counter++;
 
-        //Action DecideTurnFunc = () =>
-        //{
-        //    byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
-        //    turn_counter++;
+            client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
 
-        //    client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
-
-        //};
-        //QueueMainThreadFunction(DecideTurnFunc);
+        };
+        QueueMainThreadFunction(DecideTurnFunc);
 
         //foreach (Client c in client_list)
         //{
@@ -200,11 +205,24 @@ public class NetworkingServer : Networking
             if (client.end_connexion)
                 break;
 
-            client.client_socket.BeginReceive(client.buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnUpdateCallback), client);
+            if(client.client_socket.Connected) //to avoid crashes if the socket disconects 
+                client.client_socket.BeginReceive(client.buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnUpdateCallback), client);
 
+            else
+            {
+                break;
+            }
             client.recieveDone.WaitOne();
         }
 
+        try
+        {
+            client.client_socket.Close();
+        }
+        catch(SystemException e)
+        {
+            Debug.LogWarning("Try close client socket while it's already closed " + e);
+        }
     }
 
     private void OnUpdateCallback(IAsyncResult ar)
@@ -239,7 +257,14 @@ public class NetworkingServer : Networking
         }
         else
         {
-            client.client_socket.Close();
+            try
+            {
+                client.client_socket.Close();
+            }
+            catch (SystemException e)
+            {
+                Debug.LogWarning("Try close client socket while it's already closed " + e);
+            }
             client.recieveDone.Set();
             client.end_connexion= true;
             //close connection with client

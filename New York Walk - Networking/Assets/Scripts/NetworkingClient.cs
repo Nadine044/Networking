@@ -58,8 +58,15 @@ public class NetworkingClient : Networking
 
     void CloseConnection()
     {
-        socket.Shutdown(System.Net.Sockets.SocketShutdown.Both);
-        socket.Close();
+        try
+        {
+            socket.Shutdown(SocketShutdown.Both);
+            socket.Close();
+        }
+        catch(SocketException e)
+        {
+            Debug.LogWarning(e);
+        }
     }
     void UpdatingConnection()
     {
@@ -72,8 +79,11 @@ public class NetworkingClient : Networking
                 break;
 
             OBJ obj  = new OBJ();
+            if (socket.Connected)
+                socket.BeginReceive(obj.buffer, 0, OBJ.buffersize, 0, new AsyncCallback(ReadCallback), obj);
 
-            socket.BeginReceive(obj.buffer, 0, OBJ.buffersize, 0, new AsyncCallback(ReadCallback), obj);
+            else
+                break;
 
             recieveDone.WaitOne();
         }
