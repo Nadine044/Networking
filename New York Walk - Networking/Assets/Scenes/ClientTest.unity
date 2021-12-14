@@ -1333,7 +1333,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1319193110}
   m_LocalRotation: {x: -0.21263109, y: 0.21263114, z: 0.6743797, w: 0.6743798}
-  m_LocalPosition: {x: -7.58, y: 3.9703646, z: -9.361272}
+  m_LocalPosition: {x: 24.23, y: 3.9703646, z: 0.27}
   m_LocalScale: {x: -0.036472864, y: -1, z: -1.5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1603,8 +1603,9 @@ GameObject:
   - component: {fileID: 1538797989}
   - component: {fileID: 1538797988}
   - component: {fileID: 1538797987}
+  - component: {fileID: 1538797991}
   m_Layer: 0
-  m_Name: CityCards_Draw
+  m_Name: CityCardsDraw_Pile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1693,6 +1694,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!65 &1538797991
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1538797986}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.0000005, y: 2.0000005, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1539950643
 GameObject:
   m_ObjectHideFlags: 0
@@ -2179,6 +2193,7 @@ MonoBehaviour:
   player_city_cards: {fileID: 0}
   randomNumberGenerated: 0
   cityCardsPile: {fileID: 1538797986}
+  instatiateCard: {fileID: 1319193110}
   current_board_pos: 0
   current_token: {fileID: 0}
   turn_type: 0
@@ -2229,6 +2244,7 @@ MonoBehaviour:
   player_city_cards: {fileID: 0}
   randomNumberGenerated: 0
   cityCardsPile: {fileID: 0}
+  instatiateCard: {fileID: 0}
   current_board_pos: 0
   current_token: {fileID: 0}
   turn_type: 0

@@ -9,9 +9,6 @@ public class Player : MonoBehaviour
 
     public int randomNumberGenerated;
 
-    List<CityCard> drawCard = new List<CityCard>();
-    List<CityCard> usedCards = new List<CityCard>();
-
     public class Card
     {
         public string citizen;
@@ -33,14 +30,22 @@ public class Player : MonoBehaviour
     public Card card2 = new Card();
     public Card card3 = new Card();
 
+    //City Cards
+    List<CityCard> drawCard = new List<CityCard>();
+    List<CityCard> usedCards = new List<CityCard>();
+
     public GameObject cityCardsPile;
     public CityCard cityCard1 = new CityCard();
     public CityCard cityCard2 = new CityCard();
     public CityCard cityCard3 = new CityCard();
 
+    int current_city_cards = 0;
+
+    Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
+
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = false;
+    bool input_active = true;
     public int current_board_pos;
 
     List<int> tokens_list = new List<int>(); //this are our own tokens
@@ -88,9 +93,9 @@ public class Player : MonoBehaviour
             }
 
 
-            if(Input.GetMouseButton(1))
+            if(Input.GetMouseButtonDown(1))
             {
-                DrawCityCard(cityCardsPile);
+                DrawCityCard(cityCardsPile, card1UI_pos);
             }
         }
     }
@@ -246,16 +251,30 @@ public class Player : MonoBehaviour
             }
         }
     }
-    public void DrawCityCard (GameObject cardsToDraw)
+    public void DrawCityCard (GameObject cardsToDraw, Vector3 UI_card_position)
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         string drawCardsCollider;
 
-        if (Physics.Raycast(ray, out hit) && cardsToDraw.name == "CityCardsDraw_Pile")
+        if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("HEEEEEEELLOOOOOOOO :D");
+            drawCardsCollider = hit.collider.name;
+
+            if (drawCardsCollider == "CityCardsDraw_Pile" && current_city_cards < 3)
+            {
+                //Give player random city card and add it to usedPileCards. Quit from ToDraw list
+                //drawCard
+
+                Debug.Log("HEEEEEEELLOOOOOOOO :D");
+            }
         }
+        current_city_cards++;
+    }
+
+    public void UseCityCard()
+    {
+        current_city_cards--;
     }
 
     Card GetCitizenCardInfo(int card_n)
