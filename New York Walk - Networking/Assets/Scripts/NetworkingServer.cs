@@ -47,7 +47,7 @@ public class NetworkingServer : Networking
     int[] board = new int[25];
     void Start()
     {
-        for(int i =0; i<24;i++)
+        for(int i =0; i<25;i++)
         {
             cards_n.Add(i);
         }

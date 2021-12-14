@@ -58,7 +58,6 @@ public class Player : MonoBehaviour
 
     int identifier_token_number = -1;
     int card_counter = 0;
-    int debug_coutner = 0;
     // Start is called before the first frame update
     
     void Start()
@@ -133,7 +132,7 @@ public class Player : MonoBehaviour
                     input_active = false;
 
                     //Now we clean the restricted space //TODO better using linq funcs
-                    for(int j =0; j < 24; j++)
+                    for(int j =0; j < board.Length; j++)
                     {
                         if (board[j] == -1)
                             board[j] = 0;
@@ -205,7 +204,7 @@ public class Player : MonoBehaviour
                 {
 
                     GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    newtoken.transform.position = GameManager._instance.array_positions[0].transform.position; //we place this in the position;
+                    newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
                     tokens_list.Add(board[i]);//enemy token //TODO think what we will do in the future token class,etc
                 }
             }
@@ -217,8 +216,7 @@ public class Player : MonoBehaviour
             // place new token
             identifier_token_number = card;
             current_token = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Debug.Log(debug_coutner);
-            debug_coutner++;
+
             //now we make a restricted space to set the token through the card calss
             CreateRestrictedSpace(n_card.unavailableSquares);
             input_active = true;
@@ -232,8 +230,9 @@ public class Player : MonoBehaviour
     void CreateRestrictedSpace(int[] noavailablepos)
     {
         int tmp_counter = 0;
-        for(int i =0; i < 24; i++)
+        for(int i =0; i < board.Length; i++)
         {
+
             //if the current square equals the first value of the restricted squares array it means we have to set 
             //board[i] to a restricted space
             if(i == noavailablepos[tmp_counter])
