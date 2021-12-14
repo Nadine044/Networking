@@ -96,7 +96,7 @@
       "pickUp": "Stuyvesant High School",
       "destiny": "Police Department - Upper East Side",
       "difficulty": 2,
-      "unavailableSquares": [3, 4, 8, 13, 14, 10, 11, 16, 20, 21]
+      "unavailableSquares": [3, 4, 8,  10, 11, 13, 14, 16, 20, 21]
     },
     {
       "citizen": "Politician",
