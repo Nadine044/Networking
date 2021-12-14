@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class JSONReader : MonoBehaviour
 {
-    public TextAsset textJSON;
+    public TextAsset CitizensTXT;
+    public TextAsset CityCardsTXT;
 
     [System.Serializable]
     public class Citizen
@@ -16,17 +17,32 @@ public class JSONReader : MonoBehaviour
         public int[] unavailableSquares;
     }
 
+    public class PowerUp
+    {
+        public string name;
+        public string utility;
+        public int turns;
+        public int howMany;
+    }
+
     [System.Serializable]
     public class CitizenList
     {
         public Citizen[] citizens;
     }
 
+    public class PowerUpList
+    {
+        public PowerUp[] powerUps;
+    }
+
     public CitizenList playableCitizenList = new CitizenList();
+    public PowerUpList cityCardsList = new PowerUpList();
 
     // Start is called before the first frame update
     void Start()
     {
-        playableCitizenList = JsonUtility.FromJson<CitizenList>(textJSON.text);
+        playableCitizenList = JsonUtility.FromJson<CitizenList>(CitizensTXT.text);
+        cityCardsList = JsonUtility.FromJson<PowerUpList>(CitizensTXT.text);
     }
 }

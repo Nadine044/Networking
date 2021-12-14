@@ -5,7 +5,12 @@ using System.Linq;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
+    public JSONReader player_city_cards;
+
     public int randomNumberGenerated;
+
+    List<CityCard> drawCard = new List<CityCard>();
+    List<CityCard> usedCards = new List<CityCard>();
 
     public class Card
     {
@@ -16,9 +21,22 @@ public class Player : MonoBehaviour
         public int[] unavailableSquares;
     }
 
+    public class CityCard
+    {
+        public string name;
+        public string utility;
+        public int turns;
+        public int howMany;
+    }
+
     public Card card1 = new Card();
     public Card card2 = new Card();
     public Card card3 = new Card();
+
+    public GameObject cityCardsPile;
+    public CityCard cityCard1 = new CityCard();
+    public CityCard cityCard2 = new CityCard();
+    public CityCard cityCard3 = new CityCard();
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
@@ -69,11 +87,10 @@ public class Player : MonoBehaviour
                 }
             }
 
-            if(Input.GetKeyDown(KeyCode.O))
-            {
-                NetworkingClient._instance.SendPackage();
-                input_active = false;
 
+            if(Input.GetMouseButton(1))
+            {
+                DrawCityCard(cityCardsPile);
             }
         }
     }
@@ -229,6 +246,17 @@ public class Player : MonoBehaviour
             }
         }
     }
+    public void DrawCityCard (GameObject cardsToDraw)
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        string drawCardsCollider;
+
+        if (Physics.Raycast(ray, out hit) && cardsToDraw.name == "CityCardsDraw_Pile")
+        {
+            Debug.Log("HEEEEEEELLOOOOOOOO :D");
+        }
+    }
 
     Card GetCitizenCardInfo(int card_n)
     {
@@ -239,6 +267,18 @@ public class Player : MonoBehaviour
         card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
         card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
         card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
+
+        return card;
+    }
+
+    CityCard GetCityCardInfo(int card_n)
+    {
+        CityCard card = new CityCard();
+
+        card.name = player_city_cards.cityCardsList.powerUps[card_n].name;
+        card.utility = player_city_cards.cityCardsList.powerUps[card_n].utility;
+        card.turns = player_city_cards.cityCardsList.powerUps[card_n].turns;
+        card.howMany = player_city_cards.cityCardsList.powerUps[card_n].howMany;
 
         return card;
     }
