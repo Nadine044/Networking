@@ -29,6 +29,18 @@ public class Player : MonoBehaviour
         public int howMany;
     }
 
+    public class Token_c
+    {
+        public GameObject gameObject;
+        public int identifier;
+
+        public Token_c(GameObject go, int id)
+        {
+            gameObject = go;
+            identifier = id;
+        }
+    }
+
     public Card card1 = new Card();
     public Card card2 = new Card();
     public Card card3 = new Card();
@@ -43,15 +55,13 @@ public class Player : MonoBehaviour
     bool input_active = false;
     public int current_board_pos;
 
-    List<int> tokens_list = new List<int>(); //this are our own tokens
-
-    [HideInInspector]
-    public GameObject current_token = null; //temporal but this number is linked (it's the same) to the card recieve
+    List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
+    Token_c current_token;
     [HideInInspector]
     public int turn_type = 0;
     public static Player _instance { get; private set; }
 
-    int identifier_token_number = -1;
+
     int card_counter = 0;
     // Start is called before the first frame update
     
@@ -78,10 +88,10 @@ public class Player : MonoBehaviour
                 switch (turn_type)
                 {
                     case 1:
-                        SetInitialTokenPos(GameManager._instance.boardSquares, current_token, identifier_token_number);
+                        SetInitialTokenPos(GameManager._instance.boardSquares);
                         break;
                     case 3:
-                        SetTokenPos(GameManager._instance.boardSquares, current_token, identifier_token_number);
+                        SetTokenPos(GameManager._instance.boardSquares);
                         break;
                 }
             }
@@ -103,7 +113,7 @@ public class Player : MonoBehaviour
       //  board[array_pos] = client_n; //1 in the array means the citizen is there 2 means the citizen 2 is here, etc
     }
 
-    public void SetInitialTokenPos(List<GameObject> squares, GameObject token,int identifier_n)
+    public void SetInitialTokenPos(List<GameObject> squares)
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -122,8 +132,8 @@ public class Player : MonoBehaviour
                         return;
                     }
 
-                    token.transform.position = squares[i].transform.position; //moves the cube to the position
-                    board[i] = identifier_n;
+                    current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
+                    board[i] = current_token.identifier;
                     input_active = false;
 
                     //Now we clean the restricted space //TODO better using linq funcs
@@ -140,7 +150,7 @@ public class Player : MonoBehaviour
     }
 
     //TODO CLEAN THE PREVIOUS TOKEN POSITION 
-    public void SetTokenPos(List<GameObject> squares, GameObject token, int identifier_n)
+    public void SetTokenPos(List<GameObject> squares)
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -161,10 +171,10 @@ public class Player : MonoBehaviour
 
                     //clean the previous position
                     List<int> list_array = board.ToList();
-                    board[list_array.IndexOf(identifier_n)] =0;
+                    board[list_array.IndexOf(current_token.identifier)] =0;
 
-                    token.transform.position = squares[i].transform.position; //moves the cube to the position
-                    board[i] = identifier_n;
+                    current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
+                    board[i] = current_token.identifier;
                     input_active = false;
 
                     NetworkingClient._instance.SendPackage();
@@ -186,31 +196,35 @@ public class Player : MonoBehaviour
         turn_type = turnstep;
         board = new_board;
 
+        //TODO CHANGE THIS PRETTY DIRTY
         if (turn_type == 1) //its means whe are setting cards
         {
 
             //we have to check if the tokens are already placed
             //tokens_list.Add(card);
-
             //Update the tokens according to the board
             for(int i =0; i<board.Length;i++)
             {
-                if(board[i] !=0 && !tokens_list.Contains(board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
+                if(board[i] !=0 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
                 {
-
                     GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
-                    tokens_list.Add(board[i]);//enemy token //TODO think what we will do in the future token class,etc
+                    Token_c t = new Token_c(newtoken,board[i]);
+                    tokens_list.Add(t);
                 }
             }
 
             //Search for material 
             Card n_card = GetCitizenCardInfo(card); //here we could save a list or something of the cards
             GameManager._instance.SetMaterial(card_counter, card);
+
+            //create token & add it to the list
+            Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card);
             card_counter++;
+            tokens_list.Add(token);
+
             // place new token
-            identifier_token_number = card;
-            current_token = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            current_token = token;
 
             //now we make a restricted space to set the token through the card calss
             CreateRestrictedSpace(n_card.unavailableSquares);
@@ -219,31 +233,55 @@ public class Player : MonoBehaviour
 
         }
 
+        if(turn_type ==2)
+        {
+            //to update the other player tokens position
+            for(int i =0; i < board.Length; ++i)
+            {
+                if (board[i] != 0 && tokens_list.Any(token => token.identifier == board[i])) 
+                {
+                    Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
+                    t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
+                }
+                
+            }
+
+            Token_c token_to_move = tokens_list.First(token => token.identifier == card);
+            current_token = token_to_move;
+
+            input_active = true;
+            //no we set our move 
+        }
 
     }
 
     void CreateRestrictedSpace(int[] noavailablepos)
     {
-        int tmp_counter = 0;
-        for(int i =0; i < board.Length; i++)
+        for (int i = 0; i < noavailablepos.Length; ++i)
         {
-
-            //if the current square equals the first value of the restricted squares array it means we have to set 
-            //board[i] to a restricted space
-            if(i == noavailablepos[tmp_counter])
-            {
-                board[i] = -1;
-
-                //it means we are out of the array index
-                if (noavailablepos.Length -1 < tmp_counter + 1)
-                {
-                    return;
-                }
-
-                tmp_counter++; 
-
-            }
+            if (board[noavailablepos[i]] == 0)
+                board[noavailablepos[i]] = -1;
         }
+
+        //for(int i =0; i < board.Length; i++)
+        //{
+
+        //    //if the current square equals the first value of the restricted squares array it means we have to set 
+        //    //board[i] to a restricted space
+        //    if(i == noavailablepos[tmp_counter])
+        //    {
+        //        if (board[i] == 0)
+        //            board[i] = -1;
+
+        //        //it means we are out of the array index
+        //        if (tmp_counter >= noavailablepos.Length - 1)
+        //        {
+        //            return;
+        //        }
+
+        //        tmp_counter++; 
+        //    }
+        //}
     }
     public void DrawCityCard (GameObject cardsToDraw)
     {

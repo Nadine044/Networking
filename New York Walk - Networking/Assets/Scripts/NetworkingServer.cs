@@ -18,23 +18,34 @@ public class NetworkingServer : Networking
         public EventWaitHandle recieveDone = new AutoResetEvent(false);
         public bool end_connexion = false;
         public int client_type = 0;
-       
+
         //
         public List<int> client_cards = new List<int>();
         public List<Token> tokens_list = new List<Token>();
-
-        public class Token
+        public int tokencounter = 0;
+        public void CreateToken (int id, string name, string first_stop, string final_dst)
         {
+            Token t = new Token();
 
+            t.identifier_n = id;
+            t.name = name;
+            t.first_stop = first_stop;
+            t.final_dst = final_dst;
+
+            tokens_list.Add(t);
+        }
+
+        //maybe struct is better?¿
+        public class Token //Each player has 3 tokens
+        {
             public int identifier_n;
-            public int current_dst;
-            public int first_stop;
-            public int final_dst;
+            public string first_stop; //for now, maybe better to be a number but we'll see :)
+            public string final_dst; //for now, maybe better to be a number but we'll see :)
+            public string name;
         }
     }
 
     int turn_counter=0;
-    // Start is called before the first frame update
     int current_clients = 0;
     private static EventWaitHandle waithandle = new AutoResetEvent(false);
 
@@ -57,7 +68,7 @@ public class NetworkingServer : Networking
             board[i] = 0;
         }
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipep = new IPEndPoint(IPAddress.Any, 26002);
+        ipep = new IPEndPoint(IPAddress.Any, 26003);
 
         StartThreadingFunction(Connect);
     }
@@ -110,34 +121,21 @@ public class NetworkingServer : Networking
     {
         int client_n = (int)ar.AsyncState;
 
-
+        Debug.Log("Other client response");
         //send the card to the other player
 
         if (turn_counter < 6)
         {
             client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
+            Debug.Log("SettingUp to other player");
         }
         else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
         {
-            //    Thread t = new Thread(OnUpdate);
-            //    t.Start(c);
+            //TODO updateja la board del altre client --> per aixo no funciona
+            client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnUpdateCallback), client_list[client_n]);
+            Thread t = new Thread(OnUpdate);
+            t.Start(client_n); //the following client
         }
-
-        //Action SetUpFunc = () =>
-        //{
-        //    if (turn_counter < 6)
-        //    {
-        //        client_list[client_n].client_socket.BeginReceive(client_list[client_n].buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnSetUpCallback), client_list[client_n]);
-        //    }
-        //    else if (turn_counter == 6)//now we change game phase, each player has 3 cards and has placed its token
-        //    {
-        //        //    Thread t = new Thread(OnUpdate);
-        //        //    t.Start(c);
-        //    }
-
-        //};
-        //QueueMainThreadFunction(SetUpFunc);
-
 
     }
 
@@ -155,49 +153,58 @@ public class NetworkingServer : Networking
             {
                 if(c != client)
                 {
+                    Debug.Log("Sending update to other client & wait for response");
+                    int card_id = GetComponent<CardsServerSide>().cards_forboth[turn_counter];
                     //Now we send the update to the other client and give him the card
-                    byte[] b = Serialize(1, turn_counter + "give you card", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]);
+                    byte[] b = Serialize(1, turn_counter + "give you card", board, true, card_id);
                     turn_counter++;
                     c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp_int);
+                    c.CreateToken(
+                        card_id,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+                        );
                 }
                 tmp_int++;
             }
         }
     }
-    void DecideFirst() //HERE
+    void DecideFirst() 
     {
+        Debug.Log("DecideFirst");
 
-        //now we decide turns
-        //var rand = new System.Random();
-        //int tmp = rand.Next(0, 2);
+        int card_id = GetComponent<CardsServerSide>().cards_forboth[turn_counter];
+        int tmp = UnityEngine.Random.Range(0, 2);
+        byte[] b = Serialize(1, turn_counter + "giving cards", board, true, card_id); //client 1
+        turn_counter++;
 
+        client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
 
-        //here we should chekc if the cards counter is already 6
-        //we send the first card to the client
-
-
-        Action DecideTurnFunc = () =>
-        {
-            int tmp = UnityEngine.Random.Range(0, 1);
-            byte[] b = Serialize(1, turn_counter + "giving cards", board, true, GetComponent<CardsServerSide>().cards_forboth[turn_counter]); //client 1
-            turn_counter++;
-
-            client_list[tmp].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCards), tmp);
-
-        };
-        QueueMainThreadFunction(DecideTurnFunc);
-
-        //foreach (Client c in client_list)
+        client_list[tmp].CreateToken(
+            card_id,
+            GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+            GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
+            GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+            );
+        //Action DecideTurnFunc = () =>
         //{
-        //    Thread t = new Thread(OnUpdate);
-        //    t.Start(c);
-        //}
+
+        //    //get cards info
+
+        //};
+        //QueueMainThreadFunction(DecideTurnFunc);
     }
 
+    //REMOVE THIS FUNCTION AND USE A NON THREAD BASED FUNCITON
     //here we manage both clients
-    void OnUpdate(object c)
+    void OnUpdate(object c) //TODO here or in another thread we must check that the clients are connected, maybe create a secondary socket or another thread that given a certain time waits for a client response (given the index) 
     {
-        Client client = (Client)c;
+        int client_n = (int)c;
+
+        Debug.Log("OnUpdate");
+        Client client = client_list[client_n];
+
         while(!client.end_connexion)
         {
             client.recieveDone.Reset();
@@ -215,16 +222,38 @@ public class NetworkingServer : Networking
             client.recieveDone.WaitOne();
         }
 
-        try
-        {
-            client.client_socket.Close();
-        }
-        catch(SystemException e)
-        {
-            Debug.LogWarning("Try close client socket while it's already closed " + e);
-        }
+
+        //try
+        //{
+        //    client.client_socket.Close();
+        //}
+        //catch(SystemException e)
+        //{
+        //    Debug.LogWarning("Try close client socket while it's already closed " + e);
+        //}
+    }
+    private void SendOtherPlayerCallback(IAsyncResult ar)
+    {
+        Client client = (Client)ar.AsyncState;
+
+        //the other socket client waits for the client move to be done and send to server
+        //not use a thread maybe
+        OnUpdateNoThread(client);
+
     }
 
+    void OnUpdateNoThread(Client c)
+    {
+        if (c.client_socket.Connected)
+        {
+            c.client_socket.BeginReceive(c.buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnUpdateCallback), c);
+        }
+
+        else
+        {
+            Debug.Log("the other player isn't connected anymore");
+        }
+    }
     private void OnUpdateCallback(IAsyncResult ar)
     {
         Client client = (Client)ar.AsyncState;
@@ -233,26 +262,29 @@ public class NetworkingServer : Networking
 
         if (bytesRead >0)
         {
-            //replicate what the player has done and send it to the other client
-            //also change states
+
 
             Package package = Deserialize(client.buffer);
             board = package.board_array;
-            foreach(Client c in client_list)
+            int tmp = 0;
+            foreach(Client c in client_list) //we send a package to the new player
             {
-                if(c != client)
+                if(c == client)
                 {
-                    //now we replicate the move
-                    byte[] b = Serialize(1, "your turn, lets go!", board,true,-1);
-                    SendPackage(b, c.client_socket);
+                    Debug.Log("OnUpdateCallback sending package to other player");
+                    byte[] b = Serialize(3, "your turn, lets go!", board,true,c.tokens_list[c.tokencounter].identifier_n);
+
+                    c.tokencounter++;
+                    if (c.tokencounter > 3)
+                        c.tokencounter = 0;
+                    //now we send to the other client. What about the  begin recieve update of this new client?
+                    c.client_socket.BeginSend(b, 0, Client.BufferSize, 0, new AsyncCallback(SendOtherPlayerCallback), client_list[tmp]);
+                    c.end_connexion = true;//TODO DIRTY
+
                 }
-                else if(c == client)
-                {
-                    //tell him that is not his turn
-                    byte[] b = Serialize(2, "others turn, we relpicated your move", board,false,-1);
-                    SendPackage(b,c.client_socket);
-                }
+                tmp++;
             }
+            //what about this
             client.recieveDone.Set();
         }
         else
@@ -279,11 +311,8 @@ public class NetworkingServer : Networking
 
     private void WelcomeCallback(IAsyncResult ar) //bit dirty, may be changed
     {
-
-
         if (client_list.Count == 2)
             DecideFirst();
-           // StartThreadingFunction(DecideFirst);
     }
     private void SendCallback(IAsyncResult ar)
     {

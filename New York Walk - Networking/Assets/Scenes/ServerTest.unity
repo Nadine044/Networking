@@ -356,7 +356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e04a3ab17787284b81b5c9808c9c189, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textJSON: {fileID: 4900000, guid: dec7f056f75849c438bc32038baac57a, type: 3}
+  CitizensTXT: {fileID: 4900000, guid: dec7f056f75849c438bc32038baac57a, type: 3}
+  CityCardsTXT: {fileID: 4900000, guid: 9725e910fe0bad049a9eec466e98573c, type: 3}
   playableCitizenList:
     citizens: []
 --- !u!114 &1403106521

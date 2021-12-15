@@ -10,6 +10,11 @@ using System.IO;
 
 public class Networking : MonoBehaviour
 {
+    
+    protected enum PackageIndex
+    {
+
+    }
     protected class Package
     {
         public int index;
@@ -67,6 +72,17 @@ public class Networking : MonoBehaviour
     //2 = turn done  //setting up the game
     //3 = your turn// Game already setted
     //4 = turn done //Game already setted
+
+
+    /// <summary>
+    /// Aquesta funcio et menja els ous 
+    /// </summary>
+    /// <param name="index">El ou qque vols</param>
+    /// <param name="msg_to_log"> HElklo</param>
+    /// <param name="board_array"></param>
+    /// <param name="turn"></param>
+    /// <param name="card_type"></param>
+    /// <returns>Returns el numero de llepades</returns>
     protected byte[] Serialize(int index, string msg_to_log, int[] board_array,bool turn,int card_type)
     {
         MemoryStream stream = new MemoryStream();
@@ -97,6 +113,13 @@ public class Networking : MonoBehaviour
                 {
                     writer.Write(board_array[i]);
                 }
+                break;
+            case 3:
+                for (int i = 0; i < board_array.Length; i++)
+                {
+                    writer.Write(board_array[i]);
+                }
+                writer.Write(card_type);
                 break;
         }
 

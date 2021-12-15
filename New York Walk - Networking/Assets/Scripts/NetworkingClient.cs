@@ -20,7 +20,7 @@ public class NetworkingClient : Networking
     {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         _instance = this;
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26002);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26003);
         StartThreadingFunction(ConnectToServer);
     }
     void ConnectToServer()
@@ -52,12 +52,14 @@ public class NetworkingClient : Networking
 
     void ConnectCallback(IAsyncResult ar)
     {
+        Debug.Log("Connect callback");
         //Here tell player he is connected And launch and open UpdateConnectionWith server
         StartThreadingFunction(UpdatingConnection);
     }
 
     void CloseConnection()
     {
+        Debug.Log("Closing connection");
         try
         {
             socket.Shutdown(SocketShutdown.Both);
@@ -91,14 +93,16 @@ public class NetworkingClient : Networking
         CloseConnection();
     }
 
+   
     void ReadCallback(IAsyncResult ar)
     {
+        Debug.Log("Read Callback");
         OBJ obj = (OBJ)ar.AsyncState;
 
         int bytesread = 0;
 
         bytesread = socket.EndReceive(ar);
-        //PETA QUAN TANQUEM CONEXIÓ TODO
+        //PETA AQUI, mirar com cancelar el begin recieve quan s'ha tancat el socket...
         if(bytesread >0)
         {
             Package package = Deserialize(obj.buffer);
@@ -107,16 +111,13 @@ public class NetworkingClient : Networking
             int[] board_tmp = package.board_array;
             Debug.Log(package.msg_to_log);
 
-           // Player._instance.RecieveUpdateFromServer(client_n, turnstep, board_tmp);
 
             Action UpdatePlayer = () =>
             {
+                Debug.Log("Updating player");
                 Player._instance.RecieveUpdateFromServer( turnstep, board_tmp,package.card);
             };
             QueueMainThreadFunction(UpdatePlayer);
-
-            //not thread safe
-
 
             recieveDone.Set();
             //need to know which is which
@@ -124,11 +125,12 @@ public class NetworkingClient : Networking
         else
         {
             //close connection
-            close_connection = true;
+            //close_connection = true;
             recieveDone.Set();
         }
     }
 
+   
 
     public void SendPackage()//TODO
     {
@@ -138,6 +140,6 @@ public class NetworkingClient : Networking
 
     private void SendCallback(IAsyncResult ar)
     {
-        Debug.Log("Send to server");
+        Debug.Log("Send callback");
     }
 }

@@ -40,7 +40,7 @@ public class CardsServerSide : MonoBehaviour
 
         for (int i = 0; i < 6; i++)
         {
-            cards_forboth.Add(Random.Range(0, 23));
+            cards_forboth.Add(Random.Range(0, 25));
         }
 
         //checks if all numbers inside the list are different
@@ -54,7 +54,7 @@ public class CardsServerSide : MonoBehaviour
         while(result.Count <6)
         {
             //while the 6 numbers arent different keep making randoms
-            cards_forboth.Add(Random.Range(0, 23));
+            cards_forboth.Add(Random.Range(0, 25));
             result = cards_forboth.Distinct().ToList();
         }
 

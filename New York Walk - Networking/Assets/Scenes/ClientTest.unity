@@ -486,7 +486,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bacf0c4046cc55e4fb61966323d4e0c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1235,7 +1235,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1319193110
 GameObject:
@@ -1337,7 +1337,7 @@ Transform:
   m_LocalScale: {x: -0.036472864, y: -1, z: -1.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1339844192
 GameObject:
@@ -1609,7 +1609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1538797987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1691,7 +1691,7 @@ Transform:
   m_LocalScale: {x: -0.036472864, y: -1, z: -1.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &1539950643
 GameObject:
@@ -1834,7 +1834,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1714825400235630179, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1714825400235630179, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1883,7 +1883,7 @@ PrefabInstance:
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: player2
       value: 
-      objectReference: {fileID: 1699150044}
+      objectReference: {fileID: 0}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: cardMaterial
       value: 
@@ -2180,7 +2180,6 @@ MonoBehaviour:
   randomNumberGenerated: 0
   cityCardsPile: {fileID: 1538797986}
   current_board_pos: 0
-  current_token: {fileID: 0}
   turn_type: 0
 --- !u!4 &1661397772
 Transform:
@@ -2195,56 +2194,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1699150043
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1699150045}
-  - component: {fileID: 1699150044}
-  m_Layer: 0
-  m_Name: Player2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1699150044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699150043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ca76ed1c6ff4724f8ff168be26759df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player_cards: {fileID: 107130759}
-  player_city_cards: {fileID: 0}
-  randomNumberGenerated: 0
-  cityCardsPile: {fileID: 0}
-  current_board_pos: 0
-  current_token: {fileID: 0}
-  turn_type: 0
---- !u!4 &1699150045
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699150043}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0403154, y: 2.7641568, z: -4.4162645}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1808513552
 GameObject:
