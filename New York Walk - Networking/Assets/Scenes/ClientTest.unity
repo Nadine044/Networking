@@ -3214,7 +3214,32 @@ MonoBehaviour:
   player_cards: {fileID: 107130759}
   player_city_cards: {fileID: 107130759}
   randomNumberGenerated: 0
+  pileCards:
+  - {fileID: 1319193110}
+  - {fileID: 1574694140}
+  - {fileID: 1060306964}
+  - {fileID: 264925090}
+  - {fileID: 834418547}
+  - {fileID: 215875551}
+  - {fileID: 48999736}
+  - {fileID: 339091469}
+  - {fileID: 896441875}
+  - {fileID: 637930088}
+  - {fileID: 2056393459}
+  - {fileID: 1245272499}
   cityCardsPile: {fileID: 1538797986}
+  cityCard1:
+    name: 
+    utility: 
+    turns: 0
+  cityCard2:
+    name: 
+    utility: 
+    turns: 0
+  cityCard3:
+    name: 
+    utility: 
+    turns: 0
   current_board_pos: 0
   current_token: {fileID: 0}
   turn_type: 0
@@ -3264,7 +3289,20 @@ MonoBehaviour:
   player_cards: {fileID: 107130759}
   player_city_cards: {fileID: 0}
   randomNumberGenerated: 0
+  pileCards: []
   cityCardsPile: {fileID: 0}
+  cityCard1:
+    name: 
+    utility: 
+    turns: 0
+  cityCard2:
+    name: 
+    utility: 
+    turns: 0
+  cityCard3:
+    name: 
+    utility: 
+    turns: 0
   current_board_pos: 0
   current_token: {fileID: 0}
   turn_type: 0

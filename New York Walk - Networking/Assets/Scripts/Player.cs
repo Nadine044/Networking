@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
         public int[] unavailableSquares;
     }
 
+    [System.Serializable]
     public class CityCard
     {
         public string name;
@@ -32,7 +33,10 @@ public class Player : MonoBehaviour
 
     //City Cards
     //public CityCard[] pileCards;
-    List<CityCard> pileCards = new List<CityCard>();
+
+    List<int> random_numbers_city_cards = new List<int>();
+    public List<GameObject> pileCards = new List<GameObject>();
+    //public List<CityCard> pileCards = new List<CityCard>();
     List<CityCard> usedCards = new List<CityCard>();
 
     public GameObject cityCardsPile;
@@ -43,6 +47,8 @@ public class Player : MonoBehaviour
     int current_city_cards = 0;
 
     Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
+    Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
+    Vector3 card3UI_pos = new Vector3(12.6f, 1.97f, 0.27f);
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
@@ -263,17 +269,63 @@ public class Player : MonoBehaviour
                 //Give player random city card and add it to usedPileCards. Quit from ToDraw list
                 //drawCard
 
-                Debug.Log("HEEEEEEELLOOOOOOOO :D");
+                Debug.Log("CITY CARD PICKED!!");
                 //card1UI_pos
 
-                if (current_city_cards < 2)
+                if (current_city_cards < 1)
                 {
-                    // Card n_card = GetCitizenCardInfo(card);
-                    cityCard1 = GetCityCardInfo();
-                    Debug.Log(cityCard1.name);
+                    GetCityCardInfo(cityCard1, random_numbers_city_cards);
+
+                    foreach (var item in pileCards)
+                    {
+                        if(item.name == cityCard1.name)
+                        {
+                            item.transform.position = card1UI_pos;
+                            pileCards.Remove(item);
+                            Debug.Log(cityCard1.name);
+                            break;
+                        }
+                    }
+                }
+
+                else if (current_city_cards < 2)
+                {
+                    GetCityCardInfo(cityCard2, random_numbers_city_cards);
+                    foreach (var item in pileCards)
+                    {
+                        if (item.name == cityCard2.name)
+                        {
+                            item.transform.position = card2UI_pos;
+                            pileCards.Remove(item);
+                            Debug.Log(cityCard2.name);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    GetCityCardInfo(cityCard3, random_numbers_city_cards);
+                    foreach (var item in pileCards)
+                    {
+                        if (item.name == cityCard3.name)
+                        {
+                            item.transform.position = card3UI_pos;
+                            pileCards.Remove(item);
+                            Debug.Log(cityCard3.name);
+
+                            Debug.Log("--------------------");
+                            Debug.Log(cityCard1.name);
+                            Debug.Log(cityCard2.name);
+                            Debug.Log(cityCard3.name);
+                            break;
+                        }
+                    }
                 }
             }
         }
+
+        
+
         current_city_cards++;
     }
 
@@ -295,14 +347,26 @@ public class Player : MonoBehaviour
         return card;
     }
 
-    CityCard GetCityCardInfo(/*int card_n*/)
+    void GetCityCardInfo(CityCard card, List<int> randomNumbers)
     {
-        CityCard card = new CityCard();
+        //randomNumberGenerated = Random.RandomRange(0, 11);
 
-        card.name = player_city_cards.cityCardsList.powerUps[1].name;
-        card.utility = player_city_cards.cityCardsList.powerUps[1].utility;
-        card.turns = player_city_cards.cityCardsList.powerUps[1].turns;
+        if (current_city_cards == 1)
+            randomNumberGenerated = Random.RandomRange(0, 11);
+        else if (current_city_cards == 2)
+            randomNumberGenerated = Random.RandomRange(0, 10);
+        else if (current_city_cards == 3)
+            randomNumberGenerated = Random.RandomRange(0, 9);
 
-        return card;
+        if (!randomNumbers.Contains(randomNumberGenerated))
+        {
+            randomNumbers.Add(randomNumberGenerated);
+
+            card.name = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].name;
+            card.utility = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].utility;
+            card.turns = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].turns;            
+        }
+        else
+            GetCityCardInfo(card, randomNumbers);
     }
 }
