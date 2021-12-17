@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(input_active)
+        if (input_active)
         {
             if(Input.GetMouseButton(0))
             {
@@ -102,7 +102,47 @@ public class Player : MonoBehaviour
             {
                 DrawCityCard(cityCardsPile, card1UI_pos);
             }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                UseCityCard();
+            }
+
         }
+    }
+    public void UseCityCard()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
+            {
+                Debug.Log("STOP CARD USED!!");
+            }
+
+            else if (hit.collider.name == "VIP1" || hit.collider.name == "VIP2")
+            {
+                Debug.Log("VIP CARD USED!!");
+            }
+
+            else if (hit.collider.name == "Security")
+            {
+                Debug.Log("SECURITY CARD USED");
+            }
+
+            else if (hit.collider.name == "Filming1" || hit.collider.name == "Filming2")
+            {
+                Debug.Log("FILMING CARD USED!!");
+            }
+
+            else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
+            {
+                Debug.Log("SUBWAY CARD USED!!");
+            }
+        }
+
+        current_city_cards--;
     }
 
     void SetBoardPos(int array_pos)
@@ -327,11 +367,6 @@ public class Player : MonoBehaviour
         
 
         current_city_cards++;
-    }
-
-    public void UseCityCard()
-    {
-        current_city_cards--;
     }
 
     Card GetCitizenCardInfo(int card_n)

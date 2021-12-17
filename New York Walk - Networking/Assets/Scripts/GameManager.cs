@@ -65,14 +65,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-
-
-        //CHECKING THAT JSON CAN READ THE ARRAY OF STARTING POSITIONS
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log(player1.player_city_cards.cityCardsList.powerUps[1].name);
-        }
-
         //Click cards to select order 1 2 3 function
 
         //!!!!  Put citizens on the board (turn based)  !!!!
