@@ -3,32 +3,27 @@
     {
       "name": "Stop",
       "utility": "Blablabla",
-      "turns": "3",
-      "how_many": 4
+      "turns": "3"
     },
     {
       "name": "VIP",
       "utility": "Blablabla",
-      "turns": "0",
-      "how_many": 2
+      "turns": "0"
     },
     {
       "name": "Security",
       "utility": "Blablabla",
-      "turns": "0",
-      "how_many": 1
+      "turns": "0"
     },
     {
       "name": "Filming",
       "utility": "Blablabla",
-      "turns": "2",
-      "how_many": 2
+      "turns": "2"
     },
     {
       "name": "Subway",
       "utility": "Blablabla",
-      "turns": "0",
-      "how_many": 3
+      "turns": "0"
     }
   ]
 }

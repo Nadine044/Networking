@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
@@ -23,7 +24,6 @@ public class Player : MonoBehaviour
         public string name;
         public string utility;
         public int turns;
-        public int howMany;
     }
 
     public Card card1 = new Card();
@@ -31,7 +31,8 @@ public class Player : MonoBehaviour
     public Card card3 = new Card();
 
     //City Cards
-    List<CityCard> drawCard = new List<CityCard>();
+    //public CityCard[] pileCards;
+    List<CityCard> pileCards = new List<CityCard>();
     List<CityCard> usedCards = new List<CityCard>();
 
     public GameObject cityCardsPile;
@@ -90,7 +91,6 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
-
 
             if(Input.GetMouseButtonDown(1))
             {
@@ -220,8 +220,6 @@ public class Player : MonoBehaviour
             //now we make a restricted space to set the token through the card calss
             CreateRestrictedSpace(n_card.unavailableSquares);
             input_active = true;
-
-
         }
 
 
@@ -266,6 +264,14 @@ public class Player : MonoBehaviour
                 //drawCard
 
                 Debug.Log("HEEEEEEELLOOOOOOOO :D");
+                //card1UI_pos
+
+                if (current_city_cards < 2)
+                {
+                    // Card n_card = GetCitizenCardInfo(card);
+                    cityCard1 = GetCityCardInfo();
+                    Debug.Log(cityCard1.name);
+                }
             }
         }
         current_city_cards++;
@@ -289,14 +295,13 @@ public class Player : MonoBehaviour
         return card;
     }
 
-    CityCard GetCityCardInfo(int card_n)
+    CityCard GetCityCardInfo(/*int card_n*/)
     {
         CityCard card = new CityCard();
 
-        card.name = player_city_cards.cityCardsList.powerUps[card_n].name;
-        card.utility = player_city_cards.cityCardsList.powerUps[card_n].utility;
-        card.turns = player_city_cards.cityCardsList.powerUps[card_n].turns;
-        card.howMany = player_city_cards.cityCardsList.powerUps[card_n].howMany;
+        card.name = player_city_cards.cityCardsList.powerUps[1].name;
+        card.utility = player_city_cards.cityCardsList.powerUps[1].utility;
+        card.turns = player_city_cards.cityCardsList.powerUps[1].turns;
 
         return card;
     }

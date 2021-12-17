@@ -17,12 +17,12 @@ public class JSONReader : MonoBehaviour
         public int[] unavailableSquares;
     }
 
+    [System.Serializable]
     public class PowerUp
     {
         public string name;
         public string utility;
         public int turns;
-        public int howMany;
     }
 
     [System.Serializable]
@@ -31,6 +31,7 @@ public class JSONReader : MonoBehaviour
         public Citizen[] citizens;
     }
 
+    [System.Serializable]
     public class PowerUpList
     {
         public PowerUp[] powerUps;
@@ -43,6 +44,6 @@ public class JSONReader : MonoBehaviour
     void Start()
     {
         playableCitizenList = JsonUtility.FromJson<CitizenList>(CitizensTXT.text);
-        cityCardsList = JsonUtility.FromJson<PowerUpList>(CitizensTXT.text);
+        cityCardsList = JsonUtility.FromJson<PowerUpList>(CityCardsTXT.text);
     }
 }
