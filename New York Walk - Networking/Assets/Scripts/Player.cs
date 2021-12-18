@@ -71,11 +71,8 @@ public class Player : MonoBehaviour
         //set al positions empty
         for(int i =0; i < 25; i++)
         {
-            board[i] = 0;
-        }
-
-        SetBoardPos(0);
-        
+            board[i] = -2;
+        }        
     }
 
     // Update is called once per frame
@@ -88,6 +85,9 @@ public class Player : MonoBehaviour
                 switch (turn_type)
                 {
                     case 1:
+                        SetInitialTokenPos(GameManager._instance.boardSquares);
+                        break;
+                    case 2:
                         SetInitialTokenPos(GameManager._instance.boardSquares);
                         break;
                     case 3:
@@ -104,15 +104,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    void SetBoardPos(int array_pos)
-    {
-        //token1.transform.position = GameManager._instance.array_positions[array_pos].transform.position;
-        //current_board_pos = array_pos;
-
-        //EP
-      //  board[array_pos] = client_n; //1 in the array means the citizen is there 2 means the citizen 2 is here, etc
-    }
-
     public void SetInitialTokenPos(List<GameObject> squares)
     {
         RaycastHit hit;
@@ -127,7 +118,7 @@ public class Player : MonoBehaviour
                 if(squares[i].name == colliderName)
                 {
                     //first check if the position is already full
-                    if(board[i] !=0)
+                    if(board[i] != -2)
                     {
                         return;
                     }
@@ -140,16 +131,18 @@ public class Player : MonoBehaviour
                     for(int j =0; j < board.Length; j++)
                     {
                         if (board[j] == -1)
-                            board[j] = 0;
+                            board[j] = -2;
                     }
-                    NetworkingClient._instance.SendPackage();
+                    if(turn_type ==1)
+                        NetworkingClient._instance.SendSetUpPackage();
+                    else if(turn_type ==2)
+                        NetworkingClient._instance.SendPackage();
                     return;
                 }
             }
         }
     }
 
-    //TODO CLEAN THE PREVIOUS TOKEN POSITION 
     public void SetTokenPos(List<GameObject> squares)
     {
         RaycastHit hit;
@@ -171,7 +164,7 @@ public class Player : MonoBehaviour
 
                     //clean the previous position
                     List<int> list_array = board.ToList();
-                    board[list_array.IndexOf(current_token.identifier)] =0;
+                    board[list_array.IndexOf(current_token.identifier)] = -2;
 
                     current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
                     board[i] = current_token.identifier;
@@ -196,16 +189,18 @@ public class Player : MonoBehaviour
         turn_type = turnstep;
         board = new_board;
 
-        //TODO CHANGE THIS PRETTY DIRTY
-        if (turn_type == 1) //its means whe are setting cards
-        {
+        NetworkingClient._instance.logText.text = "Recieve Update Player";
 
+        //TODO CHANGE THIS PRETTY DIRTY
+        if (turn_type == 1 || turn_type == 2) //its means whe are setting cards
+        {
+            NetworkingClient._instance.logText.text = "Turn Type 1";
             //we have to check if the tokens are already placed
             //tokens_list.Add(card);
             //Update the tokens according to the board
             for(int i =0; i<board.Length;i++)
             {
-                if(board[i] !=0 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
+                if(board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
                 {
                     GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
@@ -213,6 +208,8 @@ public class Player : MonoBehaviour
                     tokens_list.Add(t);
                 }
             }
+
+            NetworkingClient._instance.logText.text = "Searching for material";
 
             //Search for material 
             Card n_card = GetCitizenCardInfo(card); //here we could save a list or something of the cards
@@ -222,6 +219,7 @@ public class Player : MonoBehaviour
             Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card);
             card_counter++;
             tokens_list.Add(token);
+            NetworkingClient._instance.logText.text = "Token created";
 
             // place new token
             current_token = token;
@@ -233,12 +231,27 @@ public class Player : MonoBehaviour
 
         }
 
-        if(turn_type ==2)
+        //TODO MAKE AND ESPECIFIC INDEX OR SOMETING FOR THE LAST TOKEN TO BE REPLICATED THOUGH
+        if (turn_type ==3)
         {
-            //to update the other player tokens position
-            for(int i =0; i < board.Length; ++i)
+            //this will be changed
+            for (int i = 0; i < board.Length; i++)
             {
-                if (board[i] != 0 && tokens_list.Any(token => token.identifier == board[i])) 
+                if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
+                {
+                    GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
+                    Token_c t = new Token_c(newtoken, board[i]);
+                    tokens_list.Add(t);
+                }
+            }
+
+            NetworkingClient._instance.logText.text = "Turn Type 3";
+
+            //to update the other player tokens position
+            for (int i =0; i < board.Length; ++i)
+            {
+                if (board[i] != -2 && tokens_list.Any(token => token.identifier == board[i])) 
                 {
                     Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
                     t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
@@ -253,6 +266,8 @@ public class Player : MonoBehaviour
             //no we set our move 
         }
 
+        NetworkingClient._instance.logText.text = "paSSED turn type";
+
     }
 
     void CreateRestrictedSpace(int[] noavailablepos)
@@ -262,26 +277,7 @@ public class Player : MonoBehaviour
             if (board[noavailablepos[i]] == 0)
                 board[noavailablepos[i]] = -1;
         }
-
-        //for(int i =0; i < board.Length; i++)
-        //{
-
-        //    //if the current square equals the first value of the restricted squares array it means we have to set 
-        //    //board[i] to a restricted space
-        //    if(i == noavailablepos[tmp_counter])
-        //    {
-        //        if (board[i] == 0)
-        //            board[i] = -1;
-
-        //        //it means we are out of the array index
-        //        if (tmp_counter >= noavailablepos.Length - 1)
-        //        {
-        //            return;
-        //        }
-
-        //        tmp_counter++; 
-        //    }
-        //}
+        NetworkingClient._instance.logText.text = "Restricted Space done";
     }
     public void DrawCityCard (GameObject cardsToDraw)
     {

@@ -69,7 +69,7 @@ public class Networking : MonoBehaviour
     //index
     //0 = wait for the other player
     //1 = your turn //setting up the game
-    //2 = turn done  //setting up the game
+    //2 = LastTurnofSetUp  //setting up the game
     //3 = your turn// Game already setted
     //4 = turn done //Game already setted
 
@@ -77,7 +77,7 @@ public class Networking : MonoBehaviour
     /// <summary>
     /// Aquesta funcio et menja els ous 
     /// </summary>
-    /// <param name="index">El ou qque vols</param>
+    /// <param name="index">StateOfTheGam,e</param>
     /// <param name="msg_to_log"> HElklo</param>
     /// <param name="board_array"></param>
     /// <param name="turn"></param>
@@ -113,6 +113,7 @@ public class Networking : MonoBehaviour
                 {
                     writer.Write(board_array[i]);
                 }
+                writer.Write(card_type);
                 break;
             case 3:
                 for (int i = 0; i < board_array.Length; i++)
@@ -155,6 +156,13 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
+                break;
+            case 3:
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                package.card = reader.ReadInt32();
                 break;
         }
         Debug.Log(package.msg_to_log);

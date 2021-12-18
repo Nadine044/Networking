@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Threading;
 using System.Net.Sockets;
+using UnityEngine.UI;
 
 public class NetworkingClient : Networking
 {
@@ -14,6 +15,7 @@ public class NetworkingClient : Networking
 
     bool close_connection = false;
 
+    public Text logText;
     //int client = 0;
     // Start is called before the first frame update
     void Start()
@@ -53,6 +55,11 @@ public class NetworkingClient : Networking
     void ConnectCallback(IAsyncResult ar)
     {
         Debug.Log("Connect callback");
+        Action s = () =>
+        {
+            logText.text = "Connect callback";
+        };
+        QueueMainThreadFunction(s);
         //Here tell player he is connected And launch and open UpdateConnectionWith server
         StartThreadingFunction(UpdatingConnection);
     }
@@ -60,9 +67,16 @@ public class NetworkingClient : Networking
     void CloseConnection()
     {
         Debug.Log("Closing connection");
+        Action s = () =>
+        {
+            logText.text = "closing connection <CloseConnection()>";
+        };
+        QueueMainThreadFunction(s);
         try
         {
-            socket.Shutdown(SocketShutdown.Both);
+            if(socket.Connected)
+                socket.Shutdown(SocketShutdown.Both);
+
             socket.Close();
         }
         catch(SocketException e)
@@ -81,11 +95,10 @@ public class NetworkingClient : Networking
                 break;
 
             OBJ obj  = new OBJ();
-            if (socket.Connected)
                 socket.BeginReceive(obj.buffer, 0, OBJ.buffersize, 0, new AsyncCallback(ReadCallback), obj);
 
-            else
-                break;
+            //else
+            //    break;
 
             recieveDone.WaitOne();
         }
@@ -97,6 +110,11 @@ public class NetworkingClient : Networking
     void ReadCallback(IAsyncResult ar)
     {
         Debug.Log("Read Callback");
+        Action w = () =>
+        {
+            logText.text = "ReadCallback <ReadCallback()>";
+        };
+        QueueMainThreadFunction(w);
         OBJ obj = (OBJ)ar.AsyncState;
 
         int bytesread = 0;
@@ -115,17 +133,20 @@ public class NetworkingClient : Networking
             Action UpdatePlayer = () =>
             {
                 Debug.Log("Updating player");
-                Player._instance.RecieveUpdateFromServer( turnstep, board_tmp,package.card);
+                Player._instance.RecieveUpdateFromServer(turnstep, board_tmp, package.card);
+                logText.text = "Updating player <ReadCallback()>";
             };
             QueueMainThreadFunction(UpdatePlayer);
 
             recieveDone.Set();
+            logText.text = "RecieveDone.Set()";
             //need to know which is which
         }
         else
         {
+            logText.text = "callback close conn";
             //close connection
-            //close_connection = true;
+            close_connection = true;
             recieveDone.Set();
         }
     }
@@ -134,12 +155,23 @@ public class NetworkingClient : Networking
 
     public void SendPackage()//TODO
     {
-        byte[] b = Serialize(2, "new move done", Player._instance.GetBoard(),false,-1);
+        byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),false,-1);
+        socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+    }
+
+    public void SendSetUpPackage()
+    {
+        byte[] b = Serialize(1, "new move done", Player._instance.GetBoard(), false, -1);
         socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
     }
 
     private void SendCallback(IAsyncResult ar)
     {
         Debug.Log("Send callback");
+    }
+
+    public void SetText(string txt)
+    {
+        logText.text = txt;
     }
 }
