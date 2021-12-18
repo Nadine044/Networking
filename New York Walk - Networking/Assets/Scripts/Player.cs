@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     {
         public GameObject gameObject;
         public int identifier;
-
+        public Card card;
         public Token_c(GameObject go, int id)
         {
             gameObject = go;
@@ -157,7 +157,7 @@ public class Player : MonoBehaviour
                 if (squares[i].name == colliderName)
                 {
                     //first check if the position is already full
-                    if (board[i] != 0)
+                    if (board[i] != -2)
                     {
                         return;
                     }
@@ -209,7 +209,7 @@ public class Player : MonoBehaviour
                 }
             }
 
-            NetworkingClient._instance.logText.text = "Searching for material";
+            NetworkingClient._instance.logText.text = "Searching for material " + card;
 
             //Search for material 
             Card n_card = GetCitizenCardInfo(card); //here we could save a list or something of the cards
@@ -217,6 +217,7 @@ public class Player : MonoBehaviour
 
             //create token & add it to the list
             Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card);
+            token.card = n_card;
             card_counter++;
             tokens_list.Add(token);
             NetworkingClient._instance.logText.text = "Token created";
@@ -234,7 +235,7 @@ public class Player : MonoBehaviour
         //TODO MAKE AND ESPECIFIC INDEX OR SOMETING FOR THE LAST TOKEN TO BE REPLICATED THOUGH
         if (turn_type ==3)
         {
-            //this will be changed
+            //this will be changed //creates the new token
             for (int i = 0; i < board.Length; i++)
             {
                 if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it

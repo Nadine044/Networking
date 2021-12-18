@@ -143,6 +143,7 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
+                package.card = reader.ReadInt32();
                 break;
             case 1:
                 for (int i = 0; i < 25; i++)
@@ -156,6 +157,7 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
+                package.card = reader.ReadInt32();
                 break;
             case 3:
                 for (int i = 0; i < 25; i++)

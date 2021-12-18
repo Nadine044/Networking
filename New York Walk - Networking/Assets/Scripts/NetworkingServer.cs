@@ -7,6 +7,8 @@ using System.Threading;
 using System;
 using System.IO;
 using System.Linq;
+using UnityEngine.UI;
+
 public class NetworkingServer : Networking
 {
 
@@ -57,6 +59,9 @@ public class NetworkingServer : Networking
     int welcome_callback_counter = 0;
     //board
     int[] board = new int[25];
+
+    //Debugin
+    public Text logtext;
     void Start()
     {
         //GETTING RANDOM CARDS
@@ -75,6 +80,12 @@ public class NetworkingServer : Networking
         cards_for_both = result;
         //END GETTING RANDOM CARDS
 
+        //DEBUGING
+        logtext.text = string.Empty;
+        for(int i = 0; i < cards_for_both.Count(); i++)
+        {
+            logtext.text += ", " + cards_for_both[i];
+        }
         for (int i=0; i< 25; i++)
         {
             board[i] = -2;
@@ -232,9 +243,6 @@ public class NetworkingServer : Networking
         }
         if(client.client_turn)
         {
-            //Do the magic
-            //segons el index que rebi del client ha de fer una cosa o alte
-            //
             client.client_turn = false;
             Package package = Deserialize(client.buffer);
 
@@ -247,8 +255,12 @@ public class NetworkingServer : Networking
                     {
                         if(client_list[i] != client)
                         {
+                            //PETA torna a entrar
+                            int card_id=0;
                             //the other client that we must update
-                            int card_id = cards_for_both[turn_counter];
+                            if(turn_counter <= 5)
+                               card_id = cards_for_both[turn_counter];
+
                             rand_tmp = i;
                             Action func = () =>
                             {
@@ -286,8 +298,11 @@ public class NetworkingServer : Networking
                                 client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
 
                             client_list[i].tokencounter++;
-                            if(client_list[i].tokencounter >3)
+                            if (client_list[i].tokencounter >= 3)
+                            {
+                                Debug.Log("token counter reseted");
                                 client_list[i].tokencounter = 0;
+                            }
 
                             turn_counter++;
                             client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);

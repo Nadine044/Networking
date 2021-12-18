@@ -2422,7 +2422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player_cards: {fileID: 107130759}
-  player_city_cards: {fileID: 0}
+  player_city_cards: {fileID: 107130759}
   randomNumberGenerated: 0
   cityCardsPile: {fileID: 1538797986}
   current_board_pos: 0
