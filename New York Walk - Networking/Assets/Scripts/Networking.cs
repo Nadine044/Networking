@@ -75,14 +75,14 @@ public class Networking : MonoBehaviour
 
 
     /// <summary>
-    /// Aquesta funcio et menja els ous 
+    /// Serlializes the data into bytes 
     /// </summary>
-    /// <param name="index">StateOfTheGam,e</param>
-    /// <param name="msg_to_log"> HElklo</param>
-    /// <param name="board_array"></param>
-    /// <param name="turn"></param>
-    /// <param name="card_type"></param>
-    /// <returns>Returns el numero de llepades</returns>
+    /// <param name="index">StateOfTheGame</param>
+    /// <param name="msg_to_log"> log</param>
+    /// <param name="board_array">the board table</param>
+    /// <param name="turn">player's turn</param>
+    /// <param name="card_type">token or card identifier to move</param>
+    /// <returns>byte[] array</returns>
     protected byte[] Serialize(int index, string msg_to_log, int[] board_array,bool turn,int card_type)
     {
         MemoryStream stream = new MemoryStream();

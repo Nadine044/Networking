@@ -183,7 +183,7 @@ public class Player : MonoBehaviour
         return board;
     }
 
-
+   
     public void RecieveUpdateFromServer(int turnstep,int[] new_board,int card)
     {
         turn_type = turnstep;
@@ -195,38 +195,15 @@ public class Player : MonoBehaviour
         if (turn_type == 1 || turn_type == 2) //its means whe are setting cards
         {
             NetworkingClient._instance.logText.text = "Turn Type 1";
-            //we have to check if the tokens are already placed
-            //tokens_list.Add(card);
-            //Update the tokens according to the board
-            for(int i =0; i<board.Length;i++)
-            {
-                if(board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
-                {
-                    GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
-                    Token_c t = new Token_c(newtoken,board[i]);
-                    tokens_list.Add(t);
-                }
-            }
 
-            NetworkingClient._instance.logText.text = "Searching for material " + card;
+            CheckNewTokens();
 
-            //Search for material 
-            Card n_card = GetCitizenCardInfo(card); //here we could save a list or something of the cards
-            GameManager._instance.SetMaterial(card_counter, card);
+            Card c = SearchAddMat(card);
 
-            //create token & add it to the list
-            Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card);
-            token.card = n_card;
-            card_counter++;
-            tokens_list.Add(token);
-            NetworkingClient._instance.logText.text = "Token created";
-
-            // place new token
-            current_token = token;
+            CreateToken(card, c);
 
             //now we make a restricted space to set the token through the card calss
-            CreateRestrictedSpace(n_card.unavailableSquares);
+            CreateRestrictedSpace(c.unavailableSquares);
             input_active = true;
 
 
@@ -236,29 +213,12 @@ public class Player : MonoBehaviour
         if (turn_type ==3)
         {
             //this will be changed //creates the new token
-            for (int i = 0; i < board.Length; i++)
-            {
-                if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
-                {
-                    GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
-                    Token_c t = new Token_c(newtoken, board[i]);
-                    tokens_list.Add(t);
-                }
-            }
-
+            
             NetworkingClient._instance.logText.text = "Turn Type 3";
+            CheckNewTokens();//Must be done in turn 2 this
 
             //to update the other player tokens position
-            for (int i =0; i < board.Length; ++i)
-            {
-                if (board[i] != -2 && tokens_list.Any(token => token.identifier == board[i])) 
-                {
-                    Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
-                    t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
-                }
-                
-            }
+            UpdatePlacedTokens();
 
             Token_c token_to_move = tokens_list.First(token => token.identifier == card);
             current_token = token_to_move;
@@ -280,6 +240,55 @@ public class Player : MonoBehaviour
         }
         NetworkingClient._instance.logText.text = "Restricted Space done";
     }
+
+    void CheckNewTokens()
+    {
+        for (int i = 0; i < board.Length; i++)
+        {
+            if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
+            {
+                GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
+                Token_c t = new Token_c(newtoken, board[i]);
+                tokens_list.Add(t);
+            }
+        }
+    }
+
+    void UpdatePlacedTokens()
+    {
+        //to update the other player tokens position
+        for (int i = 0; i < board.Length; ++i)
+        {
+            if (board[i] != -2 && tokens_list.Any(token => token.identifier == board[i]))
+            {
+                Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
+                t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
+            }
+
+        }
+    }
+    Card SearchAddMat(int card_id)
+    {
+        //Search for material 
+        Card n_card = GetCitizenCardInfo(card_id); //here we could save a list or something of the cards
+        GameManager._instance.SetMaterial(card_counter, card_id);
+        card_counter++;//To iterate between gameobjects card i think, need to check
+        return n_card;
+    }
+
+    void CreateToken(int card_id, Card card)
+    {
+        Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card_id);
+        token.card = card;
+        card_counter++;
+        tokens_list.Add(token);
+        NetworkingClient._instance.logText.text = "Token created";
+        // place new token
+        current_token = token;
+    }
+
+
     public void DrawCityCard (GameObject cardsToDraw)
     {
         RaycastHit hit;
