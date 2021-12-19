@@ -111,8 +111,31 @@ public class NetworkingServer : Networking
 
     void CloseConnection()
     {
-        socket.Close();
-        Debug.Log("Closing Server");
+        //maybe need to abort all threads
+        foreach(Client client in client_list)
+        {
+            if(client.client_socket.Connected)
+            {
+                try
+                {
+                    client.client_socket.Close();
+                }
+                catch(SocketException e)
+                {
+                    Debug.LogWarning("Couldn't close socket with client " + e);
+                }
+            }
+        }
+
+        try
+        {
+            socket.Close();
+            Debug.Log("Closing Server");
+        }
+        catch (SocketException e)
+        {
+            Debug.LogWarning("Cound't close the server socket " + e);
+        }
     }
 
     private void ConnectCallback(IAsyncResult ar) //here we must add the two clients & wait for clients response
@@ -176,7 +199,6 @@ public class NetworkingServer : Networking
         }
     }
 
-
     void OnUpdateClient(object obj)
     {
         Client client = (Client)obj;
@@ -195,6 +217,16 @@ public class NetworkingServer : Networking
                 break;
             }
             client.recieveDone.WaitOne();
+        }
+
+        try
+        {
+            client.client_socket.Close();
+            Debug.Log("Closing socket with client " + client);
+        }
+        catch(SocketException e)
+        {
+            Debug.LogWarning("Couldn't close socket connection with client " + client + " " + e);
         }
     }
 
@@ -220,6 +252,7 @@ public class NetworkingServer : Networking
         };
         QueueMainThreadFunction(func);
 
+        //TODO make sure the client socket is connected before we send anything to him otherwise this will crash
         client_list[rand_int].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCardsClient), rand_int);
         
         for (int i=0; i < client_list.Count(); i++)
@@ -229,90 +262,113 @@ public class NetworkingServer : Networking
             t.Start(client_list[i]);
         }
     }
+
     void OnUpdateCallbackClient(IAsyncResult ar)
     {
         Client client = (Client)ar.AsyncState;
-
         int bytesRead = client.client_socket.EndReceive(ar);
 
-        //not his turn
-        if (!client.client_turn)
+        if (bytesRead > 0)
         {
-            
-            client.recieveDone.Set();
-        }
-        if(client.client_turn)
-        {
-            client.client_turn = false;
-            Package package = Deserialize(client.buffer);
-
-            board = package.board_array;
-            switch(package.index)
+            //not his turn
+            if (!client.client_turn)
             {
-                case 1: //means we have to check what the turn counter is and tell the other client which card must he use and board update
-
-                    for(int i=0; i < client_list.Count(); i++)
-                    {
-                        if(client_list[i] != client)
-                        {
-                            //PETA torna a entrar
-                            int card_id=0;
-                            //the other client that we must update
-                            if(turn_counter <= 5)
-                               card_id = cards_for_both[turn_counter];
-
-                            rand_tmp = i;
-                            int _enter = turn_counter;
-                            Action func = () =>
-                            {
-                                int tmp = _enter;
-                                if (tmp > 5)
-                                    tmp = 5;
-                                client_list[rand_tmp].CreateToken(
-                                   cards_for_both[tmp],
-                                   GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                                   GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
-                                   GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
-                                   );
-                            };
-                            QueueMainThreadFunction(func);
-                            turn_counter++;
-                            byte[] b;
-                            if(turn_counter == 6)
-                            {
-                                b = Serialize(2, "your turn client 2", board, true, card_id);
-                            }
-                            else
-                            {
-                                b = Serialize(1, "your turn client 2", board, true, card_id);
-                            }
-                            client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
-                        }
-                    }
-                    break;
-                case 3: //means all is setted up
-                    for(int i =0; i < client_list.Count(); i++)
-                    {
-                        if (client_list[i] != client)
-                        {
-                            byte[] b = Serialize(3, "your turn nº " + turn_counter, board, true,
-                                client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
-
-                            client_list[i].tokencounter++;
-                            if (client_list[i].tokencounter >= 3)
-                            {
-                                Debug.Log("token counter reseted");
-                                client_list[i].tokencounter = 0;
-                            }
-
-                            turn_counter++;
-                            client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
-
-                        }
-                    }
-                    break;
+                client.recieveDone.Set();
             }
-            client.recieveDone.Set();
+            if (client.client_turn)
+            {
+                client.client_turn = false;
+                Package package = Deserialize(client.buffer);
+
+                board = package.board_array;
+                switch (package.index)
+                {
+                    case 1: //means we have to check what the turn counter is and tell the other client which card must he use and board update
+
+                        for (int i = 0; i < client_list.Count(); i++)
+                        {
+                            if (client_list[i] != client)
+                            {
+                                //PETA torna a entrar
+                                int card_id = 0;
+                                //the other client that we must update
+                                if (turn_counter <= 5)
+                                    card_id = cards_for_both[turn_counter];
+
+                                rand_tmp = i;
+                                int _enter = turn_counter;
+                                Action func = () =>
+                                {
+                                    int tmp = _enter;
+                                    if (tmp > 5)
+                                        tmp = 5;
+                                    client_list[rand_tmp].CreateToken(
+                                       cards_for_both[tmp],
+                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
+                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+                                       );
+                                };
+                                QueueMainThreadFunction(func);
+                                turn_counter++;
+                                byte[] b;
+                                if (turn_counter == 6)
+                                {
+                                    b = Serialize(2, "your turn client 2", board, true, card_id);
+                                }
+                                else
+                                {
+                                    b = Serialize(1, "your turn client 2", board, true, card_id);
+                                }
+
+                                //We send data to the other client, and let him send us back his input
+                                if(client_list[i].client_socket.Connected)
+                                {
+                                    client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
+                                }
+                                else
+                                {
+                                    //Here we must pause the game until the client reconnects back
+                                }
+                            }
+                        }
+                        break;
+                    case 3: //means all is setted up
+                        for (int i = 0; i < client_list.Count(); i++)
+                        {
+                            if (client_list[i] != client)
+                            {
+                                byte[] b = Serialize(3, "your turn nº " + turn_counter, board, true,
+                                    client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
+
+                                client_list[i].tokencounter++;
+                                if (client_list[i].tokencounter >= 3)
+                                {
+                                    Debug.Log("token counter reseted");
+                                    client_list[i].tokencounter = 0;
+                                }
+
+                                turn_counter++;
+                                if (client_list[i].client_socket.Connected)//We send data to the other client, and let him send us back his input
+                                {
+                                    client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
+                                }
+                                else
+                                {
+                                    //Here we must pause the game until the client reconnects back
+                                }
+                            }
+                        }
+                        break;
+                }
+                client.recieveDone.Set();
+            }
+        }
+
+        else
+        {
+                client.end_connexion = true;
+                client.recieveDone.Set();
         }
     }
 

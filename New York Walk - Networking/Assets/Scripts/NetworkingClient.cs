@@ -59,10 +59,22 @@ public class NetworkingClient : Networking
         {
             logText.text = "Connect callback";
         };
-        QueueMainThreadFunction(s);
-        //Here tell player he is connected And launch and open UpdateConnectionWith server
-        StartThreadingFunction(UpdatingConnection);
+
+        try {
+            Socket client_c = (Socket)ar.AsyncState;
+            client_c.EndConnect(ar);
+
+            QueueMainThreadFunction(s);
+            //Here tell player he is connected And launch and open UpdateConnectionWith server
+            StartThreadingFunction(UpdatingConnection);
+
+        }
+        catch (SocketException e)
+        {
+            Debug.LogWarning("Couldn't connect to the server " + e);
+        }
     }
+       
 
     void CloseConnection()
     {
@@ -72,17 +84,26 @@ public class NetworkingClient : Networking
             logText.text = "closing connection <CloseConnection()>";
         };
         QueueMainThreadFunction(s);
+
         try
         {
-            if(socket.Connected)
-                socket.Shutdown(SocketShutdown.Both);
+            socket.Shutdown(SocketShutdown.Both);
+        }
+        catch(SocketException e)
+        {
+            Debug.LogWarning("ShutDown with server failed " + e);
+        }
 
+        try
+        {
             socket.Close();
         }
         catch(SocketException e)
         {
-            Debug.LogWarning(e);
+            Debug.Log("Couldn't close the socket connection with server " + e);
         }
+        Debug.Log("ConnectionClosed");
+        logText.text = "ConnectionClosed";
     }
     void UpdatingConnection()
     {
@@ -94,7 +115,7 @@ public class NetworkingClient : Networking
             if (close_connection)
                 break;
 
-            OBJ obj  = new OBJ();
+            OBJ obj  = new OBJ(); //TODO make sure socket is connected
                 socket.BeginReceive(obj.buffer, 0, OBJ.buffersize, 0, new AsyncCallback(ReadCallback), obj);
 
             //else
@@ -102,8 +123,7 @@ public class NetworkingClient : Networking
 
             recieveDone.WaitOne();
         }
-
-        CloseConnection();
+        //CloseConnection();
     }
 
    
@@ -152,7 +172,7 @@ public class NetworkingClient : Networking
 
    
 
-    public void SendPackage()//TODO
+    public void SendPackage()//TODO make sure socket is connected
     {
         byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),false,-1);
         socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
