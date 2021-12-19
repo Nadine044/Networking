@@ -127,7 +127,6 @@ public class NetworkingClient : Networking
 
             int turnstep = package.index;
             int[] board_tmp = package.board_array;
-            Debug.Log(package.msg_to_log);
 
 
             Action UpdatePlayer = () =>

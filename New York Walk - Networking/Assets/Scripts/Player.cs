@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = true;
+    bool input_active = false;
     public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
@@ -259,7 +259,7 @@ public class Player : MonoBehaviour
         }
 
         //TODO MAKE AND ESPECIFIC INDEX OR SOMETING FOR THE LAST TOKEN TO BE REPLICATED THOUGH
-        if (turn_type ==3)
+        else if (turn_type ==3)
         {
             //this will be changed //creates the new token
             
@@ -330,7 +330,6 @@ public class Player : MonoBehaviour
     {
         Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card_id);
         token.card = card;
-        card_counter++;
         tokens_list.Add(token);
         NetworkingClient._instance.logText.text = "Token created";
         // place new token
@@ -431,11 +430,11 @@ public class Player : MonoBehaviour
         //randomNumberGenerated = Random.RandomRange(0, 11);
 
         if (current_city_cards == 1)
-            randomNumberGenerated = Random.RandomRange(0, 11);
+            randomNumberGenerated = Random.Range(0, 11);
         else if (current_city_cards == 2)
-            randomNumberGenerated = Random.RandomRange(0, 10);
+            randomNumberGenerated = Random.Range(0, 10);
         else if (current_city_cards == 3)
-            randomNumberGenerated = Random.RandomRange(0, 9);
+            randomNumberGenerated = Random.Range(0, 9);
 
         if (!randomNumbers.Contains(randomNumberGenerated))
         {

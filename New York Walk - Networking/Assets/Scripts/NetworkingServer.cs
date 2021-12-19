@@ -67,13 +67,13 @@ public class NetworkingServer : Networking
         //GETTING RANDOM CARDS
         for (int i = 0; i < 6; i++)
         {
-            cards_for_both.Add(UnityEngine.Random.Range(0, 25));
+            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
         }
         List<int> result = cards_for_both.Distinct().ToList();
         while (result.Count < 6)
         {
             //while the 6 numbers arent different keep making randoms
-            cards_for_both.Add(UnityEngine.Random.Range(0, 25));
+            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
             result = cards_for_both.Distinct().ToList();
         }
         //finally the 6 cards to give the players
@@ -262,9 +262,10 @@ public class NetworkingServer : Networking
                                card_id = cards_for_both[turn_counter];
 
                             rand_tmp = i;
+                            int _enter = turn_counter;
                             Action func = () =>
                             {
-                                int tmp = turn_counter;
+                                int tmp = _enter;
                                 if (tmp > 5)
                                     tmp = 5;
                                 client_list[rand_tmp].CreateToken(
