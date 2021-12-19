@@ -11,10 +11,16 @@ using System.IO;
 public class Networking : MonoBehaviour
 {
     
-    protected enum PackageIndex
+    public enum PackageIndex
     {
-
-    }
+        PlayerTurnReconnect = -3,
+        SetUpReconnect = -2,
+        WaitReconnection = -1,
+        WaitOtherPlayerToEnterGame = 0,
+        PlayerTurnSetUp = 1,
+        LastTurnOfSetUp = 2,
+        PlayerTurnInGame = 3
+    };
     protected class Package
     {
         public int index;
@@ -54,26 +60,6 @@ public class Networking : MonoBehaviour
         functionsToRunInMainThread.Enqueue(someFunction);
     }
 
-    //private void LateUpdate()
-    //{
-    //    while (functionsToRunInMainThread.Count > 0)
-    //    {
-    //        //Grab the first/oldest function in the list
-    //        Action someFunc;
-    //        functionsToRunInMainThread.TryDequeue(out someFunc);
-
-    //        //Now run it;
-    //        someFunc();
-    //    }
-    //}
-    //index
-    //0 = wait for the other player
-    //1 = your turn //setting up the game
-    //2 = LastTurnofSetUp  //setting up the game
-    //3 = your turn// Game already setted
-    //4 = turn done //Game already setted
-
-
     /// <summary>
     /// Serlializes the data into bytes 
     /// </summary>
@@ -94,28 +80,28 @@ public class Networking : MonoBehaviour
         writer.Write(turn);
         switch(index)
         {
-            case 0: //initializing game
+            case (int)PackageIndex.WaitOtherPlayerToEnterGame: //initializing game
                 for (int i = 0; i < board_array.Length; i++)
                 {
                     writer.Write(board_array[i]);
                 }
 
                 break;
-            case 1:
+            case (int)PackageIndex.PlayerTurnSetUp:
                 for (int i = 0; i < board_array.Length; i++)
                 {
                     writer.Write(board_array[i]);
                 }
                 writer.Write(card_type);
                 break;
-            case 2:
+            case (int)PackageIndex.LastTurnOfSetUp:
                 for (int i = 0; i < board_array.Length; i++)
                 {
                     writer.Write(board_array[i]);
                 }
                 writer.Write(card_type);
                 break;
-            case 3:
+            case (int)PackageIndex.PlayerTurnInGame:
                 for (int i = 0; i < board_array.Length; i++)
                 {
                     writer.Write(board_array[i]);
@@ -126,6 +112,23 @@ public class Networking : MonoBehaviour
 
         return stream.GetBuffer();
     }
+
+    /// <summary>
+    /// Serialize into byte array, only for sending a concrete state, like wait for another server call
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    protected byte[] Serialize(int index)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write(index);
+
+        return stream.GetBuffer();
+    }
+
+
     protected Package Deserialize(byte[] data)
     {
         Package package = new Package();
@@ -138,28 +141,28 @@ public class Networking : MonoBehaviour
         package.turn = reader.ReadBoolean();
         switch(package.index)
         {
-            case 0: //initializing game
+            case (int)PackageIndex.WaitOtherPlayerToEnterGame: //initializing game
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
-            case 1:
+            case (int)PackageIndex.PlayerTurnSetUp:
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
-            case 2:
+            case (int)PackageIndex.LastTurnOfSetUp:
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
-            case 3:
+            case (int)PackageIndex.PlayerTurnInGame:
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();

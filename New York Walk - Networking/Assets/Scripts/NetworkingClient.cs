@@ -123,7 +123,6 @@ public class NetworkingClient : Networking
 
             recieveDone.WaitOne();
         }
-        //CloseConnection();
     }
 
    
@@ -175,13 +174,29 @@ public class NetworkingClient : Networking
     public void SendPackage()//TODO make sure socket is connected
     {
         byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),false,-1);
-        socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+        if (socket.Connected)
+        {
+            socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+        }
+        else
+        {
+            logText.text = "Socket Isn't Connected";
+            Debug.LogWarning("Trying to send data to server but socket isn't connected");
+        }
     }
 
     public void SendSetUpPackage()
     {
         byte[] b = Serialize(1, "new move done", Player._instance.GetBoard(), false, -1);
-        socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+        if (socket.Connected)
+        {
+            socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+        }
+        else
+        {
+            logText.text = "Socket Isn't Connected";
+            Debug.LogWarning("Trying to send data to server but socket isn't connected");
+        }
     }
 
     private void SendCallback(IAsyncResult ar)
