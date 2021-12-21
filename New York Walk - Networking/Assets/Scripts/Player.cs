@@ -234,7 +234,94 @@ public class Player : MonoBehaviour
         return board;
     }
 
-   
+
+    public void AwaitForClientReconnection()
+    {
+        input_active = false;
+        //Active ui text saying other client isn't connected
+    }
+
+    /// <summary>
+    /// Function to update the reconnecting client, and client makes his move on the setup stage
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="newboard"></param>
+    /// <param name="token_l"></param>
+    /// <param name="current_card"></param>
+    public void RecieveReconnectionUpdateFromServerMoveSetUp(int index, int[] newboard, List<int> token_l, int current_card)
+    {
+        turn_type = Mathf.Abs(index);
+        CheckNewTokens();
+        //Add the material to the cards & card info of each card to the list
+        for (int i = 0; i < token_l.Count; i++)
+        {
+            Card card = SearchAddMat(token_l[i]);
+            Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
+            t.card = card;
+        }
+
+        Card c = SearchAddMat(current_card);
+        CreateToken(current_card, c);
+
+        //now we make a restricted space to set the token through the card calss
+        CreateRestrictedSpace(c.unavailableSquares);
+        input_active = true;
+    }
+
+    /// <summary>
+    /// Function to update the reconnecting client, and client makes his move
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="newboard"></param>
+    /// <param name="token_l"></param>
+    public void RecieveReconnectionUpdateFromServerMove(int index,int[] newboard,List<int> token_l,int current_card)
+    {
+        turn_type = Mathf.Abs(index);
+        CheckNewTokens();
+        //Add the material to the cards & card info of each card to the list
+        for (int i = 0; i < token_l.Count; i++)
+        {
+            Card card = SearchAddMat(token_l[i]);
+            Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
+            t.card = card;
+        }
+
+        //now select the token to move
+        Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
+        current_token = token_to_move;
+
+        input_active = true;
+        //no we set our move 
+    }
+
+    /// <summary>
+    /// Function to update the reconnecting client, client doesn't have input
+    /// </summary>
+    /// <param name="newboard"></param>
+    /// <param name="token_l"></param>
+    public void RecieveReconnectionUpdateFromServerNoMove(int[] newboard, List<int> token_l)
+    {
+        board = newboard;
+        CheckNewTokens();
+
+        //Add the material to the cards & card info of each card to the list
+        for(int i = 0; i < token_l.Count; i++)
+        {
+            Card card = SearchAddMat(token_l[i]);
+            Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
+            t.card = card;
+        }
+        
+        if (tokens_list.Count <= 5)
+        {
+            NetworkingClient._instance.SendSetUpPackage();
+        }
+        else
+        {
+            NetworkingClient._instance.SendPackage();
+        }
+    }
+
     public void RecieveUpdateFromServer(int turnstep,int[] new_board,int card)
     {
         turn_type = turnstep;

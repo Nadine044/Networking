@@ -144,15 +144,33 @@ public class NetworkingClient : Networking
         {
             Package package = Deserialize(obj.buffer);
 
-            int turnstep = package.index;
+            int index = package.index;
             int[] board_tmp = package.board_array;
 
 
             Action UpdatePlayer = () =>
             {
                 Debug.Log("Updating player");
-                Player._instance.RecieveUpdateFromServer(turnstep, board_tmp, package.card);
-                logText.text = "Updating player <ReadCallback()>";
+                switch(package.index)
+                {
+                    case -1:
+                        Player._instance.AwaitForClientReconnection();
+                        break;
+                    case -2:
+                        Player._instance.RecieveReconnectionUpdateFromServerNoMove(package.board_array, package.token_list_id);
+                        break;
+                    case -3:
+                        Player._instance.RecieveReconnectionUpdateFromServerMove(package.index,package.board_array, package.token_list_id,package.card);
+                        break;
+                    case -4:
+                        Player._instance.RecieveReconnectionUpdateFromServerMoveSetUp(package.index, package.board_array, package.token_list_id, package.card);
+                        break;
+                    default:
+                        Debug.Log(package.msg_to_log);
+                        Player._instance.RecieveUpdateFromServer(index, board_tmp, package.card);
+                        logText.text = "Updating player <ReadCallback()>";
+                        break;
+                }
             };
             QueueMainThreadFunction(UpdatePlayer);
 

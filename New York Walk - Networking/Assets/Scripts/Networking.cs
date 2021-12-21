@@ -13,9 +13,10 @@ public class Networking : MonoBehaviour
     
     public enum PackageIndex
     {
+        PlayerTurnReconnectSetUp = -4,//update the reconnecting player on the setup stage of the game
         PlayerTurnReconnect = -3,
-        SetUpReconnect = -2,
-        WaitReconnection = -1,
+        Reconnect_NotYourTurn = -2, //update the reconnecting player but he left the game when it wasn't his turn
+        WaitReconnection = -1,//do nothing just wait until the other player reconnects
         WaitOtherPlayerToEnterGame = 0,
         PlayerTurnSetUp = 1,
         LastTurnOfSetUp = 2,
@@ -28,6 +29,7 @@ public class Networking : MonoBehaviour
         public int[] board_array = new int[25];
         public bool turn;
         public int card;
+        public List<int> token_list_id;
     }
     public class OBJ
     {
@@ -122,12 +124,61 @@ public class Networking : MonoBehaviour
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
-
         writer.Write(index);
-
         return stream.GetBuffer();
     }
 
+    /// <summary>
+    /// This serialize is used when one client reconnects & he must be updated
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="board"></param>
+    /// <param name="token_list_id">array of the tokens_id the reconnecting client had</param>
+    /// <returns></returns>
+    protected byte[] Serialize(int index, int[] board, int[] token_list_id)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write(index);
+        for (int i = 0; i < board.Length; i++)
+        {
+            writer.Write(board[i]);
+        }
+        writer.Write(token_list_id.Length);
+        for (int i = 0; i < token_list_id.Length; i++)
+        {
+            writer.Write(token_list_id[i]);
+        }
+        return stream.GetBuffer();
+    }
+
+    /// <summary>
+    /// This serialize is used when one client reconnects & he must be updated and the move a token
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="board"></param>
+    /// <param name="token_list_id"></param>
+    /// <param name="current_token_to_move"></param>
+    /// <returns></returns>
+    protected byte[] Serialize(int index, int[] board, int[] token_list_id,int current_token_to_move)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write(index);
+        for (int i = 0; i < board.Length; i++)
+        {
+            writer.Write(board[i]);
+        }
+        writer.Write(token_list_id.Length);
+        for (int i = 0; i < token_list_id.Length; i++)
+        {
+            writer.Write(token_list_id[i]);
+        }
+        writer.Write(current_token_to_move);
+        return stream.GetBuffer();
+    }
 
     protected Package Deserialize(byte[] data)
     {
@@ -137,40 +188,85 @@ public class Networking : MonoBehaviour
 
         stream.Seek(0, SeekOrigin.Begin);
         package.index = reader.ReadInt32();
-        package.msg_to_log = reader.ReadString();
-        package.turn = reader.ReadBoolean();
+
         switch(package.index)
         {
             case (int)PackageIndex.WaitOtherPlayerToEnterGame: //initializing game
+                package.msg_to_log = reader.ReadString();
+                package.turn = reader.ReadBoolean();
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
+
             case (int)PackageIndex.PlayerTurnSetUp:
+                package.msg_to_log = reader.ReadString();
+                package.turn = reader.ReadBoolean();
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
+
             case (int)PackageIndex.LastTurnOfSetUp:
+                package.msg_to_log = reader.ReadString();
+                package.turn = reader.ReadBoolean();
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
+
             case (int)PackageIndex.PlayerTurnInGame:
+                package.msg_to_log = reader.ReadString();
+                package.turn = reader.ReadBoolean();
                 for (int i = 0; i < 25; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
+                }
+                package.card = reader.ReadInt32();
+                break;
+
+            case (int)PackageIndex.Reconnect_NotYourTurn: //just update the player he can't do anything
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                for(int i = 0; i < reader.ReadInt32(); i++)
+                {
+                    package.token_list_id.Add(reader.ReadInt32());
+                }
+                break;
+
+            case (int)PackageIndex.PlayerTurnReconnect:
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                for (int i = 0; i < reader.ReadInt32(); i++)
+                {
+                    package.token_list_id.Add(reader.ReadInt32());
+                }
+                package.card = reader.ReadInt32();
+                break;
+
+            case (int)PackageIndex.PlayerTurnReconnectSetUp:
+                for (int i = 0; i < 25; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                for (int i = 0; i < reader.ReadInt32(); i++)
+                {
+                    package.token_list_id.Add(reader.ReadInt32());
                 }
                 package.card = reader.ReadInt32();
                 break;
         }
-        Debug.Log(package.msg_to_log);
+        //Debug.Log(package.msg_to_log);
 
 
         return package;
