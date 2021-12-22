@@ -450,6 +450,7 @@ public class NetworkingServer : Networking
                                 }
                                 else
                                 {
+                                    turn_counter--;
                                     //Here we must pause the game until the client reconnects back
                                 }
                             }
@@ -462,6 +463,7 @@ public class NetworkingServer : Networking
                             {
                                 byte[] b = Serialize(3, "your turn nº " + turn_counter, board, true,
                                     client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
+                                int tmp_tokencounter = client_list[i].tokencounter;
 
                                 client_list[i].tokencounter++;
                                 if (client_list[i].tokencounter >= max_token_per_client)
@@ -476,6 +478,8 @@ public class NetworkingServer : Networking
                                 }
                                 else
                                 {
+                                    client_list[i].tokencounter = tmp_tokencounter;
+                                    turn_counter--;
                                     //Here we must pause the game until the client reconnects back
                                 }
                             }
