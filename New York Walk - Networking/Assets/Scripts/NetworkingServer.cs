@@ -330,18 +330,6 @@ public class NetworkingServer : Networking
             Debug.LogWarning("Couldn't close socket connection with client " + client + " " + e);
         }
 
-        if (!closingApp)//we are not closing the application, just the client disconnected
-        {
-            for (int i = 0; i < client_list.Count(); i++)
-            {
-                if (client_list[i] != client)
-                {
-                    WaitForClientReconnection(client_list[i]); //we tell the other client to wait
-                }
-            }
-            //wait for the client to reconnect
-            Reconnect(client);
-        }
     }
 
     void SelectFirstPlayerTurn()
@@ -488,7 +476,21 @@ public class NetworkingServer : Networking
 
         else
         {
-                client.end_connexion = true;
+            //passes twice problem heere
+            if (!closingApp)//we are not closing the application, just the client disconnected
+            {
+                for (int i = 0; i < client_list.Count(); i++)
+                {
+                    if (client_list[i] != client)
+                    {
+                        WaitForClientReconnection(client_list[i]); //we tell the other client to wait
+                    }
+                }
+                //wait for the client to reconnect
+                Reconnect(client);
+            }
+
+            client.end_connexion = true;
                 client.recieveDone.Set();
         }
     }
