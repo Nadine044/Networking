@@ -116,10 +116,12 @@ public class NetworkingClient : Networking
                 break;
 
             OBJ obj  = new OBJ(); //TODO make sure socket is connected
+            if (socket.Connected)
+            {
                 socket.BeginReceive(obj.buffer, 0, OBJ.buffersize, 0, new AsyncCallback(ReadCallback), obj);
-
-            //else
-            //    break;
+            }
+            else
+                break;
 
             recieveDone.WaitOne();
         }

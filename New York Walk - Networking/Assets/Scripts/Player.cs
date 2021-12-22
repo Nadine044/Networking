@@ -186,8 +186,6 @@ public class Player : MonoBehaviour
                     }
                     if(turn_type ==1)
                         NetworkingClient._instance.SendSetUpPackage();
-                    else if(turn_type ==2)
-                        NetworkingClient._instance.SendPackage();
                     return;
                 }
             }
@@ -251,6 +249,7 @@ public class Player : MonoBehaviour
     public void RecieveReconnectionUpdateFromServerMoveSetUp(int index, int[] newboard, List<int> token_l, int current_card)
     {
         turn_type = Mathf.Abs(index);
+        board = newboard;
         CheckNewTokens();
         //Add the material to the cards & card info of each card to the list
         for (int i = 0; i < token_l.Count; i++)
@@ -259,7 +258,6 @@ public class Player : MonoBehaviour
             Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
             t.card = card;
         }
-
         Card c = SearchAddMat(current_card);
         CreateToken(current_card, c);
 
@@ -277,6 +275,7 @@ public class Player : MonoBehaviour
     public void RecieveReconnectionUpdateFromServerMove(int index,int[] newboard,List<int> token_l,int current_card)
     {
         turn_type = Mathf.Abs(index);
+        board = newboard;
         CheckNewTokens();
         //Add the material to the cards & card info of each card to the list
         for (int i = 0; i < token_l.Count; i++)
@@ -289,9 +288,7 @@ public class Player : MonoBehaviour
         //now select the token to move
         Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
         current_token = token_to_move;
-
         input_active = true;
-        //no we set our move 
     }
 
     /// <summary>
@@ -301,6 +298,7 @@ public class Player : MonoBehaviour
     /// <param name="token_l"></param>
     public void RecieveReconnectionUpdateFromServerNoMove(int[] newboard, List<int> token_l)
     {
+        board = newboard;
         board = newboard;
         CheckNewTokens();
 

@@ -25,6 +25,7 @@ public class NetworkingServer : Networking
         public List<int> client_cards = new List<int>();
         public List<Token> tokens_list = new List<Token>();
         public int tokencounter = 0;
+        public string client_name_debug;
         public void CreateToken (int id, string name, string first_stop, string final_dst)
         {
             Token t = new Token();
@@ -131,7 +132,7 @@ public class NetworkingServer : Networking
         Socket sckt = (Socket)tmp_list[1];
 
         c.client_socket = sckt.EndAccept(ar);
-
+        c.end_connexion = false;
         //get a int list of the client tokens
         List<int> tmp_token_list = new List<int>();
         for (int j = 0; j < c.tokens_list.Count(); j++)
@@ -141,19 +142,13 @@ public class NetworkingServer : Networking
 
         if (c.client_turn) //let the player make the move 
         {
-            c.client_turn = false;
             if (turn_counter < 6) //seting up games
             {
                 byte[] b = Serialize(-4, board,tmp_token_list.ToArray(), cards_for_both[turn_counter]);
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c); 
             }
-            else if(turn_counter == 6) //i think it never will be 6 but lest put the case
-            {
-                Debug.Log("reconnect in turn 6");
-                //byte[] b = Serialize(3, "your turn reconnect", board, true, cards_for_both[turn_counter - 1]);
-                //c.client_socket.BeginSend()
-            }
-            else if(turn_counter >6)
+
+            else if(turn_counter >=6)
             {
                 int tmp_token_counter = c.tokencounter; //-1 it's because the counter already augmented after we told the player it was his move,
                 //but as the player disconnected we couldn't restore it properly
@@ -219,9 +214,11 @@ public class NetworkingServer : Networking
 
     void ReconnectSendCallback(IAsyncResult ar)
     {
+        turn_counter++;
+
         Client c = (Client)ar.AsyncState;
         c.client_socket.EndAccept(ar);
-
+        c.client_turn = false;
         Thread t = new Thread(OnUpdateClient);
         t.Start(c);
     }
@@ -355,7 +352,6 @@ public class NetworkingServer : Networking
         int rand_int = r.Next(0, 1);
         byte[] b = Serialize(1, turn_counter + "giving cards", board, true, card_id); //client 1
         client_list[rand_int].client_turn = true;
-        
         Action func = () =>
         {
             client_list[rand_int].CreateToken(
@@ -380,6 +376,10 @@ public class NetworkingServer : Networking
         }
         for (int i=0; i < client_list.Count(); i++)
         {
+            if(i ==0)
+                client_list[i].client_name_debug = "A";
+            else client_list[i].client_name_debug = "B";
+
             Debug.Log("Starting update thead " + i);
             Thread t = new Thread(OnUpdateClient);
             t.Start(client_list[i]);
@@ -404,6 +404,10 @@ public class NetworkingServer : Networking
                 Package package = Deserialize(client.buffer);
 
                 board = package.board_array;
+                if(turn_counter>=6)
+                {
+                    package.index = 3;
+                }
                 switch (package.index)
                 {
                     case 1: //means we have to check what the turn counter is and tell the other client which card must he use and board update
@@ -419,7 +423,7 @@ public class NetworkingServer : Networking
 
                                 rand_tmp = i;
                                 int _enter = turn_counter;
-                                Action func = () =>
+                                Action func = () => //issue quan enviem un package a un client i es desconnecta queda aquest token guardat com si ja el tingues i no,
                                 {
                                     int tmp = _enter;
                                     if (tmp > 5)
