@@ -37,7 +37,7 @@ public class NetworkingServer : Networking
             tokens_list.Add(t);
         }
 
-        //maybe struct is better?¿
+        //maybe struct is better?Â¿
         public class Token //Each player has 3 tokens
         {
             public int identifier_n;
@@ -157,11 +157,11 @@ public class NetworkingServer : Networking
             {
                 int tmp_token_counter = c.tokencounter; //-1 it's because the counter already augmented after we told the player it was his move,
                 //but as the player disconnected we couldn't restore it properly
-                if (tmp_token_counter < 0)
+                if (c.tokencounter < 0)
                 {
                     tmp_token_counter = 0;
                 }
-                byte[] b = Serialize(-3, board, tmp_token_list.ToArray());
+                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(),cards_for_both[c.tokencounter]);
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
             }
         }
@@ -460,7 +460,7 @@ public class NetworkingServer : Networking
                         {
                             if (client_list[i] != client)
                             {
-                                byte[] b = Serialize(3, "your turn nº " + turn_counter, board, true,
+                                byte[] b = Serialize(3, "your turn nÂº " + turn_counter, board, true,
                                     client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
 
                                 client_list[i].tokencounter++;
