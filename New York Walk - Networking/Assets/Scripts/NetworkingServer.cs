@@ -433,16 +433,8 @@ public class NetworkingServer : Networking
                                 };
                                 QueueMainThreadFunction(func);
                                 turn_counter++;
-                                byte[] b;
-                                if (turn_counter == 6)
-                                {
-                                    b = Serialize(2, "your turn client 2", board, true, card_id);
-                                }
-                                else
-                                {
-                                    b = Serialize(1, "your turn client 2", board, true, card_id);
-                                }
-
+                                byte[] b = Serialize(1, "your turn client 2", board, true, card_id);
+                                
                                 //We send data to the other client, and let him send us back his input
                                 if(client_list[i].client_socket.Connected)
                                 {
