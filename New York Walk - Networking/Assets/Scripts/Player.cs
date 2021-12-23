@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
 
     int current_city_cards = 0;
     public GameObject unavailableSquareToken;
-    bool isUsingStopCard = false;
+    bool isUsingFilmingCard = false;
     int turnsStopCard = 3;
 
     Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
@@ -110,6 +110,7 @@ public class Player : MonoBehaviour
                     case 3:
                         Debug.Log("type 3");
                         SetTokenPos(GameManager._instance.boardSquares);
+                        //decrease city cards turn use here??
                         break;
                 }
             }
@@ -123,7 +124,7 @@ public class Player : MonoBehaviour
                 SelectCityCard();
             }
 
-            if (isUsingStopCard && Input.GetKeyDown(KeyCode.V))
+            if (isUsingFilmingCard && Input.GetKeyDown(KeyCode.V))
             {
                 UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken);
             }
@@ -139,7 +140,6 @@ public class Player : MonoBehaviour
         {
             if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
             {
-                isUsingStopCard = true;
                 Debug.Log("STOP CARD USED!!");
             }
 
@@ -155,6 +155,7 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.name == "Filming1" || hit.collider.name == "Filming2")
             {
+                isUsingFilmingCard = true;
                 Debug.Log("FILMING CARD USED!!");
             }
 
@@ -192,7 +193,7 @@ public class Player : MonoBehaviour
         if (turnsStopCard < 0)
             board[id] = -2;
 
-        isUsingStopCard = false;
+        isUsingFilmingCard = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
