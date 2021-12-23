@@ -455,7 +455,6 @@ public class NetworkingServer : Networking
                                     client_list[i].tokencounter = 0;
                                 }
 
-                                turn_counter++;
                                 if (client_list[i].client_socket.Connected)//We send data to the other client, and let him send us back his input
                                 {
                                     client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
@@ -497,6 +496,7 @@ public class NetworkingServer : Networking
 
     void UpdateToOtherClientCallback(IAsyncResult ar)
     {
+        turn_counter++;
         Client client = (Client)ar.AsyncState;
         client.client_turn = true;       
     }
