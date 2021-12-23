@@ -58,8 +58,11 @@ public class Player : MonoBehaviour
 
     int current_city_cards = 0;
     public GameObject unavailableSquareToken;
+
+    bool isUsingSubwayCard = false;
     bool isUsingFilmingCard = false;
-    int turnsStopCard = 3;
+    
+    int turnsFilmingCard = 3;
 
     Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
     Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
@@ -121,10 +124,11 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
+                input_active = true;
                 SelectCityCard();
             }
 
-            if (isUsingFilmingCard && Input.GetKeyDown(KeyCode.V))
+            if ((isUsingFilmingCard || isUsingSubwayCard) && Input.GetKeyDown(KeyCode.V))
             {
                 UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken);
             }
@@ -161,6 +165,8 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
             {
+                //TODO: Si CUALQUIER posición del token del player coincide con parada de metro, activa esto (posiciones: 9, 13, 16)
+                isUsingSubwayCard = true;
                 Debug.Log("SUBWAY CARD USED!!");
             }
         }
@@ -180,20 +186,36 @@ public class Player : MonoBehaviour
             colliderName = hit.collider.name;
             for (id = 0; id < squares.Count; id++)
             {
-                if (squares[id].name == colliderName && turnsStopCard > 0)
+                if (squares[id].name == colliderName && turnsFilmingCard > 0)
                 {
-                    board[id] = -3;
-                    this.unavailableSquareToken.transform.position = squares[id].transform.position;
-                    Debug.Log(colliderName + " is not accessible during " + turnsStopCard);
-                    //cuando decrece la variable de turnos??????
+                    //FILMING CARD
+                    if (isUsingFilmingCard)
+                    {
+                        board[id] = -3;
+                        this.unavailableSquareToken.transform.position = squares[id].transform.position;
+                        Debug.Log(colliderName + " is not accessible during " + turnsFilmingCard);
+                        //TODO: cuando decrece la variable de turnos??????
+                    }
+
+                    //SUBWAYCARD
+                    else if (isUsingSubwayCard)
+                    {
+                        if (id == 9 || id == 13 || id == 16)
+                        {
+                            //current_token.gameObject.transform.position = squares[id].transform.position;
+                            Debug.Log("Player teleported to " + colliderName);
+                            //TODO: en este if tiene que teletransportar la posición del token que quiere mover
+                        }
+                    }
                 }
             }
         }
 
-        if (turnsStopCard < 0)
+        if (turnsFilmingCard == 0)
             board[id] = -2;
 
         isUsingFilmingCard = false;
+        isUsingSubwayCard = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
