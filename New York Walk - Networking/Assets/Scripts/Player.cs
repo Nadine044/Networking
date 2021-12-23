@@ -57,6 +57,9 @@ public class Player : MonoBehaviour
     public CityCard cityCard3 = new CityCard();
 
     int current_city_cards = 0;
+    public GameObject unavailableSquareToken;
+    bool isUsingStopCard = false;
+    int turnsStopCard = 3;
 
     Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
     Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
@@ -64,7 +67,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = false;
+    bool input_active = true;
     public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
@@ -117,12 +120,17 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
-                UseCityCard();
+                SelectCityCard();
+            }
+
+            if (isUsingStopCard && Input.GetKeyDown(KeyCode.V))
+            {
+                UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken);
             }
 
         }
     }
-    public void UseCityCard()
+    public void SelectCityCard()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -131,6 +139,7 @@ public class Player : MonoBehaviour
         {
             if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
             {
+                isUsingStopCard = true;
                 Debug.Log("STOP CARD USED!!");
             }
 
@@ -156,6 +165,34 @@ public class Player : MonoBehaviour
         }
 
         current_city_cards--;
+    }
+
+    public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken)
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        string colliderName;
+        int id = 0;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            colliderName = hit.collider.name;
+            for (id = 0; id < squares.Count; id++)
+            {
+                if (squares[id].name == colliderName && turnsStopCard > 0)
+                {
+                    board[id] = -3;
+                    this.unavailableSquareToken.transform.position = squares[id].transform.position;
+                    Debug.Log(colliderName + " is not accessible during " + turnsStopCard);
+                    //cuando decrece la variable de turnos??????
+                }
+            }
+        }
+
+        if (turnsStopCard < 0)
+            board[id] = -2;
+
+        isUsingStopCard = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
@@ -209,7 +246,7 @@ public class Player : MonoBehaviour
                 if (squares[i].name == colliderName)
                 {
                     //first check if the position is already full
-                    if (board[i] != -2)
+                    if (board[i] != -2 || board[i] == -3)
                     {
                         return;
                     }
