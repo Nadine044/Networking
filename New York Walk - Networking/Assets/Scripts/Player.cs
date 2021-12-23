@@ -61,6 +61,7 @@ public class Player : MonoBehaviour
 
     bool isUsingSubwayCard = false;
     bool isUsingFilmingCard = false;
+    bool isUsingVipCard = false;
     
     int turnsFilmingCard = 3;
 
@@ -128,7 +129,7 @@ public class Player : MonoBehaviour
                 SelectCityCard();
             }
 
-            if ((isUsingFilmingCard || isUsingSubwayCard) && Input.GetKeyDown(KeyCode.V))
+            if ((isUsingFilmingCard || isUsingSubwayCard || isUsingVipCard) && Input.GetKeyDown(KeyCode.V))
             {
                 UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken);
             }
@@ -149,6 +150,7 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.name == "VIP1" || hit.collider.name == "VIP2")
             {
+                isUsingVipCard = true;
                 Debug.Log("VIP CARD USED!!");
             }
 
@@ -192,7 +194,7 @@ public class Player : MonoBehaviour
                     if (isUsingFilmingCard)
                     {
                         board[id] = -3;
-                        this.unavailableSquareToken.transform.position = squares[id].transform.position;
+                        unavailableSquareToken.transform.position = squares[id].transform.position;
                         Debug.Log(colliderName + " is not accessible during " + turnsFilmingCard);
                         //TODO: cuando decrece la variable de turnos??????
                     }
@@ -207,6 +209,16 @@ public class Player : MonoBehaviour
                             //TODO: en este if tiene que teletransportar la posición del token que quiere mover
                         }
                     }
+                    else if (isUsingVipCard)
+                    {
+                        Debug.Log("Using VIP Card");
+                        if (board[id] == -3)
+                        {
+                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+                            Debug.Log("Restriction removed!!");
+                            board[id] = -2;
+                        }
+                    }
                 }
             }
         }
@@ -216,6 +228,7 @@ public class Player : MonoBehaviour
 
         isUsingFilmingCard = false;
         isUsingSubwayCard = false;
+        isUsingVipCard = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
