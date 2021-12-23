@@ -97,12 +97,15 @@ public class Player : MonoBehaviour
                 switch (turn_type)
                 {
                     case 1:
+                        Debug.Log("type 1");
                         SetInitialTokenPos(GameManager._instance.boardSquares);
                         break;
                     case 2:
+                        Debug.Log("type 2");
                         SetInitialTokenPos(GameManager._instance.boardSquares);
                         break;
                     case 3:
+                        Debug.Log("type 3");
                         SetTokenPos(GameManager._instance.boardSquares);
                         break;
                 }
@@ -248,7 +251,8 @@ public class Player : MonoBehaviour
     /// <param name="current_card"></param>
     public void RecieveReconnectionUpdateFromServerMoveSetUp(int index, int[] newboard, List<int> token_l, int current_card)
     {
-        turn_type = Mathf.Abs(index);
+
+        turn_type = 1;
         board = newboard;
         CheckNewTokens();
         //Add the material to the cards & card info of each card to the list

@@ -261,9 +261,13 @@ public class Networking : MonoBehaviour
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.token_list_id = new List<int>();
-                for (int i = 0; i < reader.ReadInt32(); i++)
+                int tmp_token_counter = reader.ReadInt32();
+                if (tmp_token_counter > 0)
                 {
-                    package.token_list_id.Add(reader.ReadInt32());
+                    for (int i = 0; i < tmp_token_counter; i++)
+                    {
+                        package.token_list_id.Add(reader.ReadInt32());
+                    }
                 }
                 package.card = reader.ReadInt32();
                 break;
