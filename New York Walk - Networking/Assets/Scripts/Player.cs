@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = true;
+    bool input_active = false;
     public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
@@ -393,7 +393,6 @@ public class Player : MonoBehaviour
     /// <param name="token_l"></param>
     public void RecieveReconnectionUpdateFromServerNoMove(int[] newboard, List<int> token_l)
     {
-        board = newboard;
         board = newboard;
         CheckNewTokens();
 

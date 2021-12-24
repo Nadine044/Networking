@@ -130,6 +130,12 @@ public class NetworkingClient : Networking
    
     void ReadCallback(IAsyncResult ar)
     {
+        if (ar == null)
+        {
+            close_connection = true;
+            recieveDone.Set();
+            return;
+        }
         Debug.Log("Read Callback");
         Action w = () =>
         {
@@ -139,7 +145,6 @@ public class NetworkingClient : Networking
         OBJ obj = (OBJ)ar.AsyncState;
 
         int bytesread = 0;
-
         bytesread = socket.EndReceive(ar);
         //PETA AQUI, mirar com cancelar el begin recieve quan s'ha tancat el socket...
         if(bytesread >0)

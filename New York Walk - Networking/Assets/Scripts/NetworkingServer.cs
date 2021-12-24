@@ -147,6 +147,7 @@ public class NetworkingServer : Networking
             {
                 //because it was setted before when we gave the turn to the client and he disconnected
                 c.tokens_list.RemoveAt(c.tokens_list.Count() - 1);
+                tmp_token_list.RemoveAt(tmp_token_list.Count - 1);
 
                 int card_id = cards_for_both[turn_counter];
                 byte[] b = Serialize(-4, board,tmp_token_list.ToArray(),card_id);
@@ -394,6 +395,12 @@ public class NetworkingServer : Networking
 
     void OnUpdateCallbackClient(IAsyncResult ar)
     {
+        if(ar == null)
+        {
+            Client c = (Client)ar.AsyncState;
+            Debug.Log("COULD GET THE ASYNC_STATE EVEN IF ASYNCRESULT IS NULL ");
+            return;
+        }
         Client client = (Client)ar.AsyncState;
         int bytesRead = client.client_socket.EndReceive(ar);
 
