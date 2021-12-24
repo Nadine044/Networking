@@ -192,6 +192,7 @@ public class NetworkingServer : Networking
     /// <param name="ar"></param>
     void ReconnectUpdatePlayerBoardCallback(IAsyncResult ar)
     {
+        //here we must make sure the server
         Client c = (Client)ar.AsyncState;
         Thread t = new Thread(OnUpdateClient);
         t.Start(c);
@@ -204,9 +205,8 @@ public class NetworkingServer : Networking
                 //other player turn
                 if (turn_counter < 6) //look that card id is okay
                 {
-                    int card_id = cards_for_both[turn_counter];
-                    b = Serialize(1, "waiting for my turn setup yuhu", board, true, card_id);
-
+                    //new state resume play;
+                    b = Serialize(-5);
                     if (client_list[i].client_socket.Connected)
                     {
                         client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);
@@ -214,13 +214,7 @@ public class NetworkingServer : Networking
                 }
                 else if (turn_counter >=6) //look tha
                 {
-                    if(client_list[i].tokencounter >=max_token_per_client)
-                    {
-                        client_list[i].tokencounter = 0;
-                    }
-                    b = Serialize(3, "waiting for my tunr yuhu", board, true,
-                        client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
-
+                    b = Serialize(-5);
                     if(client_list[i].client_socket.Connected)
                     {
                         client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);

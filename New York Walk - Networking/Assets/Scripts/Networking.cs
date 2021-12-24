@@ -13,6 +13,7 @@ public class Networking : MonoBehaviour
     
     public enum PackageIndex
     {
+        ResumePlay = -5,
         PlayerTurnReconnectSetUp = -4,//update the reconnecting player on the setup stage of the game
         PlayerTurnReconnect = -3,
         Reconnect_NotYourTurn = -2, //update the reconnecting player but he left the game when it wasn't his turn
@@ -236,6 +237,7 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
+                package.token_list_id = new List<int>();
                 int tmp = reader.ReadInt32();
                 for(int i = 0; i < tmp; i++)
                 {

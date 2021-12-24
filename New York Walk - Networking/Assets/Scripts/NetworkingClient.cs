@@ -172,6 +172,9 @@ public class NetworkingClient : Networking
                     case -4:
                         Player._instance.RecieveReconnectionUpdateFromServerMoveSetUp(package.index, package.board_array, package.token_list_id, package.card);
                         break;
+                    case -5:
+                        Player._instance.ResumePlay();
+                        break;
                     default:
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServer(index, board_tmp, package.card);

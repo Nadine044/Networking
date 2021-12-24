@@ -333,6 +333,11 @@ public class Player : MonoBehaviour
         //Active ui text saying other client isn't connected
     }
 
+    public void ResumePlay()
+    {
+        input_active = true;
+    }
+
     /// <summary>
     /// Function to update the reconnecting client, and client makes his move on the setup stage
     /// </summary>
@@ -402,15 +407,6 @@ public class Player : MonoBehaviour
             Card card = SearchAddMat(token_l[i]);
             Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
             t.card = card;
-        }
-        
-        if (tokens_list.Count <= 5)
-        {
-            NetworkingClient._instance.SendSetUpPackage();
-        }
-        else
-        {
-            NetworkingClient._instance.SendPackage();
         }
     }
 
