@@ -57,6 +57,15 @@ public class Player : MonoBehaviour
     public CityCard cityCard3 = new CityCard();
 
     int current_city_cards = 0;
+    public GameObject unavailableSquareToken;
+    public GameObject stopCones;
+
+    bool isUsingSubwayCard = false;
+    bool isUsingFilmingCard = false;
+    bool isUsingVipCard = false;
+    bool isUsingStop = false;
+    
+    int turnsFilmingCard = 3;
 
     Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
     Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
@@ -64,7 +73,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = false;
+    bool input_active = true;
     public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
@@ -107,6 +116,7 @@ public class Player : MonoBehaviour
                     case 3:
                         Debug.Log("type 3");
                         SetTokenPos(GameManager._instance.boardSquares);
+                        //decrease city cards turn use here??
                         break;
                 }
             }
@@ -117,12 +127,18 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
-                UseCityCard();
+                input_active = true;
+                SelectCityCard();
+            }
+
+            if ((isUsingFilmingCard || isUsingSubwayCard || isUsingVipCard || isUsingStop) && Input.GetKeyDown(KeyCode.V))
+            {
+                UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken, stopCones);
             }
 
         }
     }
-    public void UseCityCard()
+    public void SelectCityCard()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -131,11 +147,13 @@ public class Player : MonoBehaviour
         {
             if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
             {
+                isUsingStop = true;
                 Debug.Log("STOP CARD USED!!");
             }
 
             else if (hit.collider.name == "VIP1" || hit.collider.name == "VIP2")
             {
+                isUsingVipCard = true;
                 Debug.Log("VIP CARD USED!!");
             }
 
@@ -146,16 +164,89 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.name == "Filming1" || hit.collider.name == "Filming2")
             {
+                isUsingFilmingCard = true;
                 Debug.Log("FILMING CARD USED!!");
             }
 
             else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
             {
+                //TODO: Si CUALQUIER posición del token del player coincide con parada de metro, activa esto (posiciones: 9, 13, 16)
+                isUsingSubwayCard = true;
                 Debug.Log("SUBWAY CARD USED!!");
             }
         }
 
         current_city_cards--;
+    }
+
+    public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken, GameObject cones)
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        string colliderName;
+        int id = 0;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            colliderName = hit.collider.name;
+            for (id = 0; id < squares.Count; id++)
+            {
+                if (squares[id].name == colliderName && turnsFilmingCard > 0)
+                {
+                    //FILMING CARD
+                    if (isUsingFilmingCard)
+                    {
+                        board[id] = -3;
+                        unavailableSquareToken.transform.position = squares[id].transform.position;
+                        Debug.Log(colliderName + " is not accessible during " + turnsFilmingCard);
+                        //TODO: cuando decrece la variable de turnos??????
+                    }
+
+                    //SUBWAYCARD
+                    else if (isUsingSubwayCard)
+                    {
+                        if (id == 9 || id == 13 || id == 16)
+                        {
+                            //current_token.gameObject.transform.position = squares[id].transform.position;
+                            Debug.Log("Player teleported to " + colliderName);
+                            //TODO: en este if tiene que teletransportar la posición del token que quiere mover
+                        }
+                    }
+                    else if (isUsingVipCard)
+                    {
+                        Debug.Log("Using VIP Card");
+                        if (board[id] == -3)
+                        {
+                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+                            Debug.Log("Restriction removed!!");
+                            board[id] = -2;
+                        }
+                    }
+                    else if (isUsingStop)
+                    {
+                        if (board[id] == -3)
+                        {
+                            cones.transform.position = squares[id].transform.position + new Vector3(-0.63f, -0.08f, -0.58f);
+                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+                            board[id] = -2;
+                            Debug.Log("Cones colocated on " + squares[id].name + " square, UNAVAILABLE ONE");
+                        }
+                        else
+                        {
+                            Debug.Log("Cannot putr cones on this AVAILABLE SQUARE");
+                        }
+                    }
+                }
+            }
+        }
+
+        if (turnsFilmingCard == 0)
+            board[id] = -2;
+
+        isUsingFilmingCard = false;
+        isUsingSubwayCard = false;
+        isUsingVipCard = false;
+        isUsingStop = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
@@ -209,7 +300,7 @@ public class Player : MonoBehaviour
                 if (squares[i].name == colliderName)
                 {
                     //first check if the position is already full
-                    if (board[i] != -2)
+                    if (board[i] != -2 || board[i] == -3)
                     {
                         return;
                     }
