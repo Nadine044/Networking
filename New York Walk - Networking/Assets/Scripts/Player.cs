@@ -58,10 +58,12 @@ public class Player : MonoBehaviour
 
     int current_city_cards = 0;
     public GameObject unavailableSquareToken;
+    public GameObject stopCones;
 
     bool isUsingSubwayCard = false;
     bool isUsingFilmingCard = false;
     bool isUsingVipCard = false;
+    bool isUsingStop = false;
     
     int turnsFilmingCard = 3;
 
@@ -129,9 +131,9 @@ public class Player : MonoBehaviour
                 SelectCityCard();
             }
 
-            if ((isUsingFilmingCard || isUsingSubwayCard || isUsingVipCard) && Input.GetKeyDown(KeyCode.V))
+            if ((isUsingFilmingCard || isUsingSubwayCard || isUsingVipCard || isUsingStop) && Input.GetKeyDown(KeyCode.V))
             {
-                UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken);
+                UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken, stopCones);
             }
 
         }
@@ -145,6 +147,7 @@ public class Player : MonoBehaviour
         {
             if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
             {
+                isUsingStop = true;
                 Debug.Log("STOP CARD USED!!");
             }
 
@@ -176,7 +179,7 @@ public class Player : MonoBehaviour
         current_city_cards--;
     }
 
-    public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken)
+    public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken, GameObject cones)
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -219,6 +222,20 @@ public class Player : MonoBehaviour
                             board[id] = -2;
                         }
                     }
+                    else if (isUsingStop)
+                    {
+                        if (board[id] == -3)
+                        {
+                            cones.transform.position = squares[id].transform.position + new Vector3(-0.63f, -0.08f, -0.58f);
+                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+                            board[id] = -2;
+                            Debug.Log("Cones colocated on " + squares[id].name + " square, UNAVAILABLE ONE");
+                        }
+                        else
+                        {
+                            Debug.Log("Cannot putr cones on this AVAILABLE SQUARE");
+                        }
+                    }
                 }
             }
         }
@@ -229,6 +246,7 @@ public class Player : MonoBehaviour
         isUsingFilmingCard = false;
         isUsingSubwayCard = false;
         isUsingVipCard = false;
+        isUsingStop = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
