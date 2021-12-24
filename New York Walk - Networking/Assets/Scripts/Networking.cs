@@ -10,7 +10,7 @@ using System.IO;
 
 public class Networking : MonoBehaviour
 {
-    
+    private static readonly int board_length = 25;
     public enum PackageIndex
     {
         ResumePlay = -5,
@@ -20,7 +20,6 @@ public class Networking : MonoBehaviour
         WaitReconnection = -1,//do nothing just wait until the other player reconnects
         WaitOtherPlayerToEnterGame = 0,
         PlayerTurnSetUp = 1,
-        LastTurnOfSetUp = 2,
         PlayerTurnInGame = 3
     };
     protected class Package
@@ -31,11 +30,6 @@ public class Networking : MonoBehaviour
         public bool turn;
         public int card;
         public List<int> token_list_id;
-    }
-    public class OBJ
-    {
-        public const int buffersize = 1024;
-        public byte[] buffer = new byte[buffersize];
     }
     protected ConcurrentQueue<Action> functionsToRunInMainThread = new ConcurrentQueue<Action>();
     // Update is called once per frame
@@ -72,7 +66,7 @@ public class Networking : MonoBehaviour
     /// <param name="turn">player's turn</param>
     /// <param name="card_type">token or card identifier to move</param>
     /// <returns>byte[] array</returns>
-    protected byte[] Serialize(int index, string msg_to_log, int[] board_array,bool turn,int card_type)
+    protected byte[] Serialize(int index, string msg_to_log, int[] board_array,int card_type)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -80,7 +74,6 @@ public class Networking : MonoBehaviour
         writer.Write(index);
         writer.Write(msg_to_log);
 
-        writer.Write(turn);
         switch(index)
         {
             case (int)PackageIndex.WaitOtherPlayerToEnterGame: //initializing game
@@ -97,13 +90,7 @@ public class Networking : MonoBehaviour
                 }
                 writer.Write(card_type);
                 break;
-            case (int)PackageIndex.LastTurnOfSetUp:
-                for (int i = 0; i < board_array.Length; i++)
-                {
-                    writer.Write(board_array[i]);
-                }
-                writer.Write(card_type);
-                break;
+
             case (int)PackageIndex.PlayerTurnInGame:
                 for (int i = 0; i < board_array.Length; i++)
                 {
@@ -181,6 +168,7 @@ public class Networking : MonoBehaviour
         return stream.GetBuffer();
     }
 
+
     protected Package Deserialize(byte[] data)
     {
         Package package = new Package();
@@ -192,48 +180,35 @@ public class Networking : MonoBehaviour
 
         switch(package.index)
         {
-            case (int)PackageIndex.WaitOtherPlayerToEnterGame: //initializing game
+            case (int)PackageIndex.WaitOtherPlayerToEnterGame: //0
                 package.msg_to_log = reader.ReadString();
-                package.turn = reader.ReadBoolean();
-                for (int i = 0; i < 25; i++)
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
 
-            case (int)PackageIndex.PlayerTurnSetUp:
+            case (int)PackageIndex.PlayerTurnSetUp://1
                 package.msg_to_log = reader.ReadString();
-                package.turn = reader.ReadBoolean();
-                for (int i = 0; i < 25; i++)
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
 
-            case (int)PackageIndex.LastTurnOfSetUp:
+            case (int)PackageIndex.PlayerTurnInGame://3
                 package.msg_to_log = reader.ReadString();
-                package.turn = reader.ReadBoolean();
-                for (int i = 0; i < 25; i++)
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
                 break;
 
-            case (int)PackageIndex.PlayerTurnInGame:
-                package.msg_to_log = reader.ReadString();
-                package.turn = reader.ReadBoolean();
-                for (int i = 0; i < 25; i++)
-                {
-                    package.board_array[i] = reader.ReadInt32();
-                }
-                package.card = reader.ReadInt32();
-                break;
-
-            case (int)PackageIndex.Reconnect_NotYourTurn: //just update the player he can't do anything
-                for (int i = 0; i < 25; i++)
+            case (int)PackageIndex.Reconnect_NotYourTurn: //-2
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
@@ -245,8 +220,8 @@ public class Networking : MonoBehaviour
                 }
                 break;
 
-            case (int)PackageIndex.PlayerTurnReconnect:
-                for (int i = 0; i < 25; i++)
+            case (int)PackageIndex.PlayerTurnReconnect://-3
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
@@ -260,8 +235,8 @@ public class Networking : MonoBehaviour
                 package.card = reader.ReadInt32();
                 break;
 
-            case (int)PackageIndex.PlayerTurnReconnectSetUp:
-                for (int i = 0; i < 25; i++)
+            case (int)PackageIndex.PlayerTurnReconnectSetUp: //-4
+                for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }

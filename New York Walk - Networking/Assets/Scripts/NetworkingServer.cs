@@ -11,20 +11,22 @@ using UnityEngine.UI;
 
 public class NetworkingServer : Networking
 {
-
     class Client
     {
         public Socket client_socket;
         public const int BufferSize = 1024;
         public byte[] buffer = new byte[BufferSize];
+
         public EventWaitHandle recieveDone = new AutoResetEvent(false);
         public bool end_connexion = false;
+
         public int client_type = 0;
         public bool client_turn = false;
-        //
         public List<int> client_cards = new List<int>();
+
         public List<Token> tokens_list = new List<Token>();
         public int tokencounter = 0;
+
         public string client_name_debug;
         public void CreateToken (int id, string name, string first_stop, string final_dst)
         {
@@ -38,7 +40,6 @@ public class NetworkingServer : Networking
             tokens_list.Add(t);
         }
 
-        //maybe struct is better?¿
         public class Token //Each player has 3 tokens
         {
             public int identifier_n;
@@ -50,39 +51,23 @@ public class NetworkingServer : Networking
 
     int turn_counter=0;
     int current_clients = 0;
-    private static EventWaitHandle waithandle = new AutoResetEvent(false);
-
+    int welcome_callback_counter = 0;
     List<Client> client_list = new List<Client>();
 
     //CARDS
     List<int> cards_for_both = new List<int>(); //each number is connected to a type of card
     int rand_tmp = -1;
-    int welcome_callback_counter = 0;
     private const int max_token_per_client = 3;
+
     //board
     int[] board = new int[25];
 
     bool closingApp = false;
-    //Debugin
+    //Debugging
     public Text logtext;
     void Start()
     {
-        //GETTING RANDOM CARDS
-        for (int i = 0; i < 6; i++)
-        {
-            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
-        }
-        List<int> result = cards_for_both.Distinct().ToList();
-        while (result.Count < 6)
-        {
-            //while the 6 numbers arent different keep making randoms
-            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
-            result = cards_for_both.Distinct().ToList();
-        }
-        //finally the 6 cards to give the players
-        cards_for_both = result;
-        //END GETTING RANDOM CARDS
-
+        GenerateRandomCards();
         //DEBUGING
         logtext.text = string.Empty;
         for(int i = 0; i < cards_for_both.Count(); i++)
@@ -96,6 +81,23 @@ public class NetworkingServer : Networking
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ipep = new IPEndPoint(IPAddress.Any, 26003);
         StartThreadingFunction(Connect);
+    }
+
+    void GenerateRandomCards()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
+        }
+        List<int> result = cards_for_both.Distinct().ToList();
+        while (result.Count < 6)
+        {
+            //while the 6 numbers aren't different keep making randoms
+            cards_for_both.Add(UnityEngine.Random.Range(0, 24));
+            result = cards_for_both.Distinct().ToList();
+        }
+        //finally the 6 cards to give the players
+        cards_for_both = result;
     }
 
     #region Connect
@@ -112,129 +114,6 @@ public class NetworkingServer : Networking
         }
     }
 
-    void Reconnect(Client c)
-    {
-        List<object> tmp_list = new List<object>();
-        tmp_list.Add(c);
-        tmp_list.Add(socket); //TODO CHANGE this dirty pas only client clas
-        socket.Listen(1);
-        socket.BeginAccept(new AsyncCallback(ReconnectCallback), tmp_list);
-    }
-
-   /// <summary>
-   /// Called when the client has reconnected
-   /// </summary>
-   /// <param name="ar">we pass client class & server socket as objects</param>
-    void ReconnectCallback(IAsyncResult ar)
-    {
-        List<object> tmp_list = (List<object>)ar.AsyncState;
-        Client c = (Client)tmp_list[0];
-        Socket sckt = (Socket)tmp_list[1];
-
-        c.client_socket = sckt.EndAccept(ar);
-        c.end_connexion = false;
-        //get a int list of the client tokens
-        List<int> tmp_token_list = new List<int>();
-
-        for (int j = 0; j < c.tokens_list.Count(); j++)
-        {
-            tmp_token_list.Add(c.tokens_list[j].identifier_n);
-        }
-
-        if (c.client_turn) //let the player make the move 
-        {
-            if (turn_counter < 6) //seting up games
-            {
-                //because it was setted before when we gave the turn to the client and he disconnected
-                c.tokens_list.RemoveAt(c.tokens_list.Count() - 1);
-                tmp_token_list.RemoveAt(tmp_token_list.Count - 1);
-
-                int card_id = cards_for_both[turn_counter];
-                byte[] b = Serialize(-4, board,tmp_token_list.ToArray(),card_id);
-                int tmp = turn_counter;
-                Action func = () =>
-                {
-                    c.CreateToken(
-                        cards_for_both[tmp],
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
-                        );
-                };
-                QueueMainThreadFunction(func);
-                c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c); 
-            }
-            else if(turn_counter >=6)
-            {
-                c.tokencounter--;
-                int tmp_token_counter = c.tokencounter; //-1 it's because the counter already augmented after we told the player it was his move,
-                //but as the player disconnected we couldn't restore it properly
-                if (c.tokencounter < 0)
-                {
-                    c.tokencounter = 0;
-                }
-                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(), c.tokens_list[c.tokencounter].identifier_n);
-                c.tokencounter++;
-                c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
-            }
-        }
-
-        else if(!c.client_turn) //first update the reconnecting player (how the board is), then tell the waiting player he can make the play
-        {
-            byte[] b = Serialize(-2, board, tmp_token_list.ToArray());
-            c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectUpdatePlayerBoardCallback), c);
-        }
-    }
-
-    /// <summary>
-    /// The waiting player for reconnection does his turn
-    /// </summary>
-    /// <param name="ar"></param>
-    void ReconnectUpdatePlayerBoardCallback(IAsyncResult ar)
-    {
-        //here we must make sure the server
-        Client c = (Client)ar.AsyncState;
-        Thread t = new Thread(OnUpdateClient);
-        t.Start(c);
-
-        for(int i =0; i < client_list.Count(); i++)
-        {
-            if(client_list[i] != c)
-            {
-                byte[] b;
-                //other player turn
-                if (turn_counter < 6) //look that card id is okay
-                {
-                    //new state resume play;
-                    b = Serialize(-5);
-                    if (client_list[i].client_socket.Connected)
-                    {
-                        client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);
-                    }
-                }
-                else if (turn_counter >=6) //look tha
-                {
-                    b = Serialize(-5);
-                    if(client_list[i].client_socket.Connected)
-                    {
-                        client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);
-                    }
-                }
-            }
-        }
-    }
-
-
-    void ReconnectSendCallback(IAsyncResult ar)
-    {
-        turn_counter++;
-
-        Client c = (Client)ar.AsyncState;
-        c.client_socket.EndAccept(ar);
-        //c.client_turn = false;
-        Thread t = new Thread(OnUpdateClient);
-        t.Start(c);
-    }
     void CloseConnection()
     {
         //maybe need to abort all threads
@@ -263,33 +142,27 @@ public class NetworkingServer : Networking
         }
     }
 
-    private void ConnectCallback(IAsyncResult ar) //here we must add the two clients & wait for clients response
+    /// <summary>
+    /// Asyncfunction called when the client connects to the server
+    /// </summary>
+    /// <param name="ar"></param>
+    private void ConnectCallback(IAsyncResult ar) 
     {
-        //here we must check that the 2 clients are connected
-        //if not we tell the other client that must wait and his input is disabled 
-
         Client client = new Client();
         client_list.Add(client);
-
         client.client_socket = socket.EndAccept(ar);
-
-
-        //TODO WAIT 4 ALL PLAYERS TO CONNECT
-
-        byte[] b = Serialize(0, "wait for the other player",board,false,-1); //client =0 means its not decided who is who TEMPORAL
-        //SendPackage(b, client.client_socket);
-
+        byte[] b = Serialize(0, "wait for the other player",board,-1); //client =0 means its not decided who is who TEMPORAL
         client.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(WelcomeCallback), client.client_socket);
     }
-    #endregion
 
     private void WelcomeCallback(IAsyncResult ar) //bit dirty, may be changed
     {
+        //for a safety double check 
         welcome_callback_counter++;
-
         if (client_list.Count == 2 && welcome_callback_counter == 2)
             SelectFirstPlayerTurn();
     }
+    #endregion
 
     // Update is called once per frame
     void Update()
@@ -311,38 +184,37 @@ public class NetworkingServer : Networking
         }
     }
 
-
+    #region ClientUpdate
     void OnUpdateClient(object obj)
     {
         Client client = (Client)obj;
         while (!client.end_connexion)
         {
             client.recieveDone.Reset();
-
             if (client.end_connexion)
+            {
                 break;
-
+            }
             if (client.client_socket.Connected) //to avoid crashes if the socket disconects 
+            {
                 client.client_socket.BeginReceive(client.buffer, 0, Client.BufferSize, 0, new AsyncCallback(OnUpdateCallbackClient), client);
-
+            }
             else
             {
                 break;
             }
             client.recieveDone.WaitOne();
         }
-
         try
         {
             client.client_socket.Close();
             Debug.Log("Closing socket with client " + client);
 
         }
-        catch(SocketException e)
+        catch (SocketException e)
         {
             Debug.LogWarning("Couldn't close socket connection with client " + client + " " + e);
         }
-
     }
 
     void SelectFirstPlayerTurn()
@@ -350,8 +222,8 @@ public class NetworkingServer : Networking
         Debug.Log("Selecting first player");
         int card_id = cards_for_both[turn_counter];
         var r = new System.Random();
-        int rand_int = r.Next(0, 1);
-        byte[] b = Serialize(1, turn_counter + "giving cards", board, true, card_id); //client 1
+        int rand_int = r.Next(0, 1); //TODO MAKE TRUE RANDOM TURN (r.Next(0,100) and chekc if its multiple of 2 if(rand_int % 2 ==0) {pick one}; else {pick other}
+        byte[] b = Serialize(1, turn_counter + "giving cards", board, card_id); //client 1
         client_list[rand_int].client_turn = true;
         Action func = () =>
         {
@@ -366,7 +238,6 @@ public class NetworkingServer : Networking
         };
         QueueMainThreadFunction(func);
 
-        //TODO make sure the client socket is connected before we send anything to him otherwise this will crash
         if (client_list[rand_int].client_socket.Connected)
         {
             client_list[rand_int].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SetUpGameCardsClient), rand_int);
@@ -375,12 +246,11 @@ public class NetworkingServer : Networking
         {
             //TODO ENTER The wait for reconnect state
         }
-        for (int i=0; i < client_list.Count(); i++)
+        for (int i = 0; i < client_list.Count(); i++)
         {
-            if(i ==0)
+            if (i == 0)
                 client_list[i].client_name_debug = "A";
             else client_list[i].client_name_debug = "B";
-
             Debug.Log("Starting update thead " + i);
             Thread t = new Thread(OnUpdateClient);
             t.Start(client_list[i]);
@@ -389,7 +259,7 @@ public class NetworkingServer : Networking
 
     void OnUpdateCallbackClient(IAsyncResult ar)
     {
-        if(ar == null)
+        if (ar == null)
         {
             Client c = (Client)ar.AsyncState;
             Debug.Log("COULD GET THE ASYNC_STATE EVEN IF ASYNCRESULT IS NULL ");
@@ -397,7 +267,6 @@ public class NetworkingServer : Networking
         }
         Client client = (Client)ar.AsyncState;
         int bytesRead = client.client_socket.EndReceive(ar);
-
         if (bytesRead > 0)
         {
             //not his turn
@@ -409,9 +278,8 @@ public class NetworkingServer : Networking
             {
                 client.client_turn = false;
                 Package package = Deserialize(client.buffer);
-
                 board = package.board_array;
-                if(turn_counter>=6)
+                if (turn_counter >= 6)
                 {
                     package.index = 3;
                 }
@@ -422,7 +290,6 @@ public class NetworkingServer : Networking
                         {
                             if (client_list[i] != client)
                             {
-                                //PETA torna a entrar
                                 int card_id = 0;
                                 //the other client that we must update
                                 if (turn_counter <= 5)
@@ -430,7 +297,7 @@ public class NetworkingServer : Networking
 
                                 rand_tmp = i;
                                 int _enter = turn_counter;
-                                Action func = () => //issue quan enviem un package a un client i es desconnecta queda aquest token guardat com si ja el tingues i no,
+                                Action func = () =>
                                 {
                                     int tmp = _enter;
                                     if (tmp > 5)
@@ -443,10 +310,10 @@ public class NetworkingServer : Networking
                                        );
                                 };
                                 QueueMainThreadFunction(func);
-                                byte[] b = Serialize(1, "your turn client 2", board, true, card_id);
-                                
+                                byte[] b = Serialize(1, "your turn client 2", board, card_id);
+
                                 //We send data to the other client, and let him send us back his input
-                                if(client_list[i].client_socket.Connected)
+                                if (client_list[i].client_socket.Connected)
                                 {
                                     client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
                                 }
@@ -463,16 +330,14 @@ public class NetworkingServer : Networking
                         {
                             if (client_list[i] != client)
                             {
-                                byte[] b = Serialize(3, "your turn nº " + turn_counter, board, true,
+                                byte[] b = Serialize(3, "your turn nº " + turn_counter, board,
                                     client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
                                 int tmp_tokencounter = client_list[i].tokencounter;
-
                                 client_list[i].tokencounter++;
-                                if (client_list[i].tokencounter >= max_token_per_client)
+                                if (client_list[i].tokencounter >= max_token_per_client) //reset token counter
                                 {
                                     client_list[i].tokencounter = 0;
                                 }
-
                                 if (client_list[i].client_socket.Connected)//We send data to the other client, and let him send us back his input
                                 {
                                     client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
@@ -491,7 +356,7 @@ public class NetworkingServer : Networking
             }
         }
 
-        else
+        else //no bytes recieved, means the client disconnected or our socket closed
         {
             //passes twice problem heere
             if (!closingApp)//we are not closing the application, just the client disconnected
@@ -507,9 +372,8 @@ public class NetworkingServer : Networking
                 //wait for the client to reconnect
                 Reconnect(client);
             }
-
             client.end_connexion = true;
-                client.recieveDone.Set();
+            client.recieveDone.Set();
         }
     }
 
@@ -517,12 +381,136 @@ public class NetworkingServer : Networking
     {
         turn_counter++;
         Client client = (Client)ar.AsyncState;
-        client.client_turn = true;       
+        client.client_turn = true;
     }
 
     void SetUpGameCardsClient(IAsyncResult ar)
     {
         Debug.Log("SetupCallback");
+    }
+    #endregion
+
+    #region Reconnections
+    void Reconnect(Client c)
+    {
+        List<object> tmp_list = new List<object>();
+        tmp_list.Add(c);
+        tmp_list.Add(socket);
+        socket.Listen(1);
+        socket.BeginAccept(new AsyncCallback(ReconnectCallback), tmp_list);
+    }
+
+    /// <summary>
+    /// Called when the client has reconnected
+    /// </summary>
+    /// <param name="ar">we pass client class & server socket as objects</param>
+    void ReconnectCallback(IAsyncResult ar)
+    {
+        List<object> tmp_list = (List<object>)ar.AsyncState;
+        Client c = (Client)tmp_list[0];
+        Socket sckt = (Socket)tmp_list[1];
+
+        c.client_socket = sckt.EndAccept(ar);
+        c.end_connexion = false;
+        //get a int list of the client tokens
+        List<int> tmp_token_list = new List<int>();
+
+        for (int j = 0; j < c.tokens_list.Count(); j++)
+        {
+            tmp_token_list.Add(c.tokens_list[j].identifier_n);
+        }
+
+        if (c.client_turn) //let the player make the move 
+        {
+            if (turn_counter < 6) //seting up games stage
+            {
+                //We must remove the last item because it was added on the readcallback 
+                //but the client disconnected so the other client doesn't know about it 
+                c.tokens_list.RemoveAt(c.tokens_list.Count() - 1);
+                tmp_token_list.RemoveAt(tmp_token_list.Count - 1);
+
+                int card_id = cards_for_both[turn_counter];
+                byte[] b = Serialize(-4, board, tmp_token_list.ToArray(), card_id);
+                int tmp = turn_counter;
+                Action func = () =>
+                {
+                    c.CreateToken(
+                        cards_for_both[tmp],
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+                        );
+                };
+                QueueMainThreadFunction(func);
+                c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
+            }
+            else if (turn_counter >= 6)
+            {
+                //-1 it's because the counter already augmented after we told the player it was his move,
+                //but as the player disconnected we couldn't restore it properly
+                c.tokencounter--;
+                if (c.tokencounter < 0)
+                {
+                    c.tokencounter = 0;
+                }
+                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(), c.tokens_list[c.tokencounter].identifier_n);
+                c.tokencounter++;
+                c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
+            }
+        }
+
+        else if (!c.client_turn) //first update the reconnecting player (how the board is), then tell the waiting player he can make the play
+        {
+            byte[] b = Serialize(-2, board, tmp_token_list.ToArray());
+            c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectUpdatePlayerBoardCallback), c);
+        }
+    }
+
+    /// <summary>
+    /// Async function called when the reconnecting client has been updated about the game state & data
+    /// In this fucntion the waiting client resume his turn 
+    /// </summary>
+    /// <param name="ar"></param>
+    void ReconnectUpdatePlayerBoardCallback(IAsyncResult ar)
+    {
+        Client c = (Client)ar.AsyncState;
+        Thread t = new Thread(OnUpdateClient);
+        t.Start(c);
+        for (int i = 0; i < client_list.Count(); i++)
+        {
+            if (client_list[i] != c)
+            {
+                byte[] b;
+
+                if (turn_counter < 6) //for set up stage
+                {
+                    //resume play state;
+                    b = Serialize(-5);
+                    if (client_list[i].client_socket.Connected)
+                    {
+                        client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);
+                    }
+                }
+                else if (turn_counter >= 6) //for advance game stage
+                {
+                    b = Serialize(-5);
+                    if (client_list[i].client_socket.Connected)
+                    {
+                        client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, UpdateToOtherClientCallback, c);
+                    }
+                }
+            }
+        }
+    }
+    void ReconnectSendCallback(IAsyncResult ar)
+    {
+        turn_counter++;
+
+        Client c = (Client)ar.AsyncState;
+        c.client_socket.EndAccept(ar);
+        //c.client_turn = false;
+        Thread t = new Thread(OnUpdateClient);
+        t.Start(c);
     }
 
     /// <summary>
@@ -531,7 +519,7 @@ public class NetworkingServer : Networking
     /// <param name="c"></param>
     void WaitForClientReconnection(Client c)
     {
-        if(c.client_socket.Connected)
+        if (c.client_socket.Connected)
         {
             byte[] b = Serialize(-1);
             //Send wait state
@@ -543,10 +531,13 @@ public class NetworkingServer : Networking
             //or shutdown the aplication maybe
         }
     }
-
+    /// <summary>
+    /// Async function called when the waiting client recieved our order
+    /// </summary>
+    /// <param name="ar"></param>
     void WaitForClientReconnectionCallback(IAsyncResult ar)
     {
-
-        //what should we do here
+        Debug.Log("Waiting client recieved package send");
     }
+    #endregion
 }

@@ -9,6 +9,11 @@ using UnityEngine.UI;
 
 public class NetworkingClient : Networking
 {
+    private class OBJ
+    {
+        public const int buffersize = 1024;
+        public byte[] buffer = new byte[buffersize];
+    }
     public static NetworkingClient _instance { get; private set; }
 
     private static ManualResetEvent recieveDone = new ManualResetEvent(false);
@@ -16,8 +21,7 @@ public class NetworkingClient : Networking
     bool close_connection = false;
 
     public Text logText;
-    //int client = 0;
-    // Start is called before the first frame update
+
     void Start()
     {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -25,15 +29,17 @@ public class NetworkingClient : Networking
         ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 26003);
         StartThreadingFunction(ConnectToServer);
     }
+
     void ConnectToServer()
     {
         socket.BeginConnect(ipep, new AsyncCallback(ConnectCallback), socket);
     }
+
     private void OnConnectedToServer()
     {
         Debug.Log("hey");
     }
-    // Update is called once per frame
+
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape))
@@ -46,7 +52,6 @@ public class NetworkingClient : Networking
             //Grab the first/oldest function in the list
             Action someFunc;
             functionsToRunInMainThread.TryDequeue(out someFunc);
-
             //Now run it;
             someFunc();
         }
@@ -63,11 +68,8 @@ public class NetworkingClient : Networking
         try {
             Socket client_c = (Socket)ar.AsyncState;
             client_c.EndConnect(ar);
-
             QueueMainThreadFunction(s);
-            //Here tell player he is connected And launch and open UpdateConnectionWith server
             StartThreadingFunction(UpdatingConnection);
-
         }
         catch (SocketException e)
         {
@@ -137,16 +139,10 @@ public class NetworkingClient : Networking
             return;
         }
         Debug.Log("Read Callback");
-        Action w = () =>
-        {
-            logText.text = "ReadCallback <ReadCallback()>";
-        };
-        QueueMainThreadFunction(w);
         OBJ obj = (OBJ)ar.AsyncState;
 
         int bytesread = 0;
         bytesread = socket.EndReceive(ar);
-        //PETA AQUI, mirar com cancelar el begin recieve quan s'ha tancat el socket...
         if(bytesread >0)
         {
             Package package = Deserialize(obj.buffer);
@@ -157,6 +153,7 @@ public class NetworkingClient : Networking
 
             Action UpdatePlayer = () =>
             {
+                logText.text = "Updating player <ReadCallback()>";
                 Debug.Log("Updating player");
                 switch(package.index)
                 {
@@ -175,23 +172,23 @@ public class NetworkingClient : Networking
                     case -5:
                         Player._instance.ResumePlay();
                         break;
-                    default:
+                    case 3:
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServer(index, board_tmp, package.card);
-                        logText.text = "Updating player <ReadCallback()>";
+                        break;
+                    case 1:
+                        Debug.Log(package.msg_to_log);
+                        Player._instance.RecieveUpdateFromServerSetUp(index, board_tmp, package.card);
                         break;
                 }
             };
             QueueMainThreadFunction(UpdatePlayer);
-
             recieveDone.Set();
             logText.text = "RecieveDone.Set()";
-            //need to know which is which
         }
         else
         {
             logText.text = "callback close conn";
-            //close connection
             close_connection = true;
             recieveDone.Set();
         }
@@ -201,7 +198,7 @@ public class NetworkingClient : Networking
 
     public void SendPackage()//TODO make sure socket is connected
     {
-        byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),false,-1);
+        byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),-1);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
@@ -215,7 +212,7 @@ public class NetworkingClient : Networking
 
     public void SendSetUpPackage()
     {
-        byte[] b = Serialize(1, "new move done", Player._instance.GetBoard(), false, -1);
+        byte[] b = Serialize(1, "new move done", Player._instance.GetBoard(), -1);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);

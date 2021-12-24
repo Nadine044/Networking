@@ -410,56 +410,54 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the board, checks for new tokens & unlock the player input
+    /// Used on the setup game stage
+    /// </summary>
+    /// <param name="turnstep"></param>
+    /// <param name="new_board"></param>
+    /// <param name="card"></param>
+    public void RecieveUpdateFromServerSetUp(int turnstep,int[] new_board,int card)
+    {
+        turn_type = turnstep;
+        board = new_board;
+        NetworkingClient._instance.logText.text = "Recieve Update Player SetUp";
+        CheckNewTokens();
+        Card c = SearchAddMat(card);
+        CreateToken(card, c);
+        //now we make a restricted space to set the token through the card calss
+        CreateRestrictedSpace(c.unavailableSquares);
+        input_active = true;
+    }
+
+    /// <summary>
+    /// Updates the board, checks for new tokens & unlock the player input
+    /// Used on the ongoing game stage
+    /// </summary>
+    /// <param name="turnstep"></param>
+    /// <param name="new_board"></param>
+    /// <param name="card"></param>
     public void RecieveUpdateFromServer(int turnstep,int[] new_board,int card)
     {
         turn_type = turnstep;
         board = new_board;
-
         NetworkingClient._instance.logText.text = "Recieve Update Player";
-
-        //TODO CHANGE THIS PRETTY DIRTY
-        if (turn_type == 1 || turn_type == 2) //its means whe are setting cards
-        {
-            NetworkingClient._instance.logText.text = "Turn Type 1";
-
-            CheckNewTokens();
-
-            Card c = SearchAddMat(card);
-
-            CreateToken(card, c);
-
-            //now we make a restricted space to set the token through the card calss
-            CreateRestrictedSpace(c.unavailableSquares);
-            input_active = true;
-        }
-
-        //TODO MAKE AND ESPECIFIC INDEX OR SOMETING FOR THE LAST TOKEN TO BE REPLICATED THOUGH
-        else if (turn_type ==3)
-        {
-            //this will be changed //creates the new token
-            
-            NetworkingClient._instance.logText.text = "Turn Type 3";
-            CheckNewTokens();//Must be done in turn 2 this
-
-            //to update the other player tokens position
-            UpdatePlacedTokens();
-
-            Token_c token_to_move = tokens_list.First(token => token.identifier == card);
-            current_token = token_to_move;
-
-            input_active = true;
-            //no we set our move 
-        }
-
-        NetworkingClient._instance.logText.text = "paSSED turn type";
-
+        CheckNewTokens();
+        UpdatePlacedTokens();
+        Token_c token_to_move = tokens_list.First(token => token.identifier == card);
+        current_token = token_to_move;
+        input_active = true;
     }
 
+    /// <summary>
+    /// Makes the given array unavailable positions to setup the token
+    /// </summary>
+    /// <param name="noavailablepos"></param>
     void CreateRestrictedSpace(int[] noavailablepos)
     {
         for (int i = 0; i < noavailablepos.Length; ++i)
         {
-            if (board[noavailablepos[i]] == 0)
+            if (board[noavailablepos[i]] == -2)
                 board[noavailablepos[i]] = -1;
         }
         NetworkingClient._instance.logText.text = "Restricted Space done";
