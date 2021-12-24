@@ -247,8 +247,10 @@ public class Networking : MonoBehaviour
                 {
                     package.board_array[i] = reader.ReadInt32();
                 }
+                int tmp = reader.ReadInt32();
                 package.token_list_id = new List<int>();
-                for (int i = 0; i < reader.ReadInt32(); i++)
+
+                for (int i = 0; i < tmp; i++)
                 {
                     package.token_list_id.Add(reader.ReadInt32());
                 }

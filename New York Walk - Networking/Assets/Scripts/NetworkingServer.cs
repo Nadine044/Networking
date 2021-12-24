@@ -145,6 +145,9 @@ public class NetworkingServer : Networking
         {
             if (turn_counter < 6) //seting up games
             {
+                //because it was setted before when we gave the turn to the client and he disconnected
+                c.tokens_list.RemoveAt(c.tokens_list.Count() - 1);
+
                 int card_id = cards_for_both[turn_counter];
                 byte[] b = Serialize(-4, board,tmp_token_list.ToArray(),card_id);
                 int tmp = turn_counter;
@@ -160,16 +163,17 @@ public class NetworkingServer : Networking
                 QueueMainThreadFunction(func);
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c); 
             }
-
             else if(turn_counter >=6)
             {
+                c.tokencounter--;
                 int tmp_token_counter = c.tokencounter; //-1 it's because the counter already augmented after we told the player it was his move,
                 //but as the player disconnected we couldn't restore it properly
                 if (c.tokencounter < 0)
                 {
-                    tmp_token_counter = 0;
+                    c.tokencounter = 0;
                 }
-                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(),cards_for_both[c.tokencounter]);
+                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(), c.tokens_list[c.tokencounter].identifier_n);
+                c.tokencounter++;
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
             }
         }
@@ -499,7 +503,6 @@ public class NetworkingServer : Networking
                         WaitForClientReconnection(client_list[i]); //we tell the other client to wait
                     }
                 }
-                client.tokens_list.RemoveAt(client.tokens_list.Count() - 1);
                 //wait for the client to reconnect
                 Reconnect(client);
             }
