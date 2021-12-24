@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
 
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
-    bool input_active = false;
+    bool input_active = true;
     public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
@@ -170,9 +170,17 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
             {
-                //TODO: Si CUALQUIER posición del token del player coincide con parada de metro, activa esto (posiciones: 9, 13, 16)
-                isUsingSubwayCard = true;
-                Debug.Log("SUBWAY CARD USED!!");
+                for (int i = 0; i < board.Length; i++)
+                {
+                    if (board[i] == current_token.identifier)
+                    {
+                        if (i == 9 || i == 13 || i == 16)
+                        {
+                            isUsingSubwayCard = true;
+                            Debug.Log("SUBWAY CARD USED!!");
+                        }
+                    }
+                }
             }
         }
 
@@ -205,13 +213,27 @@ public class Player : MonoBehaviour
                     //SUBWAYCARD
                     else if (isUsingSubwayCard)
                     {
+                        for (int i = 0; i < board.Length; i++)
+                        {
+                            if (board[i] == current_token.identifier && i == id && board[i] != -2)
+                            {
+                                return;
+                            }
+                        }
+
                         if (id == 9 || id == 13 || id == 16)
                         {
-                            //current_token.gameObject.transform.position = squares[id].transform.position;
+                            List<int> list_array = board.ToList();
+                            board[list_array.IndexOf(current_token.identifier)] = -2;
+
+                            current_token.gameObject.transform.position = squares[id].transform.position; //moves the cube to the position
+                            board[id] = current_token.identifier;
+
                             Debug.Log("Player teleported to " + colliderName);
-                            //TODO: en este if tiene que teletransportar la posición del token que quiere mover
                         }
                     }
+
+                    //VIP CARD
                     else if (isUsingVipCard)
                     {
                         Debug.Log("Using VIP Card");
@@ -222,6 +244,8 @@ public class Player : MonoBehaviour
                             board[id] = -2;
                         }
                     }
+
+                    //STOP CARD
                     else if (isUsingStop)
                     {
                         if (board[id] == -3)
@@ -610,6 +634,8 @@ public class Player : MonoBehaviour
             randomNumberGenerated = Random.Range(0, 10);
         else if (current_city_cards == 3)
             randomNumberGenerated = Random.Range(0, 9);
+
+        randomNumberGenerated = 10;
 
         if (!randomNumbers.Contains(randomNumberGenerated))
         {
