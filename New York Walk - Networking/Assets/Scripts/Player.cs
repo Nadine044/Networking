@@ -72,12 +72,14 @@ public class Player : MonoBehaviour
     Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
     Vector3 card3UI_pos = new Vector3(12.6f, 1.97f, 0.27f);
 
-    //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
     bool input_active = false;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
     Token_c current_token;
+    [SerializeField]
+    GameObject token_prefab_base;
+
     [HideInInspector]
     public int turn_type = 0;
     public static Player _instance { get; private set; }
@@ -278,8 +280,12 @@ public class Player : MonoBehaviour
                         if (board[j] == -1)
                             board[j] = -2;
                     }
-                    if(turn_type ==1)
-                        NetworkingClient._instance.SendSetUpPackage();
+
+                    //stop animation
+                    current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
+
+                    //Update server
+                    NetworkingClient._instance.SendSetUpPackage();
                     return;
                 }
             }
@@ -317,7 +323,8 @@ public class Player : MonoBehaviour
                     current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
                     board[i] = current_token.identifier;
                     input_active = false;
-
+                    //stop animation
+                    current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
                     NetworkingClient._instance.SendPackage();
                     return;
                 }
@@ -334,10 +341,14 @@ public class Player : MonoBehaviour
 
         if((idx % 5) == 0 && idx - col_offset == clicked_pos) //it means is on the right edge of the board and clicked on the left edge
         {
+            Debug.Log("right to left false");
+            NetworkingClient._instance.logText.text = "right to left false";
             return false;
         }
         else if(((idx + 1) % 5) == 0 && idx + col_offset == clicked_pos) //it means is on the left edge of the board and clicked on the right edge
         {
+            Debug.Log("left to right false");
+            NetworkingClient._instance.logText.text = "left to right false";
             return false;
         }
 
@@ -347,11 +358,15 @@ public class Player : MonoBehaviour
             //check that we don't jump directly from right to left
             if(idx % 5 == 0 && (idx + row_offset) % 5 ==0)
             {
+                Debug.Log("Double check return false 1");
+                NetworkingClient._instance.logText.text = "Double check return false 1";
                 return false;
             }
             //check that we don't jump directly from left to right
             else if (idx + 1 % 5 == 0 && (idx - row_offset + 1) % 5 == 0 )
             {
+                Debug.Log("Double check return false 2");
+                NetworkingClient._instance.logText.text = "Double check return false 2";
                 return false; 
             }
             return true;
@@ -482,6 +497,7 @@ public class Player : MonoBehaviour
         UpdatePlacedTokens();
         Token_c token_to_move = tokens_list.First(token => token.identifier == card);
         current_token = token_to_move;
+        current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
         input_active = true;
     }
 
@@ -489,7 +505,7 @@ public class Player : MonoBehaviour
     /// Makes the given array unavailable positions to setup the token
     /// </summary>
     /// <param name="noavailablepos"></param>
-    void CreateRestrictedSpace(int[] noavailablepos)
+    void CreateRestrictedSpace(int[] noavailablepos) //TODO MAKE DEPLOY PLACE RED OR SOMETHING
     {
         for (int i = 0; i < noavailablepos.Length; ++i)
         {
@@ -505,7 +521,7 @@ public class Player : MonoBehaviour
         {
             if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
             {
-                GameObject newtoken = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                GameObject newtoken = Instantiate(token_prefab_base);
                 newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
                 Token_c t = new Token_c(newtoken, board[i]);
                 tokens_list.Add(t);
@@ -537,10 +553,11 @@ public class Player : MonoBehaviour
 
     void CreateToken(int card_id, Card card)
     {
-        Token_c token = new Token_c(GameObject.CreatePrimitive(PrimitiveType.Cube), card_id);
+        Token_c token = new Token_c(Instantiate(token_prefab_base), card_id);
         token.card = card;
         tokens_list.Add(token);
         NetworkingClient._instance.logText.text = "Token created";
+        token.gameObject.GetComponent<Animator>().SetBool("start", true);
         // place new token
         current_token = token;
     }
