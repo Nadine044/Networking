@@ -175,6 +175,9 @@ public class NetworkingClient : Networking
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
                         break;
+                    case 2:
+                        //Show blocking cards
+                        break;
                     case 1:
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);
@@ -193,7 +196,7 @@ public class NetworkingClient : Networking
         }
     }
 
-    public void SendPackage()//TODO make sure socket is connected
+    public void SendPackage()
     {
         byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),-1);
         if (socket.Connected)
@@ -207,9 +210,9 @@ public class NetworkingClient : Networking
         }
     }
 
-    public void SendSetUpPackage()
+    public void SendSetUpPackage(int index_type)
     {
-        byte[] b = Serialize(1, "new move done", Player._instance.GetBoard(), -1);
+        byte[] b = Serialize(index_type, "new move done", Player._instance.GetBoard(), -1);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);

@@ -361,6 +361,17 @@ public class NetworkingServer : Networking
                             }
                         }
                         break;
+
+                    case 2: //Show the 2 blocking cards
+                            //first we send to our first connected client the previous move & then we use 
+                        for(int i =0; i < client_list.Count(); i++)
+                        {
+                            if(client_list[i] != client)
+                            {
+                                byte[] b = Serialize(2, board);
+                            }
+                        }
+                        break;
                     case 3: //means all is setted up
                         for (int i = 0; i < client_list.Count(); i++)
                         {

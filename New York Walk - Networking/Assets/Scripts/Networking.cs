@@ -20,6 +20,7 @@ public class Networking : MonoBehaviour
         WaitReconnection = -1,//do nothing just wait until the other player reconnects
         WaitOtherPlayerToEnterGame = 0,
         PlayerTurnSetUp = 1,
+        ShowRemainingCards = 2, //when setup is done we enter in this stage
         PlayerTurnInGame = 3
     };
     protected class Package
@@ -116,6 +117,18 @@ public class Networking : MonoBehaviour
         return stream.GetBuffer();
     }
 
+    protected byte[] Serialize(int index, int[] board)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(index);
+        for (int i = 0; i < board.Length; i++)
+        {
+            writer.Write(board[i]);
+        }
+        return stream.GetBuffer();
+    }
+
     /// <summary>
     /// This serialize is used when one client reconnects & he must be updated
     /// </summary>
@@ -196,6 +209,13 @@ public class Networking : MonoBehaviour
                     package.board_array[i] = reader.ReadInt32();
                 }
                 package.card = reader.ReadInt32();
+                break;
+
+            case (int)PackageIndex.ShowRemainingCards://2
+                for (int i = 0; i < board_length; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
                 break;
 
             case (int)PackageIndex.PlayerTurnInGame://3

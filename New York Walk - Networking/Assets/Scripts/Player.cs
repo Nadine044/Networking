@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-
+using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
@@ -83,11 +83,12 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public int turn_type = 0;
     public static Player _instance { get; private set; }
-
+    public Button pass_turn_btn;
 
     int card_counter = 0;
     // Start is called before the first frame update
-    
+    bool testpas_once = false;
+
     void Start()
     {
         _instance = this;
@@ -95,12 +96,18 @@ public class Player : MonoBehaviour
         for(int i =0; i < 25; i++)
         {
             board[i] = -2;
-        }        
+        }
+        pass_turn_btn.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(!testpas_once && tokens_list.Count == 6)//todo dirty
+        {
+            pass_turn_btn.gameObject.SetActive(true);
+            testpas_once = true;
+        }
         if (input_active)
         {
             if(Input.GetMouseButton(0))
@@ -177,7 +184,6 @@ public class Player : MonoBehaviour
                 Debug.Log("SUBWAY CARD USED!!");
             }
         }
-
         current_city_cards--;
     }
 
@@ -187,7 +193,6 @@ public class Player : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         string colliderName;
         int id = 0;
-
         if (Physics.Raycast(ray, out hit))
         {
             colliderName = hit.collider.name;
@@ -241,7 +246,6 @@ public class Player : MonoBehaviour
                 }
             }
         }
-
         if (turnsFilmingCard == 0)
             board[id] = -2;
 
@@ -285,7 +289,13 @@ public class Player : MonoBehaviour
                     current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
 
                     //Update server
-                    NetworkingClient._instance.SendSetUpPackage();
+
+                    if (tokens_list.Count == 6) //all tokens are setted 
+                    {
+                        //NetworkingClient._instance.SendSetUpPackage(2);
+                        //return;
+                    }
+                    NetworkingClient._instance.SendSetUpPackage(1);
                     return;
                 }
             }
@@ -312,7 +322,7 @@ public class Player : MonoBehaviour
                     }
 
                     //Check if the position is adjacent to the current pos in a cross form
-                    if(!CheckAdjacentSquares(i)) //Nadine si no puedes mover comentas esta función
+                    if(!CheckAdjacentSquares(i)) 
                     {
                         return;
                     }
@@ -333,7 +343,7 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// This function validates that the clicked board pos is adjacent to the current token
+    /// This function validates that the clicked board pos is adjacent to the current token, not diagonals though
     /// </summary>
     /// <param name="clicked_pos"></param>
     /// <returns></returns>
@@ -355,7 +365,7 @@ public class Player : MonoBehaviour
             return false;
         }
 
-        //here we validate that the clicked position is adjacent to the current token
+        //here we validate that the clicked position is adjacent to the current token //diagonals don't count
         if(idx + row_offset == clicked_pos ||  idx - row_offset == clicked_pos ||
             idx + col_offset == clicked_pos || idx - col_offset == clicked_pos)
         {
@@ -543,7 +553,6 @@ public class Player : MonoBehaviour
                 Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
                 t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
             }
-
         }
     }
     Card SearchAddMat(int card_id)
@@ -635,9 +644,6 @@ public class Player : MonoBehaviour
                 }
             }
         }
-
-        
-
         current_city_cards++;
     }
 
@@ -675,5 +681,15 @@ public class Player : MonoBehaviour
         }
         else
             GetCityCardInfo(card, randomNumbers);
+    }
+
+    public void PassTurnBtnAction()
+    {
+        if(input_active)
+        {
+            current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
+            NetworkingClient._instance.SendPackage();
+            input_active = false;
+        }
     }
 }
