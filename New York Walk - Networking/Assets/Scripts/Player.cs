@@ -363,6 +363,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This function validates that the clicked board pos is adjacent to the current token
+    /// </summary>
+    /// <param name="clicked_pos"></param>
+    /// <returns></returns>
     private bool CheckAdjacentSquares(int clicked_pos)
     {
         //Get our current pos in the array/board
@@ -373,16 +378,15 @@ public class Player : MonoBehaviour
         if((idx % 5) == 0 && idx - col_offset == clicked_pos) //it means is on the right edge of the board and clicked on the left edge
         {
             Debug.Log("right to left false");
-            NetworkingClient._instance.logText.text = "right to left false";
             return false;
         }
         else if(((idx + 1) % 5) == 0 && idx + col_offset == clicked_pos) //it means is on the left edge of the board and clicked on the right edge
         {
             Debug.Log("left to right false");
-            NetworkingClient._instance.logText.text = "left to right false";
             return false;
         }
 
+        //here we validate that the clicked position is adjacent to the current token
         if(idx + row_offset == clicked_pos ||  idx - row_offset == clicked_pos ||
             idx + col_offset == clicked_pos || idx - col_offset == clicked_pos)
         {
@@ -390,20 +394,19 @@ public class Player : MonoBehaviour
             if(idx % 5 == 0 && (idx + row_offset) % 5 !=0)
             {
                 Debug.Log("Double check return false 1");
-                NetworkingClient._instance.logText.text = "Double check return false 1";
                 return false;
             }
             //check that we don't jump directly from left to right
             else if (idx + 1 % 5 == 0 && (idx - row_offset + 1) % 5 != 0 )
             {
                 Debug.Log("Double check return false 2");
-                NetworkingClient._instance.logText.text = "Double check return false 2";
                 return false; 
             }
             return true;
         }
         return false;
     }
+
     public int[] GetBoard()
     {
         return board;
@@ -470,6 +473,7 @@ public class Player : MonoBehaviour
         //now select the token to move
         Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
         current_token = token_to_move;
+        current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
         input_active = true;
     }
 
