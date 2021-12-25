@@ -133,8 +133,11 @@ public class NetworkingClient : Networking
     {
         if (ar == null)
         {
+            Debug.Log("async resul is null, closing connection & quitting application");
             close_connection = true;
             recieveDone.Set();
+            CloseConnection();
+            Application.Quit();
             return;
         }
         Debug.Log("Read Callback");

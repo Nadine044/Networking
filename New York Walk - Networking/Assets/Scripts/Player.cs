@@ -356,14 +356,14 @@ public class Player : MonoBehaviour
             idx + col_offset == clicked_pos || idx - col_offset == clicked_pos)
         {
             //check that we don't jump directly from right to left
-            if(idx % 5 == 0 && (idx + row_offset) % 5 ==0)
+            if(idx % 5 == 0 && (idx + row_offset) % 5 !=0)
             {
                 Debug.Log("Double check return false 1");
                 NetworkingClient._instance.logText.text = "Double check return false 1";
                 return false;
             }
             //check that we don't jump directly from left to right
-            else if (idx + 1 % 5 == 0 && (idx - row_offset + 1) % 5 == 0 )
+            else if (idx + 1 % 5 == 0 && (idx - row_offset + 1) % 5 != 0 )
             {
                 Debug.Log("Double check return false 2");
                 NetworkingClient._instance.logText.text = "Double check return false 2";
@@ -557,7 +557,6 @@ public class Player : MonoBehaviour
         token.card = card;
         tokens_list.Add(token);
         NetworkingClient._instance.logText.text = "Token created";
-        token.gameObject.GetComponent<Animator>().SetBool("start", true);
         // place new token
         current_token = token;
     }
