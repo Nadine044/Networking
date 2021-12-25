@@ -5,9 +5,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public Player player1;
-    //private bool pickUpArrived;
-    //private bool destinyArrived;
-    //private bool hasObject;
 
     //public List<int> randomNumbers;
     public List<CitizenMaterial> player_cards = new List<CitizenMaterial>();
@@ -22,9 +19,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _instance = this;
-        //pickUpArrived = false;
-        //destinyArrived = false;
-        //hasObject = false;
     }
 
     public void SetMaterial(int num,int material_n)
@@ -39,29 +33,6 @@ public class GameManager : MonoBehaviour
         //Before enter a game, put your Player Name
 
         //Start Game UI
-
-
-
-        //CHECK PICK-UP
-        //if (!pickUpArrived)
-        //{
-        //    if (boardSquares[player1.current_board_pos].name == player1.card1.pickUp)
-        //    {
-        //        Debug.Log("OBJECT PICKED!!");
-        //        pickUpArrived = true;
-        //        hasObject = true;
-        //    }
-        //}
-
-        ////CHECK DESTINY
-        //if (!destinyArrived && hasObject)
-        //{
-        //    if (boardSquares[player1.current_board_pos].name == player1.card1.destiny)
-        //    {
-        //        Debug.Log("DESTINY ARRIVED!!");
-        //        destinyArrived = true;
-        //    }
-        //}
 
         //Click cards to select order 1 2 3 function
 

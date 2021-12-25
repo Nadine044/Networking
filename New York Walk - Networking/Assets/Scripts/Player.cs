@@ -11,11 +11,17 @@ public class Player : MonoBehaviour
 
     public int randomNumberGenerated;
 
+    private bool pickUpArrived = false;
+    private bool destinyArrived = false;
+    private bool hasObject = false;
+
     public class Card
     {
         public string citizen;
         public string pickUp;
         public string destiny;
+        public int pickUpID;
+        public int destinyID;
         public int difficulty;
         public int[] unavailableSquares;
     }
@@ -145,8 +151,33 @@ public class Player : MonoBehaviour
                 UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken, stopCones);
             }
 
+            Check_PickUp_Destiny();
         }
     }
+
+    public void Check_PickUp_Destiny()
+    {
+        //CHECK PICK-UP
+        if (!pickUpArrived)
+        {
+           if (current_token.identifier == current_token.card.pickUpID)
+           {
+                Debug.Log("PICK UP OBJECT PICKED!!");
+                pickUpArrived = true;
+                hasObject = true;
+           }
+        }
+
+        if (!destinyArrived && hasObject)
+        {
+           if (current_token.identifier == current_token.card.destinyID)
+           {
+                Debug.Log("DESTINY ARRIVED!!");
+                destinyArrived = true;
+           }
+        }
+    }
+
     public void SelectCityCard()
     {
         RaycastHit hit;
@@ -654,6 +685,8 @@ public class Player : MonoBehaviour
         card.citizen = player_cards.playableCitizenList.citizens[card_n].citizen;
         card.pickUp = player_cards.playableCitizenList.citizens[card_n].pickUp;
         card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
+        card.pickUpID = player_cards.playableCitizenList.citizens[card_n].pickUpID;
+        card.destinyID = player_cards.playableCitizenList.citizens[card_n].destinyID;
         card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
         card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
 
