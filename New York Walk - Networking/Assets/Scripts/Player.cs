@@ -235,7 +235,7 @@ public class Player : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("Cannot putr cones on this AVAILABLE SQUARE");
+                            Debug.Log("Cannot put cones on this AVAILABLE SQUARE");
                         }
                     }
                 }
