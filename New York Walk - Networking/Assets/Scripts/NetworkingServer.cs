@@ -39,7 +39,6 @@ public class NetworkingServer : Networking
 
             tokens_list.Add(t);
         }
-
         public class Token //Each player has 3 tokens
         {
             public int identifier_n;
@@ -58,7 +57,8 @@ public class NetworkingServer : Networking
     List<int> cards_for_both = new List<int>(); //each number is connected to a type of card
     int rand_tmp = -1;
     private const int max_token_per_client = 3;
-
+    List<int> exclusive_cards = new List<int>(); //2 cards after the set up stage to lock 2 different positions
+    static readonly int max_cards_to_give = 8;
     //board
     int[] board = new int[25];
 
@@ -92,14 +92,14 @@ public class NetworkingServer : Networking
             cards_for_both.Add(UnityEngine.Random.Range(0, 24));
         }
         List<int> result = cards_for_both.Distinct().ToList();
-        while (result.Count < 6)
+        while (result.Count < max_cards_to_give)
         {
             //while the 6 numbers aren't different keep making randoms
             cards_for_both.Add(UnityEngine.Random.Range(0, 24));
             result = cards_for_both.Distinct().ToList();
         }
-        //finally the 6 cards to give the players
-        cards_for_both = result;
+        cards_for_both = result.GetRange(0, 6);
+        exclusive_cards = result.GetRange(6, 2);
     }
 
     void UpdateDebugBoardText()
@@ -168,10 +168,25 @@ public class NetworkingServer : Networking
             return;
         }
         Client client = new Client();
-        client_list.Add(client);
-        client.client_socket = socket.EndAccept(ar);
-        byte[] b = Serialize(0, "wait for the other player",board,-1); //client =0 means its not decided who is who TEMPORAL
-        client.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(WelcomeCallback), client.client_socket);
+        try
+        {
+            client.client_socket = socket.EndAccept(ar);
+        }
+        catch(ObjectDisposedException e)
+        {
+            Debug.Log("Caught " + e.Message);
+            return;
+        }
+        if (client.client_socket.Connected)
+        {
+            client_list.Add(client);
+            byte[] b = Serialize(0, "wait for the other player", board, -1); //client =0 means its not decided who is who TEMPORAL
+            client.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(WelcomeCallback), client.client_socket);
+        }
+        else
+        {
+            current_clients--;
+        }
     }
 
     private void WelcomeCallback(IAsyncResult ar) //bit dirty, may be changed
