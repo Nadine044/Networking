@@ -175,9 +175,9 @@ public class NetworkingClient : Networking
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
                         break;
-                    case 2:
-                        //Show blocking cards
-                        break;
+                    //case 2:
+                    //    //Show blocking cards
+                    //    break;
                     case 1:
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);

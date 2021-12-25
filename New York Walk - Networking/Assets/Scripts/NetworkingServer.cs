@@ -28,6 +28,8 @@ public class NetworkingServer : Networking
         public int tokencounter = 0;
 
         public string client_name_debug;
+      //  public bool showcards = false;
+
         public void CreateToken (int id, string name, string first_stop, string final_dst)
         {
             Token t = new Token();
@@ -362,16 +364,24 @@ public class NetworkingServer : Networking
                         }
                         break;
 
-                    case 2: //Show the 2 blocking cards
-                            //first we send to our first connected client the previous move & then we use 
-                        for(int i =0; i < client_list.Count(); i++)
-                        {
-                            if(client_list[i] != client)
-                            {
-                                byte[] b = Serialize(2, board);
-                            }
-                        }
-                        break;
+                    //case 2: //Show the 2 blocking cards
+                    //        //first we send to our first connected client the previous move & then we use 
+                    //    for(int i =0; i < client_list.Count(); i++)
+                    //    {
+                    //        if(client_list[i] != client)
+                    //        {
+                    //            if(!client_list[i].showcards)
+                    //            {
+                    //                byte[] b = Serialize(2, board,exclusive_cards.ToArray());
+                    //                client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ShowcardCallback), client_list[i]);
+                    //            }
+                    //           else
+                    //            {
+                    //                Debug.Log("Here");
+                    //            }
+                    //        }
+                    //    }
+                    //    break;
                     case 3: //means all is setted up
                         for (int i = 0; i < client_list.Count(); i++)
                         {
@@ -430,7 +440,12 @@ public class NetworkingServer : Networking
         Client client = (Client)ar.AsyncState;
         client.client_turn = true;
     }
-
+    void ShowcardCallback(IAsyncResult ar)
+    {
+        Client client = (Client)ar.AsyncState;
+        client.showcards = true;
+        client.client_turn = true;
+    }
     void SetUpGameCardsClient(IAsyncResult ar)
     {
         Debug.Log("SetupCallback");

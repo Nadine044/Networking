@@ -31,6 +31,7 @@ public class Networking : MonoBehaviour
         public bool turn;
         public int card;
         public List<int> token_list_id;
+        public int[] showcards = new int[2];
     }
     protected ConcurrentQueue<Action> functionsToRunInMainThread = new ConcurrentQueue<Action>();
     // Update is called once per frame
@@ -211,12 +212,17 @@ public class Networking : MonoBehaviour
                 package.card = reader.ReadInt32();
                 break;
 
-            case (int)PackageIndex.ShowRemainingCards://2
-                for (int i = 0; i < board_length; i++)
-                {
-                    package.board_array[i] = reader.ReadInt32();
-                }
-                break;
+            //case (int)PackageIndex.ShowRemainingCards://2
+            //    for (int i = 0; i < board_length; i++)
+            //    {
+            //        package.board_array[i] = reader.ReadInt32();
+            //    }
+            //    int counter_tmp = reader.ReadInt32();
+            //    for(int j =0; j < counter_tmp; j++)
+            //    {
+            //        package.showcards[j] = reader.ReadInt32();
+            //    }
+            //    break;
 
             case (int)PackageIndex.PlayerTurnInGame://3
                 package.msg_to_log = reader.ReadString();

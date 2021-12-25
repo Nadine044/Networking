@@ -321,11 +321,11 @@ public class Player : MonoBehaviour
 
                     //Update server
 
-                    if (tokens_list.Count == 6) //all tokens are setted 
-                    {
-                        //NetworkingClient._instance.SendSetUpPackage(2);
-                        //return;
-                    }
+                    //if (tokens_list.Count == 6) //all tokens are setted 
+                    //{
+                    //    //NetworkingClient._instance.SendSetUpPackage(2);
+                    //    //return;
+                    //}
                     NetworkingClient._instance.SendSetUpPackage(1);
                     return;
                 }
@@ -546,6 +546,15 @@ public class Player : MonoBehaviour
         input_active = true;
     }
 
+    //public void ShowCards(int[] newboard)
+    //{
+    //    board = newboard;
+    //    //do things
+
+    //    //tell the server we are done
+    //    NetworkingClient._instance.SendPackage();
+    //}
+
     /// <summary>
     /// Makes the given array unavailable positions to setup the token
     /// </summary>
@@ -696,7 +705,6 @@ public class Player : MonoBehaviour
     void GetCityCardInfo(CityCard card, List<int> randomNumbers)
     {
         //randomNumberGenerated = Random.RandomRange(0, 11);
-
         if (current_city_cards == 1)
             randomNumberGenerated = UnityEngine.Random.Range(0, 11);
         else if (current_city_cards == 2)
