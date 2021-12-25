@@ -27,16 +27,17 @@ public class NetworkingServer : Networking
         public List<Token> tokens_list = new List<Token>();
         public int tokencounter = 0;
 
+        public int win_counter = 0; //if 3 client wins the game
         public string client_name_debug;
       //  public bool showcards = false;
 
-        public void CreateToken (int id, string name, string first_stop, string final_dst)
+        public void CreateToken (int id, string name, int pickUp, int final_dst)
         {
             Token t = new Token();
 
             t.identifier_n = id;
             t.name = name;
-            t.first_stop = first_stop;
+            t.pickUp = pickUp;
             t.final_dst = final_dst;
 
             tokens_list.Add(t);
@@ -44,9 +45,10 @@ public class NetworkingServer : Networking
         public class Token //Each player has 3 tokens
         {
             public int identifier_n;
-            public string first_stop; //for now, maybe better to be a number but we'll see :)
-            public string final_dst; //for now, maybe better to be a number but we'll see :)
+            public int pickUp; //for now, maybe better to be a number but we'll see :)
+            public int final_dst; //for now, maybe better to be a number but we'll see :)
             public string name;
+            public bool active = true;
         }
     }
 
@@ -266,8 +268,8 @@ public class NetworkingServer : Networking
             client_list[rand_int].CreateToken(
            cards_for_both[turn_counter],
            GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
-           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
            );
             Debug.Log("Token created & turn up");
             turn_counter++;
@@ -343,8 +345,8 @@ public class NetworkingServer : Networking
                                     client_list[rand_tmp].CreateToken(
                                        cards_for_both[tmp],
                                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
-                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
                                        );
                                 };
                                 QueueMainThreadFunction(func);
@@ -362,33 +364,19 @@ public class NetworkingServer : Networking
                                 }
                             }
                         }
-                        break;
+                        break;//////////
 
-                    //case 2: //Show the 2 blocking cards
-                    //        //first we send to our first connected client the previous move & then we use 
-                    //    for(int i =0; i < client_list.Count(); i++)
-                    //    {
-                    //        if(client_list[i] != client)
-                    //        {
-                    //            if(!client_list[i].showcards)
-                    //            {
-                    //                byte[] b = Serialize(2, board,exclusive_cards.ToArray());
-                    //                client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ShowcardCallback), client_list[i]);
-                    //            }
-                    //           else
-                    //            {
-                    //                Debug.Log("Here");
-                    //            }
-                    //        }
-                    //    }
-                    //    break;
                     case 3: //means all is setted up
                         for (int i = 0; i < client_list.Count(); i++)
                         {
                             if (client_list[i] != client)
                             {
+                                //first check if the token has finished
+                                CheckTokenActive(client_list[i]);
+
                                 byte[] b = Serialize(3, "your turn nº " + turn_counter, board,
                                     client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
+
                                 int tmp_tokencounter = client_list[i].tokencounter;
                                 client_list[i].tokencounter++;
                                 if (client_list[i].tokencounter >= max_token_per_client) //reset token counter
@@ -407,7 +395,62 @@ public class NetworkingServer : Networking
                                 }
                             }
                         }
-                        break;
+                        break;//////////
+
+                    case 4:
+                        //First we check that is correct
+                        for(int j =0; j < client.tokens_list.Count(); j++)
+                        {
+                            if(client.tokens_list[j].identifier_n == package.card)
+                            {
+                                client.tokens_list[j].active = false;
+                                client.win_counter++;
+                            }
+                        }
+                        //check if 3 tokens arrived and give win
+                        if(client.win_counter == 3)
+                        {
+                            for(int i =0; i < client_list.Count(); i++)
+                            {
+                                if(client_list[i] != client)
+                                {
+                                    byte[] b = Serialize(5, board);
+                                    client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(FinishGameCallback), client_list[i]);
+
+                                }
+                            }
+                        }
+                        else //not win
+                        {
+                            //now we tell the other client
+                            for (int i = 0; i < client_list.Count(); i++)
+                            {
+                                if(client_list[i] != client)
+                                {
+                                    CheckTokenActive(client_list[i]);
+                                    byte[] b = Serialize(3, "your turn nº " + turn_counter, board,
+                                       client_list[i].tokens_list[client_list[i].tokencounter].identifier_n);
+
+                                    int tmp_tokencounter = client_list[i].tokencounter;
+                                    client_list[i].tokencounter++;
+                                    if (client_list[i].tokencounter >= max_token_per_client) //reset token counter
+                                    {
+                                        client_list[i].tokencounter = 0;
+                                    }
+                                    if (client_list[i].client_socket.Connected)//We send data to the other client, and let him send us back his input
+                                    {
+                                        client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(UpdateToOtherClientCallback), client_list[i]);
+                                    }
+                                    else
+                                    {
+                                        client_list[i].tokencounter = tmp_tokencounter;
+                                        turn_counter--;
+                                        //Here we must pause the game until the client reconnects back
+                                    }
+                                }
+                            }
+                        }
+                        break;//////////
                 }
                 client.recieveDone.Set();
             }
@@ -434,18 +477,35 @@ public class NetworkingServer : Networking
         }
     }
 
+    void CheckTokenActive(Client c)
+    {
+        if (!c.tokens_list[c.tokencounter].active)
+        {
+            c.tokencounter++;
+            if(c.tokencounter >= 3)
+            {
+                c.tokencounter = 0;
+            }
+            if(!c.tokens_list[c.tokencounter].active)
+            {
+                Debug.Log("recursive check");
+                CheckTokenActive(c);
+            }
+        }
+    }
+
+    void FinishGameCallback(IAsyncResult ar)//TODO TELL THE USER THAT THE GAME IS OVER AND HE MUST EXIT THE APPLICATION
+    {
+        CloseConnection();
+        Application.Quit();
+    }
     void UpdateToOtherClientCallback(IAsyncResult ar)
     {
         turn_counter++;
         Client client = (Client)ar.AsyncState;
         client.client_turn = true;
     }
-    void ShowcardCallback(IAsyncResult ar)
-    {
-        Client client = (Client)ar.AsyncState;
-        client.showcards = true;
-        client.client_turn = true;
-    }
+
     void SetUpGameCardsClient(IAsyncResult ar)
     {
         Debug.Log("SetupCallback");
@@ -503,8 +563,8 @@ public class NetworkingServer : Networking
                     c.CreateToken(
                         cards_for_both[tmp],
                         GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUp,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destiny
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
                         );
                 };
                 QueueMainThreadFunction(func);

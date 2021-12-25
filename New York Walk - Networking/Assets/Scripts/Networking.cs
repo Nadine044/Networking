@@ -21,7 +21,10 @@ public class Networking : MonoBehaviour
         WaitOtherPlayerToEnterGame = 0,
         PlayerTurnSetUp = 1,
         ShowRemainingCards = 2, //when setup is done we enter in this stage
-        PlayerTurnInGame = 3
+        PlayerTurnInGame = 3,
+        TokenArriveDestiny = 4,
+        ClientWin = 5
+
     };
     protected class Package
     {
@@ -182,6 +185,20 @@ public class Networking : MonoBehaviour
         return stream.GetBuffer();
     }
 
+    protected byte[] Serialize(int index, int[] board, int token_that_arrived)
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(index);
+        for (int i = 0; i < board.Length; i++)
+        {
+            writer.Write(board[i]);
+        }
+        writer.Write(token_that_arrived);
+        return stream.GetBuffer();
+    }
+
+
 
     protected Package Deserialize(byte[] data)
     {
@@ -212,20 +229,16 @@ public class Networking : MonoBehaviour
                 package.card = reader.ReadInt32();
                 break;
 
-            //case (int)PackageIndex.ShowRemainingCards://2
-            //    for (int i = 0; i < board_length; i++)
-            //    {
-            //        package.board_array[i] = reader.ReadInt32();
-            //    }
-            //    int counter_tmp = reader.ReadInt32();
-            //    for(int j =0; j < counter_tmp; j++)
-            //    {
-            //        package.showcards[j] = reader.ReadInt32();
-            //    }
-            //    break;
-
             case (int)PackageIndex.PlayerTurnInGame://3
                 package.msg_to_log = reader.ReadString();
+                for (int i = 0; i < board_length; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
+                package.card = reader.ReadInt32();
+                break;
+
+            case (int)PackageIndex.TokenArriveDestiny://4
                 for (int i = 0; i < board_length; i++)
                 {
                     package.board_array[i] = reader.ReadInt32();
@@ -276,6 +289,13 @@ public class Networking : MonoBehaviour
                     }
                 }
                 package.card = reader.ReadInt32();
+                break;
+
+            case (int)PackageIndex.ClientWin://5
+                for (int i = 0; i < board_length; i++)
+                {
+                    package.board_array[i] = reader.ReadInt32();
+                }
                 break;
         }
         //Debug.Log(package.msg_to_log);

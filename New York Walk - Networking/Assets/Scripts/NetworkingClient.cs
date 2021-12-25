@@ -77,7 +77,7 @@ public class NetworkingClient : Networking
         }
     }
 
-    void CloseConnection()
+    public void CloseConnection()
     {
         Debug.Log("Closing connection");
         Action s = () =>
@@ -175,9 +175,11 @@ public class NetworkingClient : Networking
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
                         break;
-                    //case 2:
-                    //    //Show blocking cards
-                    //    break;
+                    case 5:
+                        //End Game
+                        logText.text = "The other player won :(";
+                        CloseConnection();
+                        break;
                     case 1:
                         Debug.Log(package.msg_to_log);
                         Player._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);
@@ -232,5 +234,14 @@ public class NetworkingClient : Networking
     public void SetText(string txt)
     {
         logText.text = txt;
+    }
+
+    public void SendWinPackage(int token_id)
+    {
+        byte[] b = Serialize(4,Player._instance.GetBoard(),token_id);
+        if (socket.Connected)
+        {
+            socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
+        }
     }
 }

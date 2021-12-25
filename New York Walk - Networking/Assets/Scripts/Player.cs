@@ -10,11 +10,7 @@ public class Player : MonoBehaviour
     public JSONReader player_city_cards;
 
     public int randomNumberGenerated;
-
-    private bool pickUpArrived = false;
-    private bool destinyArrived = false;
-    private bool hasObject = false;
-
+    public List<Material> flag_material_list;
     public class Card
     {
         public string citizen;
@@ -44,6 +40,9 @@ public class Player : MonoBehaviour
             gameObject = go;
             identifier = id;
         }
+        public GameObject pickUp;
+        public GameObject destiny;
+        public bool pickUpObtained = false;
     }
 
     public Card card1 = new Card();
@@ -95,6 +94,12 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     bool testpas_once = false;
 
+    //Destiny & pickup
+    public GameObject destinyprefab;
+    public GameObject pickUpprefab;
+
+    //win condition
+    private int win_counter = 0;
     void Start()
     {
         _instance = this;
@@ -135,46 +140,6 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
-
-            if(Input.GetMouseButtonDown(1))
-            {
-                DrawCityCard(cityCardsPile, card1UI_pos);
-            }
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                input_active = true;
-                SelectCityCard();
-            }
-
-            if ((isUsingFilmingCard || isUsingSubwayCard || isUsingVipCard || isUsingStop) && Input.GetKeyDown(KeyCode.V))
-            {
-                UseCityCard(GameManager._instance.boardSquares, unavailableSquareToken, stopCones);
-            }
-
-            Check_PickUp_Destiny();
-        }
-    }
-
-    public void Check_PickUp_Destiny()
-    {
-        //CHECK PICK-UP
-        if (!pickUpArrived)
-        {
-           if (current_token.identifier == current_token.card.pickUpID)
-           {
-                Debug.Log("PICK UP OBJECT PICKED!!");
-                pickUpArrived = true;
-                hasObject = true;
-           }
-        }
-
-        if (!destinyArrived && hasObject)
-        {
-           if (current_token.identifier == current_token.card.destinyID)
-           {
-                Debug.Log("DESTINY ARRIVED!!");
-                destinyArrived = true;
-           }
         }
     }
 
@@ -318,7 +283,7 @@ public class Player : MonoBehaviour
 
                     //stop animation
                     current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
-
+                    current_token.pickUp.SetActive(false);
                     //Update server
 
                     //if (tokens_list.Count == 6) //all tokens are setted 
@@ -366,6 +331,23 @@ public class Player : MonoBehaviour
                     input_active = false;
                     //stop animation
                     current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
+
+                    if (current_token.pickUp != null)
+                        current_token.pickUp.SetActive(false);
+
+                    ChangeAlphaMaterial(current_token.destiny, 0.45f);
+                    //Check win condition
+                    if (!current_token.pickUpObtained)
+                    {
+                         current_token.pickUpObtained = CheckPickUp(i);
+                    }
+                    else
+                    {
+                        if(CheckDestiny(i))
+                        {
+                            return;
+                        }
+                    }
                     NetworkingClient._instance.SendPackage();
                     return;
                 }
@@ -442,7 +424,6 @@ public class Player : MonoBehaviour
     /// <param name="current_card"></param>
     public void RecieveReconnectionUpdateFromServerMoveSetUp(int index, int[] newboard, List<int> token_l, int current_card)
     {
-
         turn_type = 1;
         board = newboard;
         CheckNewTokens();
@@ -521,6 +502,9 @@ public class Player : MonoBehaviour
         CheckNewTokens();
         Card c = SearchAddMat(card);
         CreateToken(card, c);
+        //create destiny and pickUp go
+        SetDestinyPickUp();
+
         //now we make a restricted space to set the token through the card calss
         CreateRestrictedSpace(c.unavailableSquares);
         input_active = true;
@@ -542,6 +526,11 @@ public class Player : MonoBehaviour
         UpdatePlacedTokens();
         Token_c token_to_move = tokens_list.First(token => token.identifier == card);
         current_token = token_to_move;
+
+        if(current_token.pickUp != null)
+            current_token.pickUp.SetActive(true);
+
+        ChangeAlphaMaterial(current_token.destiny, 1f);
         current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
         input_active = true;
     }
@@ -576,7 +565,7 @@ public class Player : MonoBehaviour
             if (board[i] != -2 && !tokens_list.Any(enemy_token => enemy_token.identifier == board[i])) //there is some token there that isnt in the list, so we must create a new token and place it
             {
                 GameObject newtoken = Instantiate(token_prefab_base);
-                newtoken.transform.position = GameManager._instance.array_positions[i].transform.position; //we place this in the position;
+                newtoken.transform.position = GameManager._instance.boardSquares[i].transform.position; //we place this in the position;
                 Token_c t = new Token_c(newtoken, board[i]);
                 tokens_list.Add(t);
             }
@@ -591,7 +580,7 @@ public class Player : MonoBehaviour
             if (board[i] != -2 && tokens_list.Any(token => token.identifier == board[i]))
             {
                 Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
-                t.gameObject.transform.position = GameManager._instance.array_positions[i].transform.position;
+                t.gameObject.transform.position = GameManager._instance.boardSquares[i].transform.position;
             }
         }
     }
@@ -610,7 +599,7 @@ public class Player : MonoBehaviour
         token.card = card;
         tokens_list.Add(token);
         NetworkingClient._instance.logText.text = "Token created";
-        // place new token
+        //instantia the pickup and the destiny gameobjects
         current_token = token;
     }
 
@@ -690,7 +679,6 @@ public class Player : MonoBehaviour
     Card GetCitizenCardInfo(int card_n)
     {
         Card card = new Card();
-
         card.citizen = player_cards.playableCitizenList.citizens[card_n].citizen;
         card.pickUp = player_cards.playableCitizenList.citizens[card_n].pickUp;
         card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
@@ -698,7 +686,6 @@ public class Player : MonoBehaviour
         card.destinyID = player_cards.playableCitizenList.citizens[card_n].destinyID;
         card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
         card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
-
         return card;
     }
 
@@ -732,5 +719,64 @@ public class Player : MonoBehaviour
             NetworkingClient._instance.SendPackage();
             input_active = false;
         }
+    }
+
+    void SetDestinyPickUp()
+    {
+        for (int i = 0; i < board.Length; i++)
+        {
+            if (i == current_token.card.pickUpID)
+            {
+                GameObject pick = Instantiate(pickUpprefab);
+                pick.transform.position = GameManager._instance.boardSquares[i].transform.position;
+                //Color color = pick.GetComponentInChildren<Material>().color;
+                //color.a = 0.5f; //0 is transparent 1, opaque
+                //pick.GetComponentInChildren<Material>().color = color;
+                current_token.pickUp = pick;
+            }
+            else if (i == current_token.card.destinyID)
+            {
+                GameObject go = Instantiate(pickUpprefab);
+                go.transform.position = GameManager._instance.boardSquares[i].transform.position;
+                //go.transform.Rotate(new Vector3(90f, 0, 0));
+                current_token.destiny = go;
+
+                current_token.destiny.GetComponentInChildren<MeshRenderer>().material = flag_material_list[card_counter - 1];
+                ChangeAlphaMaterial(current_token.destiny, 0.45f);
+            }
+        }
+    }
+
+    void ChangeAlphaMaterial(GameObject go, float alpha)
+    {
+        Color color = go.GetComponentInChildren<MeshRenderer>().material.color;
+        color.a = alpha; //0 is transparent 1, opaque
+        go.GetComponentInChildren<MeshRenderer>().material.color = color;
+    }
+
+    bool CheckPickUp(int pos)
+    {
+        if(current_token.card.pickUpID == pos)
+        {
+            Destroy(current_token.pickUp);
+            return true;
+        }
+        return false;
+    }
+
+    bool CheckDestiny(int pos)
+    {
+        if(current_token.card.destinyID == pos)
+        {
+            win_counter++;
+            NetworkingClient._instance.SendWinPackage(current_token.identifier);
+            if(win_counter == 3)
+            {
+                NetworkingClient._instance.logText.text = "We have won!!!!!";
+                NetworkingClient._instance.CloseConnection();
+            }
+            return true;
+        }
+        return false;
     }
 }
