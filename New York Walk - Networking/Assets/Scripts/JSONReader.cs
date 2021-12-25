@@ -13,6 +13,8 @@ public class JSONReader : MonoBehaviour
         public string citizen;
         public string pickUp;
         public string destiny;
+        public int pickUpID;
+        public int destinyID;
         public int difficulty;
         public int[] unavailableSquares;
     }
