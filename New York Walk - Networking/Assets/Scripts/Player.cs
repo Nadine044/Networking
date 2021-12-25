@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -74,7 +75,6 @@ public class Player : MonoBehaviour
     //Modo guarro quick, despu�s ya se estructurar� mejor
     int[] board = new int[25];
     bool input_active = false;
-    public int current_board_pos;
 
     List<Token_c> tokens_list = new List<Token_c>(); //this are our own tokens
     Token_c current_token;
@@ -305,9 +305,14 @@ public class Player : MonoBehaviour
                         return;
                     }
 
+                    //Check if the position is adjacent to the current pos in a cross form
+                    if(!CheckAdjacentSquares(i)) //Nadine si no puedes mover comentas esta función
+                    {
+                        return;
+                    }
+
                     //clean the previous position
-                    List<int> list_array = board.ToList();
-                    board[list_array.IndexOf(current_token.identifier)] = -2;
+                    board[Array.IndexOf(board, current_token.identifier)] = -2;
 
                     current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
                     board[i] = current_token.identifier;
@@ -320,17 +325,48 @@ public class Player : MonoBehaviour
         }
     }
 
+    private bool CheckAdjacentSquares(int clicked_pos)
+    {
+        //Get our current pos in the array/board
+        int idx = Array.IndexOf(board, current_token.identifier);
+        int row_offset = 5;
+        int col_offset = 1;
 
+        if((idx % 5) == 0 && idx - col_offset == clicked_pos) //it means is on the right edge of the board and clicked on the left edge
+        {
+            return false;
+        }
+        else if(((idx + 1) % 5) == 0 && idx + col_offset == clicked_pos) //it means is on the left edge of the board and clicked on the right edge
+        {
+            return false;
+        }
+
+        if(idx + row_offset == clicked_pos ||  idx - row_offset == clicked_pos ||
+            idx + col_offset == clicked_pos || idx - col_offset == clicked_pos)
+        {
+            //check that we don't jump directly from right to left
+            if(idx % 5 == 0 && (idx + row_offset) % 5 ==0)
+            {
+                return false;
+            }
+            //check that we don't jump directly from left to right
+            else if (idx + 1 % 5 == 0 && (idx - row_offset + 1) % 5 == 0 )
+            {
+                return false; 
+            }
+            return true;
+        }
+        return false;
+    }
     public int[] GetBoard()
     {
         return board;
     }
 
-
     public void AwaitForClientReconnection()
     {
         input_active = false;
-        //Active ui text saying other client isn't connected
+        //TODO Active ui text saying other client isn't connected
     }
 
     public void ResumePlay()
@@ -603,11 +639,11 @@ public class Player : MonoBehaviour
         //randomNumberGenerated = Random.RandomRange(0, 11);
 
         if (current_city_cards == 1)
-            randomNumberGenerated = Random.Range(0, 11);
+            randomNumberGenerated = UnityEngine.Random.Range(0, 11);
         else if (current_city_cards == 2)
-            randomNumberGenerated = Random.Range(0, 10);
+            randomNumberGenerated = UnityEngine.Random.Range(0, 10);
         else if (current_city_cards == 3)
-            randomNumberGenerated = Random.Range(0, 9);
+            randomNumberGenerated = UnityEngine.Random.Range(0, 9);
 
         if (!randomNumbers.Contains(randomNumberGenerated))
         {

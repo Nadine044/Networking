@@ -65,6 +65,7 @@ public class NetworkingServer : Networking
     bool closingApp = false;
     //Debugging
     public Text logtext;
+    public Text board_array_text;
     void Start()
     {
         GenerateRandomCards();
@@ -78,6 +79,7 @@ public class NetworkingServer : Networking
         {
             board[i] = -2;
         }
+        UpdateDebugBoardText();
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ipep = new IPEndPoint(IPAddress.Any, 26003);
         StartThreadingFunction(Connect);
@@ -98,6 +100,19 @@ public class NetworkingServer : Networking
         }
         //finally the 6 cards to give the players
         cards_for_both = result;
+    }
+
+    void UpdateDebugBoardText()
+    {
+        if(board_array_text != null)
+        {
+            board_array_text.text = string.Empty;
+
+            for(int i = 0; i < board.Length; i++)
+            {
+                board_array_text.text += board[i].ToString() +", ";
+            }
+        }
     }
 
     #region Connect
@@ -148,6 +163,10 @@ public class NetworkingServer : Networking
     /// <param name="ar"></param>
     private void ConnectCallback(IAsyncResult ar) 
     {
+        if(ar == null)
+        {
+            return;
+        }
         Client client = new Client();
         client_list.Add(client);
         client.client_socket = socket.EndAccept(ar);
@@ -279,6 +298,8 @@ public class NetworkingServer : Networking
                 client.client_turn = false;
                 Package package = Deserialize(client.buffer);
                 board = package.board_array;
+                Action updateboard = () => { UpdateDebugBoardText(); };
+                QueueMainThreadFunction(updateboard);
                 if (turn_counter >= 6)
                 {
                     package.index = 3;
@@ -406,6 +427,10 @@ public class NetworkingServer : Networking
     /// <param name="ar">we pass client class & server socket as objects</param>
     void ReconnectCallback(IAsyncResult ar)
     {
+        if(ar == null)
+        {
+            return;
+        }
         List<object> tmp_list = (List<object>)ar.AsyncState;
         Client c = (Client)tmp_list[0];
         Socket sckt = (Socket)tmp_list[1];

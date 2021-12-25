@@ -76,7 +76,6 @@ public class NetworkingClient : Networking
             Debug.LogWarning("Couldn't connect to the server " + e);
         }
     }
-       
 
     void CloseConnection()
     {
@@ -107,6 +106,7 @@ public class NetworkingClient : Networking
         Debug.Log("ConnectionClosed");
         logText.text = "ConnectionClosed";
     }
+
     void UpdatingConnection()
     {
         byte[] data = new byte[1024];
@@ -128,7 +128,6 @@ public class NetworkingClient : Networking
             recieveDone.WaitOne();
         }
     }
-
    
     void ReadCallback(IAsyncResult ar)
     {
@@ -142,14 +141,11 @@ public class NetworkingClient : Networking
         OBJ obj = (OBJ)ar.AsyncState;
 
         int bytesread = 0;
-        bytesread = socket.EndReceive(ar);
+        if(socket.Connected)
+            bytesread = socket.EndReceive(ar);
         if(bytesread >0)
         {
             Package package = Deserialize(obj.buffer);
-
-            int index = package.index;
-            int[] board_tmp = package.board_array;
-
 
             Action UpdatePlayer = () =>
             {
@@ -174,11 +170,11 @@ public class NetworkingClient : Networking
                         break;
                     case 3:
                         Debug.Log(package.msg_to_log);
-                        Player._instance.RecieveUpdateFromServer(index, board_tmp, package.card);
+                        Player._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
                         break;
                     case 1:
                         Debug.Log(package.msg_to_log);
-                        Player._instance.RecieveUpdateFromServerSetUp(index, board_tmp, package.card);
+                        Player._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);
                         break;
                 }
             };
@@ -193,8 +189,6 @@ public class NetworkingClient : Networking
             recieveDone.Set();
         }
     }
-
-   
 
     public void SendPackage()//TODO make sure socket is connected
     {
