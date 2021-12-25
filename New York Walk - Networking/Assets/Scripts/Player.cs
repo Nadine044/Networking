@@ -715,6 +715,7 @@ public class Player : MonoBehaviour
     {
         if(input_active)
         {
+            ChangeAlphaMaterial(current_token.destiny, 0.45f);
             current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
             NetworkingClient._instance.SendPackage();
             input_active = false;

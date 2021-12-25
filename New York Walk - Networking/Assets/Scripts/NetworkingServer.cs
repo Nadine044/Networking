@@ -321,7 +321,8 @@ public class NetworkingServer : Networking
                 QueueMainThreadFunction(updateboard);
                 if (turn_counter >= 6)
                 {
-                    package.index = 3;
+                    if(package.index != 4)
+                        package.index = 3;
                 }
                 switch (package.index)
                 {
@@ -496,8 +497,8 @@ public class NetworkingServer : Networking
 
     void FinishGameCallback(IAsyncResult ar)//TODO TELL THE USER THAT THE GAME IS OVER AND HE MUST EXIT THE APPLICATION
     {
-        CloseConnection();
-        Application.Quit();
+        //CloseConnection();
+        //Application.Quit();
     }
     void UpdateToOtherClientCallback(IAsyncResult ar)
     {
