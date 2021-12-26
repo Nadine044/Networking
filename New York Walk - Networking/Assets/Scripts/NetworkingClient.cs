@@ -177,7 +177,6 @@ public class NetworkingClient : Networking
                         break;
                     case 5:
                         //End Game
-                        GameManager._instance.SetLosePanel();
                         logText.text = "The other player won :(";
                         CloseConnection();
                         break;

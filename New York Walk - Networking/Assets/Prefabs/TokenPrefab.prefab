@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 9054786842268681480}
   - component: {fileID: 3868491599102023204}
   - component: {fileID: 5194468400362950514}
-  - component: {fileID: 916054317466899850}
   m_Layer: 0
   m_Name: TokenPrefab
   m_TagString: Untagged
@@ -93,7 +92,7 @@ BoxCollider:
   m_GameObject: {fileID: 4453378332004085191}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -116,15 +115,3 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &916054317466899850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4453378332004085191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4be859a0d525db04eba68dd3e5fd1b38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
