@@ -487,6 +487,7 @@ public class Player : MonoBehaviour
             {
                 Token_c t = tokens_list.First(token => token.identifier == board[i]); //gets the first element in the list that matches the condition
                 t.gameObject.transform.position = GameManager._instance.boardSquares[i].transform.position;
+                //t.gameObject.GetComponent<TokenScript>().SetDestPos(GameManager._instance.boardSquares[i].transform.position);
             }
         }
     }
