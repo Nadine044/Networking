@@ -36,16 +36,25 @@ public class TokenScript : MonoBehaviour
 
     IEnumerator MoveToPos()
     {
+        float start_time = Time.time;
         t += Time.deltaTime / time_to_reach_target;
-        while (transform.position != destination)
+
+        while (transform.position.x != destination.x || transform.position.z != destination.z || transform.position.y <= destination.y)
         {
             float x = Mathf.MoveTowards(transform.position.x, destination.x, t);
             float z = Mathf.MoveTowards(transform.position.z, destination.z, t);
-            transform.position = new Vector3(x, transform.position.y, z);
+            float y = 3 * Mathf.Sin(Mathf.PI * ((Time.time - start_time) / time_to_reach_target));
+            if(y ==0)
+            {
+                Debug.Log("0 heer");
+            }
+            transform.position = new Vector3(x,y, z);
             Debug.Log("Inside here");
             yield return null;
         }
 
+        transform.position = new Vector3(transform.position.x,destination.y,transform.position.z);
+        
         anim.SetBool("jump", false);
     }
 }
