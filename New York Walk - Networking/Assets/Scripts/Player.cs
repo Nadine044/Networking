@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
+    public bool inGameMusicPlaying = false;
 
     public int randomNumberGenerated;
     public List<Material> flag_material_list;
@@ -100,7 +101,7 @@ public class Player : MonoBehaviour
     public GameObject pickUpprefab;
 
     //win condition
-    private int win_counter = 0;
+    public int win_counter = 0;
     void Start()
     {
         _instance = this;
@@ -189,6 +190,11 @@ public class Player : MonoBehaviour
 
     public void SetTokenPos(List<GameObject> squares)
     {
+        if (!inGameMusicPlaying)
+        {
+            inGameMusicPlaying = true;
+        }
+        
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         string colliderName;
