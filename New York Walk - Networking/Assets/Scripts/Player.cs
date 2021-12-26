@@ -68,17 +68,6 @@ public class Player : MonoBehaviour
     public GameObject unavailableSquareToken;
     public GameObject stopCones;
 
-    //bool isUsingSubwayCard = false;
-    //bool isUsingFilmingCard = false;
-    //bool isUsingVipCard = false;
-    //bool isUsingStop = false;
-    
-    //int turnsFilmingCard = 3;
-
-    //Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
-    //Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
-    //Vector3 card3UI_pos = new Vector3(12.6f, 1.97f, 0.27f);
-
     int[] board = new int[25];
     bool input_active = false;
 
@@ -103,7 +92,13 @@ public class Player : MonoBehaviour
     public GameObject pickUpprefab;
 
     //win condition
+    [HideInInspector]
     public int win_counter = 0;
+
+    [SerializeField]
+    private Material PlayerTokenMat;
+    [SerializeField]
+    private Material EnemyTokenMat;
     void Start()
     {
         _instance = this;
@@ -335,6 +330,7 @@ public class Player : MonoBehaviour
             current_token = t;
             SetDestinyPickUp();
             current_token.pickUp.SetActive(false);
+            current_token.gameObject.GetComponent<MeshRenderer>().material = PlayerTokenMat;
         }
         Card c = SearchAddMat(current_card);
         CreateToken(current_card, c);
@@ -365,6 +361,7 @@ public class Player : MonoBehaviour
             current_token = t;
             SetDestinyPickUp();
             current_token.pickUp.SetActive(false);
+            current_token.gameObject.GetComponent<MeshRenderer>().material = PlayerTokenMat;
         }
         //now select the token to move
         Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
@@ -397,6 +394,7 @@ public class Player : MonoBehaviour
             SetDestinyPickUp();
             current_token.pickUp.SetActive(true);
             ChangeAlphaMaterial(current_token.destiny, 0.45f);
+            current_token.gameObject.GetComponent<MeshRenderer>().material = PlayerTokenMat;
         }
     }
 
@@ -477,6 +475,7 @@ public class Player : MonoBehaviour
                 newtoken.transform.position = GameManager._instance.boardSquares[i].transform.position; //we place this in the position;
                 Token_c t = new Token_c(newtoken, board[i]);
                 tokens_list.Add(t);
+                t.gameObject.GetComponent<MeshRenderer>().material = EnemyTokenMat;
             }
         }
     }
@@ -511,6 +510,7 @@ public class Player : MonoBehaviour
         NetworkingClient._instance.logText.text = "Token created";
         //instantia the pickup and the destiny gameobjects
         current_token = token;
+        current_token.gameObject.GetComponent<MeshRenderer>().material = PlayerTokenMat;
     }
 
     Card GetCitizenCardInfo(int card_n)
