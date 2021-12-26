@@ -82,33 +82,18 @@ public class GameManager : MonoBehaviour
             go.transform.position = boardSquares[currentpos - 5].transform.position;
             availableposCubeList.Add(go);
         }
-        if (currentpos % 5 == 0) //means we are on the right side 
-        {
-            //if(currentpos + 1 % 5 != 0) // mean we aren't on the left side
-            //{
-            //    GameObject go = Instantiate(availableCubePrefab);
-            //    go.transform.position = boardSquares[currentpos + 1].transform.position;
-            //    availableposCubeList.Add(go);
-            //}
-        }
-        else
+        if (currentpos % 5 != 0) //means we aren't on the right side 
         {
             GameObject go = Instantiate(availableCubePrefab);
             go.transform.position = boardSquares[currentpos - 1].transform.position; //one to the right
             availableposCubeList.Add(go);
         }
-
-        if ((currentpos + 1) % 5 == 0)//means we are on the left side
-        {
-
-        }
-        else if(currentpos+1 <= 24)
+        if ((currentpos + 1) % 5 != 0)//means we are on the left side
         {
             GameObject go = Instantiate(availableCubePrefab);
             go.transform.position = boardSquares[currentpos + 1].transform.position; //one to the left
             availableposCubeList.Add(go);
         }
-
     }
     public void EraseAvailableSquares()
     {

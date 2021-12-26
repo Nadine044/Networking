@@ -260,8 +260,17 @@ public class NetworkingServer : Networking
         Debug.Log("Selecting first player");
         int card_id = cards_for_both[turn_counter];
         var r = new System.Random();
-        int rand_int = r.Next(0, 1); //TODO MAKE TRUE RANDOM TURN (r.Next(0,100) and chekc if its multiple of 2 if(rand_int % 2 ==0) {pick one}; else {pick other}
-        byte[] b = Serialize(1, turn_counter + "giving cards", board, card_id); //client 1
+        int f_rand = r.Next(0, 100); 
+        int rand_int;
+        if(f_rand %2 ==0)
+        {
+            rand_int = 1;
+        }
+        else
+        {
+            rand_int = 0;
+        }
+        byte[] b = Serialize(1, turn_counter + "giving cards", board, card_id); 
         client_list[rand_int].client_turn = true;
         Action func = () =>
         {

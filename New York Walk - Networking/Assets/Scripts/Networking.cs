@@ -24,7 +24,6 @@ public class Networking : MonoBehaviour
         PlayerTurnInGame = 3,
         TokenArriveDestiny = 4,
         ClientWin = 5
-
     };
     protected class Package
     {
