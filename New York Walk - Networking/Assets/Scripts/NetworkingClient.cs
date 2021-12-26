@@ -160,10 +160,10 @@ public class NetworkingClient : Networking
                         Player._instance.AwaitForClientReconnection();
                         break;
                     case -2:
-                        Player._instance.RecieveReconnectionUpdateFromServerNoMove(package.board_array, package.token_list_id);
+                        Player._instance.RecieveReconnectionUpdateFromServerNoMove(package.board_array, package.token_list_id,package.win_counter);
                         break;
                     case -3:
-                        Player._instance.RecieveReconnectionUpdateFromServerMove(package.index,package.board_array, package.token_list_id,package.card);
+                        Player._instance.RecieveReconnectionUpdateFromServerMove(package.index,package.board_array, package.token_list_id,package.card, package.win_counter);
                         break;
                     case -4:
                         Player._instance.RecieveReconnectionUpdateFromServerMoveSetUp(package.index, package.board_array, package.token_list_id, package.card);

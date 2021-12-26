@@ -35,6 +35,7 @@ public class Networking : MonoBehaviour
         public int card;
         public List<int> token_list_id;
         public int[] showcards = new int[2];
+        public int win_counter = 0;
     }
     protected ConcurrentQueue<Action> functionsToRunInMainThread = new ConcurrentQueue<Action>();
     // Update is called once per frame
@@ -140,7 +141,7 @@ public class Networking : MonoBehaviour
     /// <param name="board"></param>
     /// <param name="token_list_id">array of the tokens_id the reconnecting client had</param>
     /// <returns></returns>
-    protected byte[] Serialize(int index, int[] board, int[] token_list_id)
+    protected byte[] Serialize(int index, int[] board, int win_counter, int[] token_list_id)
     {
         MemoryStream stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -155,6 +156,27 @@ public class Networking : MonoBehaviour
         {
             writer.Write(token_list_id[i]);
         }
+        writer.Write(win_counter);
+        return stream.GetBuffer();
+    }
+
+    protected byte[] Serialize(int index, int[] board, int[] token_list_id, int current_token_to_move, int wincounter )
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write(index);
+        for (int i = 0; i < board.Length; i++)
+        {
+            writer.Write(board[i]);
+        }
+        writer.Write(token_list_id.Length);
+        for (int i = 0; i < token_list_id.Length; i++)
+        {
+            writer.Write(token_list_id[i]);
+        }
+        writer.Write(current_token_to_move);
+        writer.Write(wincounter);
         return stream.GetBuffer();
     }
 
@@ -257,6 +279,7 @@ public class Networking : MonoBehaviour
                 {
                     package.token_list_id.Add(reader.ReadInt32());
                 }
+                package.win_counter = reader.ReadInt32();
                 break;
 
             case (int)PackageIndex.PlayerTurnReconnect://-3
@@ -272,6 +295,7 @@ public class Networking : MonoBehaviour
                     package.token_list_id.Add(reader.ReadInt32());
                 }
                 package.card = reader.ReadInt32();
+                package.win_counter = reader.ReadInt32();
                 break;
 
             case (int)PackageIndex.PlayerTurnReconnectSetUp: //-4

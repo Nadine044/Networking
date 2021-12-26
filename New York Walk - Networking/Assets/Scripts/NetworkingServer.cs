@@ -295,7 +295,7 @@ public class NetworkingServer : Networking
         }
     }
 
-    void OnUpdateCallbackClient(IAsyncResult ar)
+    void OnUpdateCallbackClient(IAsyncResult ar)//TODO POLISH CALLBACK
     {
         if (ar == null)
         {
@@ -417,7 +417,8 @@ public class NetworkingServer : Networking
                                 {
                                     byte[] b = Serialize(5, board);
                                     client_list[i].client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(FinishGameCallback), client_list[i]);
-
+                                    client_list[i].end_connexion = true;
+                                    client_list[i].recieveDone.Set();
                                 }
                             }
                         }
@@ -580,7 +581,9 @@ public class NetworkingServer : Networking
                 {
                     c.tokencounter = 0;
                 }
-                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(), c.tokens_list[c.tokencounter].identifier_n);
+                CheckTokenActive(c); //we set the turn at the index where the tokens hasn't arrived to destiny
+
+                byte[] b = Serialize(-3, board, tmp_token_list.ToArray(), c.tokens_list[c.tokencounter].identifier_n,c.win_counter);
                 c.tokencounter++;
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
             }
@@ -588,7 +591,7 @@ public class NetworkingServer : Networking
 
         else if (!c.client_turn) //first update the reconnecting player (how the board is), then tell the waiting player he can make the play
         {
-            byte[] b = Serialize(-2, board, tmp_token_list.ToArray());
+            byte[] b = Serialize(-2, board, c.win_counter, tmp_token_list.ToArray()); //where do we say that wincounter is
             c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectUpdatePlayerBoardCallback), c);
         }
     }

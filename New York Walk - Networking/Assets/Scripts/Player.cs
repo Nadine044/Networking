@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public JSONReader player_cards;
-    public JSONReader player_city_cards;
 
     public int randomNumberGenerated;
     public List<Material> flag_material_list;
@@ -66,16 +65,16 @@ public class Player : MonoBehaviour
     public GameObject unavailableSquareToken;
     public GameObject stopCones;
 
-    bool isUsingSubwayCard = false;
-    bool isUsingFilmingCard = false;
-    bool isUsingVipCard = false;
-    bool isUsingStop = false;
+    //bool isUsingSubwayCard = false;
+    //bool isUsingFilmingCard = false;
+    //bool isUsingVipCard = false;
+    //bool isUsingStop = false;
     
-    int turnsFilmingCard = 3;
+    //int turnsFilmingCard = 3;
 
-    Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
-    Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
-    Vector3 card3UI_pos = new Vector3(12.6f, 1.97f, 0.27f);
+    //Vector3 card1UI_pos = new Vector3(12.6f, 3.97f, 0.27f);
+    //Vector3 card2UI_pos = new Vector3(12.6f, 2.97f, 0.27f);
+    //Vector3 card3UI_pos = new Vector3(12.6f, 1.97f, 0.27f);
 
     int[] board = new int[25];
     bool input_active = false;
@@ -89,6 +88,8 @@ public class Player : MonoBehaviour
     public int turn_type = 0;
     public static Player _instance { get; private set; }
     public Button pass_turn_btn;
+    [SerializeField]
+    private GameObject waiting_reconnec_text;
 
     int card_counter = 0;
     // Start is called before the first frame update
@@ -109,6 +110,7 @@ public class Player : MonoBehaviour
             board[i] = -2;
         }
         pass_turn_btn.gameObject.SetActive(false);
+        waiting_reconnec_text.SetActive(false);
     }
 
     // Update is called once per frame
@@ -141,114 +143,6 @@ public class Player : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void SelectCityCard()
-    {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
-            {
-                isUsingStop = true;
-                Debug.Log("STOP CARD USED!!");
-            }
-
-            else if (hit.collider.name == "VIP1" || hit.collider.name == "VIP2")
-            {
-                isUsingVipCard = true;
-                Debug.Log("VIP CARD USED!!");
-            }
-
-            else if (hit.collider.name == "Security")
-            {
-                Debug.Log("SECURITY CARD USED");
-            }
-
-            else if (hit.collider.name == "Filming1" || hit.collider.name == "Filming2")
-            {
-                isUsingFilmingCard = true;
-                Debug.Log("FILMING CARD USED!!");
-            }
-
-            else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
-            {
-                //TODO: Si CUALQUIER posición del token del player coincide con parada de metro, activa esto (posiciones: 9, 13, 16)
-                isUsingSubwayCard = true;
-                Debug.Log("SUBWAY CARD USED!!");
-            }
-        }
-        current_city_cards--;
-    }
-
-    public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken, GameObject cones)
-    {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        string colliderName;
-        int id = 0;
-        if (Physics.Raycast(ray, out hit))
-        {
-            colliderName = hit.collider.name;
-            for (id = 0; id < squares.Count; id++)
-            {
-                if (squares[id].name == colliderName && turnsFilmingCard > 0)
-                {
-                    //FILMING CARD
-                    if (isUsingFilmingCard)
-                    {
-                        board[id] = -3;
-                        unavailableSquareToken.transform.position = squares[id].transform.position;
-                        Debug.Log(colliderName + " is not accessible during " + turnsFilmingCard);
-                        //TODO: cuando decrece la variable de turnos??????
-                    }
-
-                    //SUBWAYCARD
-                    else if (isUsingSubwayCard)
-                    {
-                        if (id == 9 || id == 13 || id == 16)
-                        {
-                            //current_token.gameObject.transform.position = squares[id].transform.position;
-                            Debug.Log("Player teleported to " + colliderName);
-                            //TODO: en este if tiene que teletransportar la posición del token que quiere mover
-                        }
-                    }
-                    else if (isUsingVipCard)
-                    {
-                        Debug.Log("Using VIP Card");
-                        if (board[id] == -3)
-                        {
-                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
-                            Debug.Log("Restriction removed!!");
-                            board[id] = -2;
-                        }
-                    }
-                    else if (isUsingStop)
-                    {
-                        if (board[id] == -3)
-                        {
-                            cones.transform.position = squares[id].transform.position + new Vector3(-0.63f, -0.08f, -0.58f);
-                            unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
-                            board[id] = -2;
-                            Debug.Log("Cones colocated on " + squares[id].name + " square, UNAVAILABLE ONE");
-                        }
-                        else
-                        {
-                            Debug.Log("Cannot put cones on this AVAILABLE SQUARE");
-                        }
-                    }
-                }
-            }
-        }
-        if (turnsFilmingCard == 0)
-            board[id] = -2;
-
-        isUsingFilmingCard = false;
-        isUsingSubwayCard = false;
-        isUsingVipCard = false;
-        isUsingStop = false;
     }
 
     public void SetInitialTokenPos(List<GameObject> squares)
@@ -406,12 +300,13 @@ public class Player : MonoBehaviour
 
     public void AwaitForClientReconnection()
     {
+        waiting_reconnec_text.SetActive(true);
         input_active = false;
-        //TODO Active ui text saying other client isn't connected
     }
 
     public void ResumePlay()
     {
+        waiting_reconnec_text.SetActive(false);
         input_active = true;
     }
 
@@ -433,10 +328,13 @@ public class Player : MonoBehaviour
             Card card = SearchAddMat(token_l[i]);
             Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
             t.card = card;
+            current_token = t;
+            SetDestinyPickUp();
+            current_token.pickUp.SetActive(false);
         }
         Card c = SearchAddMat(current_card);
         CreateToken(current_card, c);
-
+        SetDestinyPickUp();
         //now we make a restricted space to set the token through the card calss
         CreateRestrictedSpace(c.unavailableSquares);
         input_active = true;
@@ -448,8 +346,9 @@ public class Player : MonoBehaviour
     /// <param name="index"></param>
     /// <param name="newboard"></param>
     /// <param name="token_l"></param>
-    public void RecieveReconnectionUpdateFromServerMove(int index,int[] newboard,List<int> token_l,int current_card)
+    public void RecieveReconnectionUpdateFromServerMove(int index,int[] newboard,List<int> token_l,int current_card,int w_counter)
     {
+        win_counter = w_counter;
         turn_type = Mathf.Abs(index);
         board = newboard;
         CheckNewTokens();
@@ -459,12 +358,16 @@ public class Player : MonoBehaviour
             Card card = SearchAddMat(token_l[i]);
             Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
             t.card = card;
+            current_token = t;
+            SetDestinyPickUp();
+            current_token.pickUp.SetActive(false);
         }
-
         //now select the token to move
         Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
         current_token = token_to_move;
         current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
+        current_token.pickUp.SetActive(true);
+        ChangeAlphaMaterial(current_token.destiny, 0.45f);
         input_active = true;
     }
 
@@ -473,8 +376,9 @@ public class Player : MonoBehaviour
     /// </summary>
     /// <param name="newboard"></param>
     /// <param name="token_l"></param>
-    public void RecieveReconnectionUpdateFromServerNoMove(int[] newboard, List<int> token_l)
+    public void RecieveReconnectionUpdateFromServerNoMove(int[] newboard, List<int> token_l,int w_counter)
     {
+        win_counter = w_counter;
         board = newboard;
         CheckNewTokens();
 
@@ -484,6 +388,10 @@ public class Player : MonoBehaviour
             Card card = SearchAddMat(token_l[i]);
             Token_c t = tokens_list.First(token => token.identifier == token_l[i]);
             t.card = card;
+            current_token = t;
+            SetDestinyPickUp();
+            current_token.pickUp.SetActive(true);
+            ChangeAlphaMaterial(current_token.destiny, 0.45f);
         }
     }
 
@@ -496,6 +404,7 @@ public class Player : MonoBehaviour
     /// <param name="card"></param>
     public void RecieveUpdateFromServerSetUp(int turnstep,int[] new_board,int card)
     {
+        waiting_reconnec_text.SetActive(false);
         turn_type = turnstep;
         board = new_board;
         NetworkingClient._instance.logText.text = "Recieve Update Player SetUp";
@@ -519,6 +428,7 @@ public class Player : MonoBehaviour
     /// <param name="card"></param>
     public void RecieveUpdateFromServer(int turnstep,int[] new_board,int card)
     {
+        waiting_reconnec_text.SetActive(false);
         turn_type = turnstep;
         board = new_board;
         NetworkingClient._instance.logText.text = "Recieve Update Player";
@@ -534,15 +444,6 @@ public class Player : MonoBehaviour
         current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
         input_active = true;
     }
-
-    //public void ShowCards(int[] newboard)
-    //{
-    //    board = newboard;
-    //    //do things
-
-    //    //tell the server we are done
-    //    NetworkingClient._instance.SendPackage();
-    //}
 
     /// <summary>
     /// Makes the given array unavailable positions to setup the token
@@ -603,79 +504,6 @@ public class Player : MonoBehaviour
         current_token = token;
     }
 
-
-    public void DrawCityCard (GameObject cardsToDraw, Vector3 UI_card_position)
-    {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        string drawCardsCollider;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            drawCardsCollider = hit.collider.name;
-
-            if (drawCardsCollider == "CityCardsDraw_Pile" && current_city_cards < 3)
-            {
-                //Give player random city card and add it to usedPileCards. Quit from ToDraw list
-                //drawCard
-
-                Debug.Log("CITY CARD PICKED!!");
-                //card1UI_pos
-
-                if (current_city_cards < 1)
-                {
-                    GetCityCardInfo(cityCard1, random_numbers_city_cards);
-
-                    foreach (var item in pileCards)
-                    {
-                        if(item.name == cityCard1.name)
-                        {
-                            item.transform.position = card1UI_pos;
-                            pileCards.Remove(item);
-                            Debug.Log(cityCard1.name);
-                            break;
-                        }
-                    }
-                }
-
-                else if (current_city_cards < 2)
-                {
-                    GetCityCardInfo(cityCard2, random_numbers_city_cards);
-                    foreach (var item in pileCards)
-                    {
-                        if (item.name == cityCard2.name)
-                        {
-                            item.transform.position = card2UI_pos;
-                            pileCards.Remove(item);
-                            Debug.Log(cityCard2.name);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    GetCityCardInfo(cityCard3, random_numbers_city_cards);
-                    foreach (var item in pileCards)
-                    {
-                        if (item.name == cityCard3.name)
-                        {
-                            item.transform.position = card3UI_pos;
-                            pileCards.Remove(item);
-                            Debug.Log(cityCard3.name);
-
-                            Debug.Log("--------------------");
-                            Debug.Log(cityCard1.name);
-                            Debug.Log(cityCard2.name);
-                            Debug.Log(cityCard3.name);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        current_city_cards++;
-    }
-
     Card GetCitizenCardInfo(int card_n)
     {
         Card card = new Card();
@@ -702,10 +530,9 @@ public class Player : MonoBehaviour
         if (!randomNumbers.Contains(randomNumberGenerated))
         {
             randomNumbers.Add(randomNumberGenerated);
-
-            card.name = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].name;
-            card.utility = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].utility;
-            card.turns = player_city_cards.cityCardsList.powerUps[randomNumberGenerated].turns;            
+            card.name = player_cards.cityCardsList.powerUps[randomNumberGenerated].name;
+            card.utility = player_cards.cityCardsList.powerUps[randomNumberGenerated].utility;
+            card.turns = player_cards.cityCardsList.powerUps[randomNumberGenerated].turns;            
         }
         else
             GetCityCardInfo(card, randomNumbers);
@@ -780,4 +607,187 @@ public class Player : MonoBehaviour
         }
         return false;
     }
+
+    ///WIP FOR NEXT ASSIGNMENT
+    ///
+
+    //public void DrawCityCard (GameObject cardsToDraw, Vector3 UI_card_position)
+    //{
+    //    RaycastHit hit;
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    string drawCardsCollider;
+
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        drawCardsCollider = hit.collider.name;
+
+    //        if (drawCardsCollider == "CityCardsDraw_Pile" && current_city_cards < 3)
+    //        {
+    //            //Give player random city card and add it to usedPileCards. Quit from ToDraw list
+    //            //drawCard
+
+    //            Debug.Log("CITY CARD PICKED!!");
+    //            //card1UI_pos
+
+    //            if (current_city_cards < 1)
+    //            {
+    //                GetCityCardInfo(cityCard1, random_numbers_city_cards);
+
+    //                foreach (var item in pileCards)
+    //                {
+    //                    if(item.name == cityCard1.name)
+    //                    {
+    //                        item.transform.position = card1UI_pos;
+    //                        pileCards.Remove(item);
+    //                        Debug.Log(cityCard1.name);
+    //                        break;
+    //                    }
+    //                }
+    //            }
+
+    //            else if (current_city_cards < 2)
+    //            {
+    //                GetCityCardInfo(cityCard2, random_numbers_city_cards);
+    //                foreach (var item in pileCards)
+    //                {
+    //                    if (item.name == cityCard2.name)
+    //                    {
+    //                        item.transform.position = card2UI_pos;
+    //                        pileCards.Remove(item);
+    //                        Debug.Log(cityCard2.name);
+    //                        break;
+    //                    }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                GetCityCardInfo(cityCard3, random_numbers_city_cards);
+    //                foreach (var item in pileCards)
+    //                {
+    //                    if (item.name == cityCard3.name)
+    //                    {
+    //                        item.transform.position = card3UI_pos;
+    //                        pileCards.Remove(item);
+    //                        Debug.Log(cityCard3.name);
+
+    //                        Debug.Log("--------------------");
+    //                        Debug.Log(cityCard1.name);
+    //                        Debug.Log(cityCard2.name);
+    //                        Debug.Log(cityCard3.name);
+    //                        break;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    current_city_cards++;
+    //}
+
+    //public void SelectCityCard()
+    //{
+    //    RaycastHit hit;
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        if (hit.collider.name == "Stop1" || hit.collider.name == "Stop2" || hit.collider.name == "Stop3")
+    //        {
+    //            isUsingStop = true;
+    //            Debug.Log("STOP CARD USED!!");
+    //        }
+
+    //        else if (hit.collider.name == "VIP1" || hit.collider.name == "VIP2")
+    //        {
+    //            isUsingVipCard = true;
+    //            Debug.Log("VIP CARD USED!!");
+    //        }
+
+    //        else if (hit.collider.name == "Security")
+    //        {
+    //            Debug.Log("SECURITY CARD USED");
+    //        }
+
+    //        else if (hit.collider.name == "Filming1" || hit.collider.name == "Filming2")
+    //        {
+    //            isUsingFilmingCard = true;
+    //            Debug.Log("FILMING CARD USED!!");
+    //        }
+
+    //        else if (hit.collider.name == "Subway1" || hit.collider.name == "Subway2" || hit.collider.name == "Subway3")
+    //        {
+    //            //TODO: Si CUALQUIER posición del token del player coincide con parada de metro, activa esto (posiciones: 9, 13, 16)
+    //            isUsingSubwayCard = true;
+    //            Debug.Log("SUBWAY CARD USED!!");
+    //        }
+    //    }
+    //    current_city_cards--;
+    //}
+
+    //public void UseCityCard(List<GameObject> squares, GameObject unavailableSquareToken, GameObject cones)
+    //{
+    //    RaycastHit hit;
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    string colliderName;
+    //    int id = 0;
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        colliderName = hit.collider.name;
+    //        for (id = 0; id < squares.Count; id++)
+    //        {
+    //            if (squares[id].name == colliderName && turnsFilmingCard > 0)
+    //            {
+    //                //FILMING CARD
+    //                if (isUsingFilmingCard)
+    //                {
+    //                    board[id] = -3;
+    //                    unavailableSquareToken.transform.position = squares[id].transform.position;
+    //                    Debug.Log(colliderName + " is not accessible during " + turnsFilmingCard);
+    //                    //TODO: cuando decrece la variable de turnos??????
+    //                }
+
+    //                //SUBWAYCARD
+    //                else if (isUsingSubwayCard)
+    //                {
+    //                    if (id == 9 || id == 13 || id == 16)
+    //                    {
+    //                        //current_token.gameObject.transform.position = squares[id].transform.position;
+    //                        Debug.Log("Player teleported to " + colliderName);
+    //                        //TODO: en este if tiene que teletransportar la posición del token que quiere mover
+    //                    }
+    //                }
+    //                else if (isUsingVipCard)
+    //                {
+    //                    Debug.Log("Using VIP Card");
+    //                    if (board[id] == -3)
+    //                    {
+    //                        unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+    //                        Debug.Log("Restriction removed!!");
+    //                        board[id] = -2;
+    //                    }
+    //                }
+    //                else if (isUsingStop)
+    //                {
+    //                    if (board[id] == -3)
+    //                    {
+    //                        cones.transform.position = squares[id].transform.position + new Vector3(-0.63f, -0.08f, -0.58f);
+    //                        unavailableSquareToken.transform.position = new Vector3(28, 10, -7); /*starting point*/
+    //                        board[id] = -2;
+    //                        Debug.Log("Cones colocated on " + squares[id].name + " square, UNAVAILABLE ONE");
+    //                    }
+    //                    else
+    //                    {
+    //                        Debug.Log("Cannot put cones on this AVAILABLE SQUARE");
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (turnsFilmingCard == 0)
+    //        board[id] = -2;
+
+    //    isUsingFilmingCard = false;
+    //    isUsingSubwayCard = false;
+    //    isUsingVipCard = false;
+    //    isUsingStop = false;
+    //}
 }
