@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject restritecSpaceCubePrefab;
     private List<GameObject> restrictedCubesList = new List<GameObject>();
+
+    [SerializeField]
+    private GameObject availableCubePrefab;
+    private List<GameObject> availableposCubeList = new List<GameObject>();
     // Start is called before the first frame update
     [SerializeField]
     private GameObject wonpanel;
@@ -64,4 +68,54 @@ public class GameManager : MonoBehaviour
         losepanel.SetActive(true);
     }
 
+    public void SetAvailableCubes(int currentpos)
+    {
+        if (currentpos + 5 <= 24) //we are inside of boundaries
+        {
+            GameObject go = Instantiate(availableCubePrefab);
+            go.transform.position = boardSquares[currentpos + 5].transform.position;
+            availableposCubeList.Add(go);
+        }
+        if (currentpos - 5 >= 0)
+        {
+            GameObject go = Instantiate(availableCubePrefab);
+            go.transform.position = boardSquares[currentpos - 5].transform.position;
+            availableposCubeList.Add(go);
+        }
+        if (currentpos % 5 == 0) //means we are on the right side 
+        {
+            //if(currentpos + 1 % 5 != 0) // mean we aren't on the left side
+            //{
+            //    GameObject go = Instantiate(availableCubePrefab);
+            //    go.transform.position = boardSquares[currentpos + 1].transform.position;
+            //    availableposCubeList.Add(go);
+            //}
+        }
+        else
+        {
+            GameObject go = Instantiate(availableCubePrefab);
+            go.transform.position = boardSquares[currentpos - 1].transform.position; //one to the right
+            availableposCubeList.Add(go);
+        }
+
+        if ((currentpos + 1) % 5 == 0)//means we are on the left side
+        {
+
+        }
+        else if(currentpos+1 <= 24)
+        {
+            GameObject go = Instantiate(availableCubePrefab);
+            go.transform.position = boardSquares[currentpos + 1].transform.position; //one to the left
+            availableposCubeList.Add(go);
+        }
+
+    }
+    public void EraseAvailableSquares()
+    {
+        for (int i = 0; i < availableposCubeList.Count(); i++)
+        {
+            Destroy(availableposCubeList[i]);
+        }
+        availableposCubeList.Clear();
+    }
 }

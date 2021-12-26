@@ -3235,10 +3235,10 @@ RectTransform:
   m_Father: {fileID: 554026700}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 281.9, y: 197.1}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 397, y: 215}
+  m_SizeDelta: {x: -940, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1124210755
 MonoBehaviour:
@@ -3757,11 +3757,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 21
+    m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 5
-    m_MaxSize: 50
+    m_MaxSize: 58
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -4570,11 +4570,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 21
+    m_FontSize: 54
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 5
-    m_MaxSize: 50
+    m_MaxSize: 55
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -4661,6 +4661,10 @@ PrefabInstance:
       propertyPath: cardMaterial
       value: 
       objectReference: {fileID: 80190866}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: availableCubePrefab
+      value: 
+      objectReference: {fileID: 8952817350888809822, guid: 977eed03415e6f9469da1a0cab52d9ee, type: 3}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: boardSquares.Array.size
       value: 25
@@ -5400,7 +5404,7 @@ Transform:
   - {fileID: 99821358}
   - {fileID: 436042314}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1891089101
 GameObject:

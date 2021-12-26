@@ -229,7 +229,7 @@ public class Player : MonoBehaviour
                     input_active = false;
                     //stop animation
                     current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
-
+                    GameManager._instance.EraseAvailableSquares();
                     if (current_token.pickUp != null)
                         current_token.pickUp.SetActive(false);
 
@@ -370,6 +370,7 @@ public class Player : MonoBehaviour
         Token_c token_to_move = tokens_list.First(token => token.identifier == current_card);
         current_token = token_to_move;
         current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
+        GameManager._instance.SetAvailableCubes(Array.IndexOf(board, current_token.identifier));
         current_token.pickUp.SetActive(true);
         ChangeAlphaMaterial(current_token.destiny, 0.45f);
         input_active = true;
@@ -446,6 +447,7 @@ public class Player : MonoBehaviour
 
         ChangeAlphaMaterial(current_token.destiny, 1f);
         current_token.gameObject.GetComponent<Animator>().SetBool("start", true);
+        GameManager._instance.SetAvailableCubes(Array.IndexOf(board, current_token.identifier));
         input_active = true;
     }
 
@@ -553,6 +555,7 @@ public class Player : MonoBehaviour
             current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
             NetworkingClient._instance.SendPackage();
             input_active = false;
+            GameManager._instance.EraseAvailableSquares();
         }
     }
 
