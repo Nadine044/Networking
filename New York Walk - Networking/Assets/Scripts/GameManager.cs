@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,8 +19,14 @@ public class GameManager : MonoBehaviour
     private GameObject restritecSpaceCubePrefab;
     private List<GameObject> restrictedCubesList = new List<GameObject>();
     // Start is called before the first frame update
+    [SerializeField]
+    private GameObject wonpanel;
+    [SerializeField]
+    private GameObject losepanel;
     void Start()
     {
+        wonpanel.SetActive(false);
+        losepanel.SetActive(false);
         _instance = this;
     }
 
@@ -27,7 +34,6 @@ public class GameManager : MonoBehaviour
     {
         player_cards[num].AssignMaterial(material_n);
     }
-
 
     public void SetRestrictedSpaceCubes(int[] restricted_pos)
     {
@@ -46,6 +52,16 @@ public class GameManager : MonoBehaviour
             Destroy(restrictedCubesList[i]);
         }
         restrictedCubesList.Clear();
+    }
+
+    public void SetWonPanel()
+    {
+        wonpanel.SetActive(true);
+    }
+
+    public void SetLosePanel()
+    {
+        losepanel.SetActive(true);
     }
 
 }
