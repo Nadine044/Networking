@@ -9,8 +9,6 @@ public class AudioManager : MonoBehaviour
     public AudioSource lastCitizenMusic;
     public AudioSource pickUp;
 
-    public Player player;
-
     bool checkGameMusic = false;
     bool lastMusicPlaying = false;
 
@@ -23,20 +21,20 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player.SFX_PickUp)
+        if (Player._instance.SFX_PickUp)
         {
             pickUp.Play();
-            player.SFX_PickUp = false;
+            Player._instance.SFX_PickUp = false;
         }
 
-        if (player.inGameMusicPlaying && !checkGameMusic)
+        if (Player._instance.inGameMusicPlaying && !checkGameMusic)
         {
             checkGameMusic = true;
             positionatingPlayersMusic.Stop();
             inGameMusic.Play();
         }
 
-        if (player.win_counter == 2 && !lastMusicPlaying)
+        if (Player._instance.win_counter == 2 && !lastMusicPlaying)
         {
             lastMusicPlaying = true;
             inGameMusic.Stop();

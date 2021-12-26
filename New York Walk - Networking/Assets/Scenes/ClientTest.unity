@@ -1594,8 +1594,7 @@ MonoBehaviour:
   positionatingPlayersMusic: {fileID: 460793618}
   inGameMusic: {fileID: 460793617}
   lastCitizenMusic: {fileID: 460793616}
-  pickUp: {fileID: 0}
-  player: {fileID: 0}
+  pickUp: {fileID: 460793615}
 --- !u!4 &460793620
 Transform:
   m_ObjectHideFlags: 0
