@@ -131,10 +131,6 @@ public class Player : MonoBehaviour
                         Debug.Log("type 1");
                         SetInitialTokenPos(GameManager._instance.boardSquares);
                         break;
-                    case 2:
-                        Debug.Log("type 2");
-                        SetInitialTokenPos(GameManager._instance.boardSquares);
-                        break;
                     case 3:
                         Debug.Log("type 3");
                         SetTokenPos(GameManager._instance.boardSquares);
@@ -175,16 +171,15 @@ public class Player : MonoBehaviour
                             board[j] = -2;
                     }
 
+                    //clean it vissualy
+                    GameManager._instance.EraseRestrictedSpaceCubes();
+
                     //stop animation
                     current_token.gameObject.GetComponent<Animator>().SetBool("start", false);
                     current_token.pickUp.SetActive(false);
                     //Update server
 
-                    //if (tokens_list.Count == 6) //all tokens are setted 
-                    //{
-                    //    //NetworkingClient._instance.SendSetUpPackage(2);
-                    //    //return;
-                    //}
+                   
                     NetworkingClient._instance.SendSetUpPackage(1);
                     return;
                 }
@@ -457,6 +452,8 @@ public class Player : MonoBehaviour
                 board[noavailablepos[i]] = -1;
         }
         NetworkingClient._instance.logText.text = "Restricted Space done";
+        //to make show it visually on the board
+        GameManager._instance.SetRestrictedSpaceCubes(noavailablepos);
     }
 
     void CheckNewTokens()

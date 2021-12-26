@@ -3993,6 +3993,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
+      propertyPath: restritecSpaceCubePrefab
+      value: 
+      objectReference: {fileID: 8180521233889315799, guid: f035959c609026c4687a177cdafa0a8d, type: 3}
+    - target: {fileID: 1714825400235630188, guid: bb5b78b873ef114479c07584eb2e2251, type: 3}
       propertyPath: boardSquares.Array.data[0]
       value: 
       objectReference: {fileID: 1550473290}
