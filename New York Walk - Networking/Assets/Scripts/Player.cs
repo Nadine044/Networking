@@ -215,8 +215,7 @@ public class Player : MonoBehaviour
                     //clean the previous position
                     board[Array.IndexOf(board, current_token.identifier)] = -2;
 
-                    //current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
-                    current_token.gameObject.GetComponent<TokenScript>().SetDestPos(squares[i].transform.position);
+                    current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
                     board[i] = current_token.identifier;
                     input_active = false;
                     //stop animation
@@ -601,7 +600,6 @@ public class Player : MonoBehaviour
             {
                 NetworkingClient._instance.logText.text = "We have won!!!!!";
                 NetworkingClient._instance.CloseConnection();
-                GameManager._instance.SetWonPanel();
             }
             return true;
         }
