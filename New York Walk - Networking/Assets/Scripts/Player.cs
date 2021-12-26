@@ -6,6 +6,9 @@ using System;
 using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
+    public bool SFX_PickUp = false;
+    public bool inGameMusicPlaying = false;
+
     public JSONReader player_cards;
 
     public int randomNumberGenerated;
@@ -100,7 +103,7 @@ public class Player : MonoBehaviour
     public GameObject pickUpprefab;
 
     //win condition
-    private int win_counter = 0;
+    public int win_counter = 0;
     void Start()
     {
         _instance = this;
@@ -189,6 +192,11 @@ public class Player : MonoBehaviour
 
     public void SetTokenPos(List<GameObject> squares)
     {
+        if (!inGameMusicPlaying)
+        {
+            inGameMusicPlaying = true;
+        }
+
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         string colliderName;
@@ -583,6 +591,7 @@ public class Player : MonoBehaviour
     {
         if(current_token.card.pickUpID == pos)
         {
+            SFX_PickUp = true;
             Destroy(current_token.pickUp);
             return true;
         }
