@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-
+using Photon.Pun.UtilityScripts;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    PunTurnManager turn;//check for this, maybe handles everything
+    
     [SerializeField] private UIManager uiManager;
 
     private const int MAX_PLAYERS = 2;
@@ -58,6 +60,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
     {
         Debug.LogError($"Player {newPlayer.ActorNumber} joined the room");
+    }
+
+    private void SetTurn()
+    {
+        int tmp = Random.Range(1, 3);
+        if(PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        {
+            //how can we send data to the player telling its his turn?
+            var starting_player = PhotonNetwork.CurrentRoom.GetPlayer(tmp); 
+           // if(starting_player.CustomProperties.COn)
+        }
     }
     #endregion
 }
