@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using Photon.Pun.UtilityScripts;
+using ExitGames.Client.Photon;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    PunTurnManager turn;//check for this, maybe handles everything
-    
+    //testing purpose
+    private bool do_once = false;
     [SerializeField] private UIManager uiManager;
 
+    private ExitGames.Client.Photon.Hashtable _myCustomProperties = new ExitGames.Client.Photon.Hashtable();
+
+    private const string STARTING_TURN = "turn";
     private const int MAX_PLAYERS = 2;
     private void Awake()
     {
@@ -26,10 +29,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Connect()
     {
-        if(PhotonNetwork.IsConnected)
+        if (PhotonNetwork.IsConnected)
         {
             Debug.LogError($"Connected to server from connect");
-            PhotonNetwork.JoinRandomRoom(null,MAX_PLAYERS);
+            PhotonNetwork.JoinRandomRoom(null, MAX_PLAYERS);
         }
         else
         {
@@ -54,7 +57,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        uiManager.Connected();
         Debug.LogError($"Player {PhotonNetwork.LocalPlayer.ActorNumber} joined the room");
+
+        if (IsRoomFull())
+            SetTurn();
+    }
+
+    public bool IsRoomFull()
+    {
+        return PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers;
     }
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
@@ -62,14 +74,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.LogError($"Player {newPlayer.ActorNumber} joined the room");
     }
 
-    private void SetTurn()
+    public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        Debug.LogError($"Player {targetPlayer.ActorNumber} has changed his property");
+
+        if(PhotonNetwork.LocalPlayer == targetPlayer)
+            uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); //maybe we should update this in another way
+    }
+
+    private void SetTurn() //here we decide whos turn first
     {
         int tmp = Random.Range(1, 3);
-        if(PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        foreach(Player p in PhotonNetwork.PlayerList)
         {
-            //how can we send data to the player telling its his turn?
-            var starting_player = PhotonNetwork.CurrentRoom.GetPlayer(tmp); 
-           // if(starting_player.CustomProperties.COn)
+            if(p.ActorNumber == tmp)
+                p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, true } });
+
+            else
+                p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, false } });
         }
     }
     #endregion

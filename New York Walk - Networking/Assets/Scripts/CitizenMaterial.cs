@@ -7,7 +7,7 @@ public class CitizenMaterial : MonoBehaviour
     public Material[] materialList;
     Renderer rend;
 
-    public Player player;
+    public User player;
 
     // Start is called before the first frame update
     void Start()

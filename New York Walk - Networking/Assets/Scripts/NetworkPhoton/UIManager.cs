@@ -14,11 +14,12 @@ public class UIManager : MonoBehaviour
     [Header("Texts")]
    // [SerializeField] private Text resultText;
     [SerializeField] private Text connectionStatusText;
+    [SerializeField] private Text turnStatusText;
 
     [Header("Screen GameObjects")]
     [SerializeField] private GameObject gameoverScreen;
     [SerializeField] private GameObject connectScreen;
-
+    [SerializeField] private GameObject whosTurn;
 
     private void Awake()
     {
@@ -35,6 +36,7 @@ public class UIManager : MonoBehaviour
     {
         gameoverScreen.SetActive(false);
         connectScreen.SetActive(false);
+        whosTurn.SetActive(false);
     }
 
     public void OnConnect()
@@ -46,5 +48,15 @@ public class UIManager : MonoBehaviour
     {
         connectionStatusText.text = status;
     }
+    
+    public void Connected()
+    {
+        connectScreen.SetActive(false);
+        whosTurn.SetActive(true);
+    }
 
+    public void SetTurnType(bool turn)
+    {
+        turnStatusText.text = turn ? "My Turn" : "Not My Turn";
+    }
 }

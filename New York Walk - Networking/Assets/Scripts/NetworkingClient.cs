@@ -157,23 +157,23 @@ public class NetworkingClient : Networking
                 switch(package.index)
                 {
                     case -1:
-                        Player._instance.AwaitForClientReconnection();
+                        User._instance.AwaitForClientReconnection();
                         break;
                     case -2:
-                        Player._instance.RecieveReconnectionUpdateFromServerNoMove(package.board_array, package.token_list_id,package.win_counter);
+                        User._instance.RecieveReconnectionUpdateFromServerNoMove(package.board_array, package.token_list_id,package.win_counter);
                         break;
                     case -3:
-                        Player._instance.RecieveReconnectionUpdateFromServerMove(package.index,package.board_array, package.token_list_id,package.card, package.win_counter);
+                        User._instance.RecieveReconnectionUpdateFromServerMove(package.index,package.board_array, package.token_list_id,package.card, package.win_counter);
                         break;
                     case -4:
-                        Player._instance.RecieveReconnectionUpdateFromServerMoveSetUp(package.index, package.board_array, package.token_list_id, package.card);
+                        User._instance.RecieveReconnectionUpdateFromServerMoveSetUp(package.index, package.board_array, package.token_list_id, package.card);
                         break;
                     case -5:
-                        Player._instance.ResumePlay();
+                        User._instance.ResumePlay();
                         break;
                     case 3:
                         Debug.Log(package.msg_to_log);
-                        Player._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
+                        User._instance.RecieveUpdateFromServer(package.index, package.board_array, package.card);
                         break;
                     case 5:
                         //End Game
@@ -183,7 +183,7 @@ public class NetworkingClient : Networking
                         break;
                     case 1:
                         Debug.Log(package.msg_to_log);
-                        Player._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);
+                        User._instance.RecieveUpdateFromServerSetUp(package.index, package.board_array, package.card);
                         break;
                 }
             };
@@ -201,7 +201,7 @@ public class NetworkingClient : Networking
 
     public void SendPackage()
     {
-        byte[] b = Serialize(3, "new move done", Player._instance.GetBoard(),-1);
+        byte[] b = Serialize(3, "new move done", User._instance.GetBoard(),-1);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
@@ -215,7 +215,7 @@ public class NetworkingClient : Networking
 
     public void SendSetUpPackage(int index_type)
     {
-        byte[] b = Serialize(index_type, "new move done", Player._instance.GetBoard(), -1);
+        byte[] b = Serialize(index_type, "new move done", User._instance.GetBoard(), -1);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);
@@ -239,7 +239,7 @@ public class NetworkingClient : Networking
 
     public void SendWinPackage(int token_id)
     {
-        byte[] b = Serialize(4,Player._instance.GetBoard(),token_id);
+        byte[] b = Serialize(4,User._instance.GetBoard(),token_id);
         if (socket.Connected)
         {
             socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(SendCallback), socket);

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UnityEngine.UI;
-public class Player : MonoBehaviour
+public class User : MonoBehaviour
 {
     public bool SFX_PickUp = false;
     public bool inGameMusicPlaying = false;
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
 
     [HideInInspector]
     public int turn_type = 0;
-    public static Player _instance { get; private set; }
+    public static User _instance { get; private set; }
     public Button pass_turn_btn;
     [SerializeField]
     private GameObject waiting_reconnec_text;

@@ -21,20 +21,20 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Player._instance.SFX_PickUp)
+        if (User._instance.SFX_PickUp)
         {
             pickUp.Play();
-            Player._instance.SFX_PickUp = false;
+            User._instance.SFX_PickUp = false;
         }
 
-        if (Player._instance.inGameMusicPlaying && !checkGameMusic)
+        if (User._instance.inGameMusicPlaying && !checkGameMusic)
         {
             checkGameMusic = true;
             positionatingPlayersMusic.Stop();
             inGameMusic.Play();
         }
 
-        if (Player._instance.win_counter == 2 && !lastMusicPlaying)
+        if (User._instance.win_counter == 2 && !lastMusicPlaying)
         {
             lastMusicPlaying = true;
             inGameMusic.Stop();
