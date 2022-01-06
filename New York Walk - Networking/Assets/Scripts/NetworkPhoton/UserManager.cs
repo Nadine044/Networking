@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UserManager : ScriptableObject
+public class UserManager : MonoBehaviour
 {
     [HideInInspector] public int[] cards = new int[3];
 

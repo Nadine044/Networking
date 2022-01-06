@@ -92,12 +92,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); //maybe we should update this in another way
             gameInitializer.InitializeMultiplayerGameController();
 
-            if((bool)targetPlayer.CustomProperties[STARTING_TURN] == true)
+            if((bool)targetPlayer.CustomProperties[STARTING_TURN])
             {
                 Debug.LogError($"Entered here as player {targetPlayer.ActorNumber}");
                 GetRandomCards getRandomCards = new GetRandomCards();
                 controller.SetFirstTurnTrue();//dirty af
                 controller.SetRandomCards(getRandomCards.GenerateRandom());
+                controller.SetTurnState(GameTurn.MyTurn);
                 //here we must set our game state
             }
         }

@@ -26,8 +26,9 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 
     private void Awake()
     {
-        userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
+       // userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
         turnState = GameTurn.OtherTurn;
+        userManager = GetComponent<UserManager>();
         userManager.SetController(this);
     }
 
@@ -107,6 +108,11 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         object[] content = new object[] { 2, 14 }; //token id, token pos
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All }; //recieverGroup Maybe just other?
         PhotonNetwork.RaiseEvent(SET_TOKEN, content, raiseEventOptions, SendOptions.SendReliable);
+    }
+
+    public void SetTurnState(GameTurn turnState)
+    {
+        this.turnState = turnState;
     }
 
     //bassically here we tell the other player its his turn
