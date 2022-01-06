@@ -6,12 +6,9 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    //testing purpose
-    private bool do_once = false;
     [SerializeField] private UIManager uiManager;
-
-    private ExitGames.Client.Photon.Hashtable _myCustomProperties = new ExitGames.Client.Photon.Hashtable();
-
+    [SerializeField] private GameInitializer gameInitializer;
+   // private ExitGames.Client.Photon.Hashtable _myCustomProperties = new ExitGames.Client.Photon.Hashtable();
     private const string STARTING_TURN = "turn";
     private const int MAX_PLAYERS = 2;
     private void Awake()
@@ -60,8 +57,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         uiManager.Connected();
         Debug.LogError($"Player {PhotonNetwork.LocalPlayer.ActorNumber} joined the room");
 
-        if (IsRoomFull())
-            SetTurn();
+        if (!IsRoomFull())
+        {
+            gameInitializer.CreateMultiplayerBoard();
+        }
+        else SetTurn();
     }
 
     public bool IsRoomFull()
