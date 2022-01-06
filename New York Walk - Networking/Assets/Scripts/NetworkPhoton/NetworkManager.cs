@@ -8,6 +8,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private GameInitializer gameInitializer;
+
+    private MultiplayerGameController controller;
    // private ExitGames.Client.Photon.Hashtable _myCustomProperties = new ExitGames.Client.Photon.Hashtable();
     private const string STARTING_TURN = "turn";
     private const int MAX_PLAYERS = 2;
@@ -22,6 +24,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Debug.developerConsoleVisible = true;
+    }
+
+    void SetController(MultiplayerGameController controller)
+    {
+        this.controller = controller;
     }
 
     public void Connect()
@@ -78,8 +85,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.LogError($"Player {targetPlayer.ActorNumber} has changed his property");
 
-        if(PhotonNetwork.LocalPlayer == targetPlayer)
+        if (PhotonNetwork.LocalPlayer == targetPlayer)
+        {
             uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); //maybe we should update this in another way
+            gameInitializer.InitializeMultiplayerGameController();
+            //here we can set the game initial game state
+        }
     }
 
     private void SetTurn() //here we decide whos turn first

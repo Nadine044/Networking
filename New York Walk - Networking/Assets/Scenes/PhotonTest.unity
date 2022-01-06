@@ -1236,9 +1236,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b34c399132c57741a4756d63ad85172, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  multiplayerBoardPrefab: {fileID: 4263798521387049340, guid: 4fbdc11b625ea2c4aa487f0e57bd0a3d, type: 3}
+  multiplayerBoardPrefab: {fileID: 1779918619499373792, guid: 4fbdc11b625ea2c4aa487f0e57bd0a3d, type: 3}
+  MultiplayerGameControllerPrefab: {fileID: 6465059333335704418, guid: cd2a81c503300ed408baf686986a6923, type: 3}
   networkManager: {fileID: 793620654}
   BoardAnchor: {fileID: 2143415128}
+  UIManager: {fileID: 1081584680}
 --- !u!4 &2073963376
 Transform:
   m_ObjectHideFlags: 0
