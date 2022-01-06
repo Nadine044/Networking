@@ -8,6 +8,9 @@ public class UserManager : ScriptableObject
 
     private int turnCounter= 0;
     // Start is called before the first frame update
+    private GameTurn state;
+    private MultiplayerGameController controller;
+
     void Start()
     {
         
@@ -16,12 +19,23 @@ public class UserManager : ScriptableObject
     // Update is called once per frame
     void Update()
     {
-        
+        if(controller.CanPerformMove()&& Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Debug.LogError("Playing");
+            controller.EndTurn();
+        }
     }
 
+    public void SetController(MultiplayerGameController controller)
+    {
+        this.controller = controller;
+    }
     public void SetCards(List<int> cards)
     {
         this.cards = cards.ToArray();
-        Debug.LogError($"Cards recieved {cards[0]},{cards[1]},{cards[2]}");
+    }
+    public void SetState(GameTurn state)
+    {
+        this.state = state;
     }
 }

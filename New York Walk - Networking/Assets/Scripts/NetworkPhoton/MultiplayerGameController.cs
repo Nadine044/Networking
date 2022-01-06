@@ -8,7 +8,7 @@ using System;
 
 public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 {
-    private GameState state;
+    private GameTurn turnState;
     private const byte SET_GAME_STATE_EVENT_CODE = 1;
     private const byte GIVE_CARDS = 2;
     private const byte SET_TOKEN = 3;
@@ -27,6 +27,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private void Awake()
     {
         userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
+        turnState = GameTurn.OtherTurn;
+        userManager.SetController(this);
     }
 
     public void SetFirstTurnTrue()
@@ -34,9 +36,9 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         firstTurn = true;
     }
     //this should be called when we try to click on the board
-    bool CanPerformMove()
+    public bool CanPerformMove()
     {
-        if(!IsGameInProgress() || !IsLocalPlayerTurn())
+        if(!IsLocalPlayerTurn())
         {
             return false;
         }
@@ -45,16 +47,18 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 
     private bool IsLocalPlayerTurn()
     {
-        return localUser = activePlayer;
+        return turnState == GameTurn.MyTurn;
     }
-    private bool IsGameInProgress()
-    {
-        return state == GameState.Play;
-    }
+    ////
+    //private bool IsGameInProgress()
+    //{
+    //    //should check if the game still active
+    //}
 
     public void EndTurn()
     {
-
+        ChangeOtherGameState();
+        //end current token animation
     }
 
     public void SetDependencies(UIManager uiManager, User user, MultiplayerBoard multi_board)
@@ -85,8 +89,6 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         if (eventCode == SET_TOKEN)
         {
             object[] data = (object[])photonEvent.CustomData;
-
-            Debug.LogError($"Token Event Setted id {(int)data[0]}, pos {data[1]} :)");
         }
     }
     public void OnEvent(EventData photonEvent) //we can also subscribe custom function events so that we don't have a hughe function
@@ -95,8 +97,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         if (eventCode == SET_GAME_STATE_EVENT_CODE)
         {
             object[] data = (object[])photonEvent.CustomData;
-            GameState state = (GameState)data[0];
-            this.state = state;
+            GameTurn state = (GameTurn)data[0];
+            this.turnState = state;
         }
     }
 
@@ -107,10 +109,12 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         PhotonNetwork.RaiseEvent(SET_TOKEN, content, raiseEventOptions, SendOptions.SendReliable);
     }
 
-    private void SetGameState(GameState state)
+    //bassically here we tell the other player its his turn
+    private void ChangeOtherGameState()
     {
-        object[] content = new object[] { (int)state };
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All }; //recieverGroup Maybe just other?
+        this.turnState = GameTurn.OtherTurn;
+        object[] content = new object[] { (int)GameTurn.MyTurn };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
         PhotonNetwork.RaiseEvent(SET_GAME_STATE_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
     }
 
