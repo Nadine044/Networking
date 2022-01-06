@@ -10,12 +10,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameInitializer gameInitializer;
 
     private MultiplayerGameController controller;
-   // private ExitGames.Client.Photon.Hashtable _myCustomProperties = new ExitGames.Client.Photon.Hashtable();
+
     private const string STARTING_TURN = "turn";
     private const int MAX_PLAYERS = 2;
+
     private void Awake()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
+
     }
     private void Update()
     {
@@ -26,7 +28,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.developerConsoleVisible = true;
     }
 
-    void SetController(MultiplayerGameController controller)
+    public void SetController(MultiplayerGameController controller)
     {
         this.controller = controller;
     }
@@ -89,7 +91,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); //maybe we should update this in another way
             gameInitializer.InitializeMultiplayerGameController();
-            //here we can set the game initial game state
+
+            if((bool)targetPlayer.CustomProperties[STARTING_TURN] == true)
+            {
+                Debug.LogError($"Entered here as player {targetPlayer.ActorNumber}");
+                GetRandomCards getRandomCards = new GetRandomCards();
+                controller.SetFirstTurnTrue();//dirty af
+                controller.SetRandomCards(getRandomCards.GenerateRandom());
+                //here we must set our game state
+            }
         }
     }
 
@@ -98,9 +108,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         int tmp = Random.Range(1, 3);
         foreach(Player p in PhotonNetwork.PlayerList)
         {
-            if(p.ActorNumber == tmp)
+            if (p.ActorNumber == tmp)
+            {
                 p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, true } });
 
+            }
             else
                 p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, false } });
         }

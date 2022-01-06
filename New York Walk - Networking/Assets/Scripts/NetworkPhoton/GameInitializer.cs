@@ -8,7 +8,7 @@ public class GameInitializer : MonoBehaviour
     // Start is called before the first frame update
     [Header("Dependant Objects")]
     [SerializeField] private MultiplayerBoard multiplayerBoardPrefab;
-    [SerializeField] private MultiplayerGameController MultiplayerGameControllerPrefab;
+    private MultiplayerGameController controller;
 
     [Header("Scene references")]
     [SerializeField] private NetworkManager networkManager;
@@ -20,6 +20,7 @@ public class GameInitializer : MonoBehaviour
     private void Awake()
     {
         user = GetComponent<User>();
+        controller = GetComponent<MultiplayerGameController>();
     }
     public void CreateMultiplayerBoard()
     {
@@ -32,8 +33,8 @@ public class GameInitializer : MonoBehaviour
     public void InitializeMultiplayerGameController()
     {
         MultiplayerBoard mBoard = FindObjectOfType<MultiplayerBoard>();//try not to use findobject
-        MultiplayerGameController controller = Instantiate(MultiplayerGameControllerPrefab);
         controller.SetDependencies(UIManager,user, mBoard);
+        networkManager.SetController(controller);
     }
 
 }

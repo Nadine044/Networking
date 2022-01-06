@@ -1217,6 +1217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2073963376}
   - component: {fileID: 2073963375}
+  - component: {fileID: 2073963377}
   m_Layer: 0
   m_Name: GameInitializer
   m_TagString: Untagged
@@ -1237,7 +1238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiplayerBoardPrefab: {fileID: 1779918619499373792, guid: 4fbdc11b625ea2c4aa487f0e57bd0a3d, type: 3}
-  MultiplayerGameControllerPrefab: {fileID: 6465059333335704418, guid: cd2a81c503300ed408baf686986a6923, type: 3}
   networkManager: {fileID: 793620654}
   BoardAnchor: {fileID: 2143415128}
   UIManager: {fileID: 1081584680}
@@ -1255,6 +1255,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2073963377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073963374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45cfd06def54ef74697a124aa3fa60e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2143415127
 GameObject:
   m_ObjectHideFlags: 0
