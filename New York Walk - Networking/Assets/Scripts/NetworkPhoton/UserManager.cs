@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,10 +12,9 @@ public class UserManager : MonoBehaviour
     private GameTurn state;
     private MultiplayerGameController controller;
 
-    void Start()
-    {
-        
-    }
+    private List<GameObject> boardSquares = new List<GameObject>();
+
+
 
     // Update is called once per frame
     void Update()
@@ -22,6 +22,7 @@ public class UserManager : MonoBehaviour
         if(controller.CanPerformMove()&& Input.GetKeyDown(KeyCode.Mouse0))
         {
             Debug.LogError("Playing");
+            SetSpaceCubes._instance.EraseRestrictedSpaceCubes();
             controller.EndTurn();
         }
     }
@@ -37,5 +38,25 @@ public class UserManager : MonoBehaviour
     public void SetState(GameTurn state)
     {
         this.state = state;
+    }
+
+    public void SetUpToken()
+    {
+        if(turnCounter >=3)
+            return;
+        
+        JSONReader.Citizen citizen = JSONReader._instance.GetCitizenCardInfo(cards[turnCounter]);
+        Debug.LogError($"setup token {citizen.citizen}");
+        SetSpaceCubes._instance.SetRestrictedSpaceCubes(citizen.unavailableSquares);
+        turnCounter++;
+    }
+
+    public void FillBoardSquares(BoxCollider[] boxCollider)
+    {
+        for(int i =0; i < boxCollider.Length; i++)
+        {
+            boardSquares.Add(boxCollider[i].gameObject);
+        }
+        SetSpaceCubes._instance.DefineBoardPos(boardSquares);
     }
 }

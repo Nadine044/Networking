@@ -516,13 +516,13 @@ public class User : MonoBehaviour
     Card GetCitizenCardInfo(int card_n)
     {
         Card card = new Card();
-        card.citizen = player_cards.playableCitizenList.citizens[card_n].citizen;
-        card.pickUp = player_cards.playableCitizenList.citizens[card_n].pickUp;
-        card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
-        card.pickUpID = player_cards.playableCitizenList.citizens[card_n].pickUpID;
-        card.destinyID = player_cards.playableCitizenList.citizens[card_n].destinyID;
-        card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
-        card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
+        //card.citizen = player_cards.playableCitizenList.citizens[card_n].citizen;
+        //card.pickUp = player_cards.playableCitizenList.citizens[card_n].pickUp;
+        //card.destiny = player_cards.playableCitizenList.citizens[card_n].destiny;
+        //card.pickUpID = player_cards.playableCitizenList.citizens[card_n].pickUpID;
+        //card.destinyID = player_cards.playableCitizenList.citizens[card_n].destinyID;
+        //card.difficulty = player_cards.playableCitizenList.citizens[card_n].difficulty;
+        //card.unavailableSquares = player_cards.playableCitizenList.citizens[card_n].unavailableSquares;
         return card;
     }
 
@@ -538,10 +538,10 @@ public class User : MonoBehaviour
 
         if (!randomNumbers.Contains(randomNumberGenerated))
         {
-            randomNumbers.Add(randomNumberGenerated);
-            card.name = player_cards.cityCardsList.powerUps[randomNumberGenerated].name;
-            card.utility = player_cards.cityCardsList.powerUps[randomNumberGenerated].utility;
-            card.turns = player_cards.cityCardsList.powerUps[randomNumberGenerated].turns;            
+            //randomNumbers.Add(randomNumberGenerated);
+            //card.name = player_cards.cityCardsList.powerUps[randomNumberGenerated].name;
+            //card.utility = player_cards.cityCardsList.powerUps[randomNumberGenerated].utility;
+            //card.turns = player_cards.cityCardsList.powerUps[randomNumberGenerated].turns;            
         }
         else
             GetCityCardInfo(card, randomNumbers);

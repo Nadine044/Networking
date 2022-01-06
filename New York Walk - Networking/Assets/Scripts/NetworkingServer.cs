@@ -272,18 +272,18 @@ public class NetworkingServer : Networking
         }
         byte[] b = Serialize(1, turn_counter + "giving cards", board, card_id); 
         client_list[rand_int].client_turn = true;
-        Action func = () =>
-        {
-            client_list[rand_int].CreateToken(
-           cards_for_both[turn_counter],
-           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
-           GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
-           );
-            Debug.Log("Token created & turn up");
-            turn_counter++;
-        };
-        QueueMainThreadFunction(func);
+        //Action func = () =>
+        //{
+        //    client_list[rand_int].CreateToken(
+        //   cards_for_both[turn_counter],
+        //   //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+        //   //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+        //   //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
+        //   );
+        //    Debug.Log("Token created & turn up");
+        //    turn_counter++;
+        //};
+        //QueueMainThreadFunction(func);
 
         if (client_list[rand_int].client_socket.Connected)
         {
@@ -347,19 +347,19 @@ public class NetworkingServer : Networking
 
                                 rand_tmp = i;
                                 int _enter = turn_counter;
-                                Action func = () =>
-                                {
-                                    int tmp = _enter;
-                                    if (tmp > 5)
-                                        tmp = 5;
-                                    client_list[rand_tmp].CreateToken(
-                                       cards_for_both[tmp],
-                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
-                                       GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
-                                       );
-                                };
-                                QueueMainThreadFunction(func);
+                                //Action func = () =>
+                                //{
+                                //    int tmp = _enter;
+                                //    if (tmp > 5)
+                                //        tmp = 5;
+                                //    client_list[rand_tmp].CreateToken(
+                                //       cards_for_both[tmp],
+                                //       //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+                                //       //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+                                //       //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
+                                //       );
+                                //};
+                                //QueueMainThreadFunction(func);
                                 byte[] b = Serialize(1, "your turn client 2", board, card_id);
 
                                 //We send data to the other client, and let him send us back his input
@@ -569,16 +569,16 @@ public class NetworkingServer : Networking
                 int card_id = cards_for_both[turn_counter];
                 byte[] b = Serialize(-4, board, tmp_token_list.ToArray(), card_id);
                 int tmp = turn_counter;
-                Action func = () =>
-                {
-                    c.CreateToken(
-                        cards_for_both[tmp],
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
-                        GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
-                        );
-                };
-                QueueMainThreadFunction(func);
+                //Action func = () =>
+                //{
+                //    c.CreateToken(
+                //        cards_for_both[tmp],
+                //        //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].citizen,
+                //        //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].pickUpID,
+                //        //GetComponent<JSONReader>().playableCitizenList.citizens[card_id].destinyID
+                //        );
+                //};
+                //QueueMainThreadFunction(func);
                 c.client_socket.BeginSend(b, 0, b.Length, 0, new AsyncCallback(ReconnectSendCallback), c);
             }
             else if (turn_counter >= 6)

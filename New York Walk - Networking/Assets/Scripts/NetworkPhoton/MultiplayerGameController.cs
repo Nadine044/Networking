@@ -48,7 +48,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 
     private bool IsLocalPlayerTurn()
     {
-        return turnState == GameTurn.MyTurn;
+        return turnState == GameTurn.MyTurnSetUp || turnState == GameTurn.MyTurn;
     }
     ////
     //private bool IsGameInProgress()
@@ -58,7 +58,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 
     public void EndTurn()
     {
-        ChangeOtherGameState();
+        ChangeOtherGameState(GameTurn.MyTurnSetUp);
         //end current token animation
     }
 
@@ -67,6 +67,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         this.uiManager = uiManager;
         localUser = user;
         board = multi_board;
+        userManager.FillBoardSquares(board.GetComponentsInChildren<BoxCollider>());
     }
 
     #region PUN EVENTS
@@ -92,7 +93,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             object[] data = (object[])photonEvent.CustomData;
         }
     }
-    public void OnEvent(EventData photonEvent) //we can also subscribe custom function events so that we don't have a hughe function
+    public void OnEvent(EventData photonEvent) 
     {
         byte eventCode = photonEvent.Code;
         if (eventCode == SET_GAME_STATE_EVENT_CODE)
@@ -100,6 +101,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             object[] data = (object[])photonEvent.CustomData;
             GameTurn state = (GameTurn)data[0];
             this.turnState = state;
+            if (turnState == GameTurn.MyTurnSetUp)
+                userManager.SetUpToken();
         }
     }
 
@@ -116,10 +119,10 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     }
 
     //bassically here we tell the other player its his turn
-    private void ChangeOtherGameState()
+    private void ChangeOtherGameState(GameTurn state)
     {
         this.turnState = GameTurn.OtherTurn;
-        object[] content = new object[] { (int)GameTurn.MyTurn };
+        object[] content = new object[] { (int)state };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
         PhotonNetwork.RaiseEvent(SET_GAME_STATE_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
     }
@@ -130,6 +133,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         //we kept the first half and give the other player the other half
         userManager.SetCards(randomCards.GetRange(0, 3));
         GiveCards(randomCards.GetRange(3, 3));
+        userManager.SetUpToken();
     }
 
     private void GiveCards(List<int> randomcards)

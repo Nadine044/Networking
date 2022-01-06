@@ -23,15 +23,15 @@ public class CitizenMaterial : MonoBehaviour
 
     }
 
-    public void AssignMaterial(int material_n)
+    public void AssignMaterial(int material_n)//TODO
     {
-        foreach(var Item in materialList)
-        {
-            if (Item.name == player.player_cards.playableCitizenList.citizens[material_n].citizen)
-            {
-                rend.sharedMaterial = Item;
-                Debug.Log(Item.name);
-            }
-        }
+        //foreach(var Item in materialList)
+        //{
+        //    if (Item.name == player.player_cards.playableCitizenList.citizens[material_n].citizen)
+        //    {
+        //        rend.sharedMaterial = Item;
+        //        Debug.Log(Item.name);
+        //    }
+        //}
     }
 }
