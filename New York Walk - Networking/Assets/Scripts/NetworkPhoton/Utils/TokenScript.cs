@@ -12,9 +12,11 @@ public class TokenScript : MonoBehaviour
     private int id = -1;
     private int boardArrayPos;
     private JSONReader.Citizen citizen;
+    private TokenAnimationMovement tokenAnimation;
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
+        tokenAnimation = GetComponent<TokenAnimationMovement>();
     }
 
     public void SetID_BoardArrayPos(int id, int boardArrayPos)
@@ -31,6 +33,16 @@ public class TokenScript : MonoBehaviour
     public void UpdateBoard(int[] boardArray)
     {
 
+    }
+
+    public void StartIdleAnimation()
+    {
+        tokenAnimation.SetIdleAnimation(true);
+    }
+
+    public void StopIdleAnimation()
+    {
+        tokenAnimation.SetIdleAnimation(false);
     }
 
     ////TODO pass more things but for know just like this
@@ -92,7 +104,7 @@ public class TokenScript : MonoBehaviour
 
     public void UpdatePosition(Vector3 newPos)
     {
-        transform.position = newPos;
+        tokenAnimation.SetDestPos(newPos);
     }
 
     public void SetCitizenCard(JSONReader.Citizen citizen)

@@ -12,7 +12,7 @@ public class UserManager : MonoBehaviour
 
     [SerializeField] private TokenScript tokenScriptPrefab;
 
-    private int tokenCounter= 0;
+    private int tokenCounter = 0;
     // Start is called before the first frame update
     private MultiplayerGameController controller;
 
@@ -121,6 +121,7 @@ public class UserManager : MonoBehaviour
                 }
             }
         }
+        currentToken.StartIdleAnimation();
     }
 
     private void UpdateTokenPos()
@@ -136,6 +137,7 @@ public class UserManager : MonoBehaviour
                     if (!currentToken.CheckAdjacentSquares(i, boardArray) || boardArray[i] != DEFAULT_SQUARE_VALUE)
                         return;
 
+                    currentToken.StopIdleAnimation();
                     boardArray[Array.IndexOf(boardArray, currentToken.GetID())] = DEFAULT_SQUARE_VALUE;//Clean previous boardArray pos
                     boardArray[i] = currentToken.GetID();
                     SetSpaceCubes._instance.EraseAvailableSquares();

@@ -21,6 +21,11 @@ public class TokenAnimationMovement : MonoBehaviour
         StartMovement();
     }
 
+    public void SetIdleAnimation(bool state)
+    {
+        anim.SetBool("start", state);
+    }
+
     public void StartMovement()
     {
         anim.SetBool("jump", true);
