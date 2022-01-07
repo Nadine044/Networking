@@ -22,8 +22,6 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private UIManager uiManager;
     private MultiplayerBoard board;
 
-    private bool firstTurn = false;
-
     private void Awake()
     {
        // userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
@@ -32,10 +30,6 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         userManager.SetController(this);
     }
 
-    public void SetFirstTurnTrue()
-    {
-        firstTurn = true;
-    }
     //this should be called when we try to click on the board
     public bool CanPerformMove()
     {

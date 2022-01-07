@@ -96,7 +96,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             {
                 Debug.LogError($"Entered here as player {targetPlayer.ActorNumber}");
                 GetRandomCards getRandomCards = new GetRandomCards();
-                controller.SetFirstTurnTrue();//dirty af
                 controller.SetRandomCards(getRandomCards.GenerateRandom());
                 controller.SetTurnState(GameTurn.MyTurnSetUp);
                 //here we must set our game state

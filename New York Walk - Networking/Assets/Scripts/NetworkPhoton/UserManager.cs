@@ -2,21 +2,39 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using System.Linq;
 
 public class UserManager : MonoBehaviour
 {
-    [HideInInspector] public int[] cards = new int[3];
+    public static UserManager _instance;
+    private int[] cards = new int[3];
+
+    [SerializeField] private TokenScript tokenScriptPrefab;
 
     private int tokenCounter= 0;
     // Start is called before the first frame update
-    private GameTurn state;
     private MultiplayerGameController controller;
 
     private List<GameObject> boardSquares = new List<GameObject>();
 
+    private const int DEFAULT_SQUARE_VALUE = -2;
+    private const int RESTRICTED_SQUARE_VALUE = -1;
+    private const int SQUARES = 25;
+    private int[] boardArray = new int[SQUARES];
 
+    private List<GameObject> tokenList = new List<GameObject>();
+    private JSONReader.Citizen currentCitizen;
+    private TokenScript currentToken;
+    private void Awake()
+    {
+        _instance = this;
+        for(int i = 0; i < SQUARES; i++)
+        {
+            boardArray[i] = -2;
+        }
+    }
 
-    // Update is called once per frame
     void Update()
     {
         if(controller.CanPerformMove()&& Input.GetKeyDown(KeyCode.Mouse0))
@@ -25,12 +43,11 @@ public class UserManager : MonoBehaviour
             {
                 case GameTurn.MyTurn:
                     Debug.LogError("MyTurn Enter");
-                    controller.EndTurn();
+                    UpdateTokenPos();
                     break;
                 case GameTurn.MyTurnSetUp:
+                    SetInitialTokenPos();
                     Debug.LogError("MyTurnSetUp Enter");
-                    SetSpaceCubes._instance.EraseRestrictedSpaceCubes(); //TODO token must launch an event to call this funciton
-                    controller.EndSetUpTurn();
                     break;
                 default:
 
@@ -47,20 +64,16 @@ public class UserManager : MonoBehaviour
     {
         this.cards = cards.ToArray();
     }
-    public void SetState(GameTurn state)
-    {
-        this.state = state;
-    }
 
     public void SetUpToken()
     {
         if(tokenCounter >=3)
             return;
         
-        JSONReader.Citizen citizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
-        Debug.LogError($"setup token {citizen.citizen}");
-        SetSpaceCubes._instance.SetRestrictedSpaceCubes(citizen.unavailableSquares);
-        tokenCounter++;
+        currentCitizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
+        Debug.LogError($"setup token {currentCitizen.citizen}");
+        SetSpaceCubes._instance.SetRestrictedSpaceCubes(currentCitizen.unavailableSquares);
+        CreateRestrictedSpace(currentCitizen.unavailableSquares);        
     }
 
     public void FillBoardSquares(BoxCollider[] boxCollider)
@@ -82,23 +95,107 @@ public class UserManager : MonoBehaviour
     {
         Debug.LogError($"UpdatePhase");
         //how can we no the token maybe with a list
-        //current token = 
-        //for(int i =0; i < tokenList.Count(); i++)
-        //{
-        //  if(current_token = tokenList[i])
-        //  {    
-        //if (i == 2)
-        //{
-        //    currentToken = tokenList[0];
-        //    return;
-        //}
-        //else
-        //{
-        //    currentToken = tokenList[i + 1];
-        //    return;
-        //}
-        //  }
-        //}
-        //
+        SetCurrentToken();
+        SetSpaceCubes._instance.SetAvailableCubes(Array.IndexOf(boardArray, currentToken.GetID()));
+
+    }
+
+    void SetCurrentToken()
+    {
+        if (currentToken == null)
+            currentToken = tokenList[0].GetComponent<TokenScript>(); ;
+
+        for (int i = 0; i < tokenList.Count(); i++)
+        {
+            if (currentToken == tokenList[i].GetComponent<TokenScript>())
+            {
+                if (i == 2)
+                {
+                    currentToken = tokenList[0].GetComponent<TokenScript>(); ;
+                    break;
+                }
+                else
+                {
+                    currentToken = tokenList[i + 1].GetComponent<TokenScript>(); ;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void UpdateTokenPos()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit))
+        {
+            for(int i = 0; i < SQUARES; i++)
+            {
+                if (boardSquares[i].name == hit.collider.name)
+                {
+                    if (!currentToken.CheckAdjacentSquares(i, boardArray) || boardArray[i] != DEFAULT_SQUARE_VALUE)
+                        return;
+
+                    boardArray[Array.IndexOf(boardArray, currentToken.GetID())] = DEFAULT_SQUARE_VALUE;//Clean previous boardArray pos
+                    boardArray[i] = currentToken.GetID();
+                    SetSpaceCubes._instance.EraseAvailableSquares();
+                    currentToken.GetComponent<TokenScript>().UpdatePosition(boardSquares[i].transform.position);
+                    controller.EndTurn();
+                }
+            }
+        }
+    }
+
+    private void SetInitialTokenPos()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if(Physics.Raycast(ray,out hit))
+        {
+            for(int i =0; i < SQUARES; i++)
+            {
+                if(boardSquares[i].name == hit.collider.name)
+                {
+                    //check if the position is already occupied
+                    if (boardArray[i] != DEFAULT_SQUARE_VALUE)
+                        return;
+
+                    GameObject tmp_token = PhotonNetwork.Instantiate(tokenScriptPrefab.name, boardSquares[i].transform.position,boardSquares[i].transform.rotation);
+                    tokenList.Add(tmp_token);
+                    tmp_token.GetComponent<TokenScript>().SetCitizenCard(currentCitizen);
+                    tmp_token.GetComponent<TokenScript>().SetID_BoardArrayPos(cards[tokenCounter],i);
+                    CleanRestrictedSpace();
+                    SetSpaceCubes._instance.EraseRestrictedSpaceCubes();
+                    
+                    tokenCounter++;
+                    //last function to call
+                    controller.EndSetUpTurn();
+                }
+            }
+        }
+    }
+
+    private void CreateRestrictedSpace(int[] noavailablepos) 
+    {
+        for (int i = 0; i < noavailablepos.Length; ++i)
+        {
+            if (boardArray[noavailablepos[i]] == DEFAULT_SQUARE_VALUE)
+                boardArray[noavailablepos[i]] = RESTRICTED_SQUARE_VALUE;
+        }    
+    }
+
+    private void CleanRestrictedSpace()
+    {
+        for (int j = 0; j < SQUARES; j++)
+        {
+            if (boardArray[j] == RESTRICTED_SQUARE_VALUE)
+                boardArray[j] = DEFAULT_SQUARE_VALUE;
+        }
+    }
+
+    public void UpdateBoardArray(int id, int boardArrayPos)
+    {
+        boardArray[boardArrayPos] = id;
     }
 }
