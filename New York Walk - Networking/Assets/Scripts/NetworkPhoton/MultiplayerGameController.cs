@@ -58,9 +58,20 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 
     public void EndTurn()
     {
-        ChangeOtherGameState(GameTurn.MyTurnSetUp);
+        ChangeOtherGameState(GameTurn.MyTurn);
         //end current token animation
     }
+
+    public void EndSetUpTurn()
+    {
+        ChangeOtherGameState(GameTurn.MyTurnSetUp);
+    }
+
+    public GameTurn GetGameTurn()
+    {
+        return turnState;
+    }
+
 
     public void SetDependencies(UIManager uiManager, User user, MultiplayerBoard multi_board)
     {
@@ -92,6 +103,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         {
             object[] data = (object[])photonEvent.CustomData;
         }
+        //do if from here
+        
     }
     public void OnEvent(EventData photonEvent) 
     {
@@ -101,8 +114,14 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             object[] data = (object[])photonEvent.CustomData;
             GameTurn state = (GameTurn)data[0];
             this.turnState = state;
-            if (turnState == GameTurn.MyTurnSetUp)
+            if (turnState == GameTurn.MyTurnSetUp && userManager.GetTokenCounter() < 3)
                 userManager.SetUpToken();
+
+            else if (userManager.GetTokenCounter() == 3)
+            {
+                turnState = GameTurn.MyTurn;
+                userManager.UpdateToken(); //TODO how do we use other events?
+            }
         }
     }
 
@@ -140,14 +159,14 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
 
         object[] content = new object[] { randomcards[0],randomcards[1],randomcards[2] }; //token id, token pos
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All }; //recieverGroup Maybe just other?
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
         PhotonNetwork.RaiseEvent(GIVE_CARDS, content, raiseEventOptions, SendOptions.SendReliable);
     }
 
     private void RecieveRandomCards(EventData photonEvent)
     {
         byte eventCode = photonEvent.Code;
-        if (eventCode == GIVE_CARDS && !firstTurn)
+        if (eventCode == GIVE_CARDS)
         {
             object[] data = (object[])photonEvent.CustomData;
 
@@ -156,6 +175,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             dataRecieved.Add((int)data[1]);
             dataRecieved.Add((int)data[2]);
             userManager.SetCards(dataRecieved);
+            Debug.LogError("Entered here hehe");
         }
     }
     #endregion

@@ -7,7 +7,7 @@ public class UserManager : MonoBehaviour
 {
     [HideInInspector] public int[] cards = new int[3];
 
-    private int turnCounter= 0;
+    private int tokenCounter= 0;
     // Start is called before the first frame update
     private GameTurn state;
     private MultiplayerGameController controller;
@@ -21,9 +21,21 @@ public class UserManager : MonoBehaviour
     {
         if(controller.CanPerformMove()&& Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Debug.LogError("Playing");
-            SetSpaceCubes._instance.EraseRestrictedSpaceCubes();
-            controller.EndTurn();
+            switch(controller.GetGameTurn())
+            {
+                case GameTurn.MyTurn:
+                    Debug.LogError("MyTurn Enter");
+                    controller.EndTurn();
+                    break;
+                case GameTurn.MyTurnSetUp:
+                    Debug.LogError("MyTurnSetUp Enter");
+                    SetSpaceCubes._instance.EraseRestrictedSpaceCubes(); //TODO token must launch an event to call this funciton
+                    controller.EndSetUpTurn();
+                    break;
+                default:
+
+                    break;
+            }
         }
     }
 
@@ -42,13 +54,13 @@ public class UserManager : MonoBehaviour
 
     public void SetUpToken()
     {
-        if(turnCounter >=3)
+        if(tokenCounter >=3)
             return;
         
-        JSONReader.Citizen citizen = JSONReader._instance.GetCitizenCardInfo(cards[turnCounter]);
+        JSONReader.Citizen citizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
         Debug.LogError($"setup token {citizen.citizen}");
         SetSpaceCubes._instance.SetRestrictedSpaceCubes(citizen.unavailableSquares);
-        turnCounter++;
+        tokenCounter++;
     }
 
     public void FillBoardSquares(BoxCollider[] boxCollider)
@@ -58,5 +70,35 @@ public class UserManager : MonoBehaviour
             boardSquares.Add(boxCollider[i].gameObject);
         }
         SetSpaceCubes._instance.DefineBoardPos(boardSquares);
+    }
+
+    //maybe later pass the token list.Count()
+    public int GetTokenCounter()
+    {
+        return tokenCounter;
+    }
+
+    public void UpdateToken()
+    {
+        Debug.LogError($"UpdatePhase");
+        //how can we no the token maybe with a list
+        //current token = 
+        //for(int i =0; i < tokenList.Count(); i++)
+        //{
+        //  if(current_token = tokenList[i])
+        //  {    
+        //if (i == 2)
+        //{
+        //    currentToken = tokenList[0];
+        //    return;
+        //}
+        //else
+        //{
+        //    currentToken = tokenList[i + 1];
+        //    return;
+        //}
+        //  }
+        //}
+        //
     }
 }

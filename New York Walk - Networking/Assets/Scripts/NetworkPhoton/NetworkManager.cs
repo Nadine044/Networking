@@ -98,7 +98,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 GetRandomCards getRandomCards = new GetRandomCards();
                 controller.SetFirstTurnTrue();//dirty af
                 controller.SetRandomCards(getRandomCards.GenerateRandom());
-                controller.SetTurnState(GameTurn.MyTurn);
+                controller.SetTurnState(GameTurn.MyTurnSetUp);
                 //here we must set our game state
             }
         }

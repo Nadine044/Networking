@@ -2,22 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TokenScript : MonoBehaviour
+public class TokenAnimationMovement : MonoBehaviour
 {
     private Vector3 destination; 
     private Animator anim;
-    // Start is called before the first frame update
     private float time_to_reach_target = 0.4f;
     float t =0;
-    void Start()
+
+    private void Awake()
     {
         anim = GetComponent<Animator>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void SetDestPos(Vector3 dst)
@@ -50,4 +44,6 @@ public class TokenScript : MonoBehaviour
         transform.position = new Vector3(transform.position.x,destination.y,transform.position.z);
         anim.SetBool("jump", false);
     }
+
+
 }

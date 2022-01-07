@@ -219,7 +219,7 @@ public class User : MonoBehaviour
                     board[Array.IndexOf(board, current_token.identifier)] = -2;
 
                     //current_token.gameObject.transform.position = squares[i].transform.position; //moves the cube to the position
-                    current_token.gameObject.GetComponent<TokenScript>().SetDestPos(squares[i].transform.position);
+                    current_token.gameObject.GetComponent<TokenAnimationMovement>().SetDestPos(squares[i].transform.position);
                     board[i] = current_token.identifier;
                     input_active = false;
                     //stop animation
