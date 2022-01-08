@@ -6,6 +6,8 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    public static NetworkManager _instance { get; private set; }
+
     [SerializeField] private UIManager uiManager;
     [SerializeField] private GameInitializer gameInitializer;
 
@@ -17,7 +19,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
-
+        _instance = this;
     }
     private void Update()
     {
@@ -89,8 +91,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.LocalPlayer == targetPlayer)
         {
-            uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); //maybe we should update this in another way
-            gameInitializer.InitializeMultiplayerGameController();
+            uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); 
+            if(controller == null)
+                gameInitializer.InitializeMultiplayerGameController();
+
             controller.SetGameState(GameState.Game);
             if ((bool)targetPlayer.CustomProperties[STARTING_TURN])
             {
@@ -116,6 +120,25 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
             else
                 p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, false } });
+        }
+    }
+
+    /// <summary>
+    /// Swap players Team
+    /// </summary>
+    public void RestartGame()
+    {
+
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+            if((bool)p.CustomProperties[STARTING_TURN])
+            {
+                p.CustomProperties[STARTING_TURN] = false;
+            }
+            else
+            {
+                p.CustomProperties[STARTING_TURN] = true;
+            }
         }
     }
     #endregion

@@ -13,12 +13,12 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private const byte SET_TURN_STATE_EVENT_CODE = 1;
     private const byte GIVE_CARDS = 2;
     private const byte GAME_STATE = 4;
-
+    private const byte RESET_GAME = 3;
     private UserManager userManager;
 
     private UIManager uiManager;
     private MultiplayerBoard board;
-
+    private bool restartGame = false;
     private void Awake()
     {
        // userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
@@ -28,7 +28,6 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         userManager.SetController(this);
     }
 
-    //this should be called when we try to click on the board
     public bool CanPerformMove()
     {
         if(!IsLocalPlayerTurn() && !IsGameInProgress())
@@ -67,12 +66,14 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     public void EndGame()
     {
         gameState = GameState.Finish;
+        turnState = GameTurn.OtherTurn;
         uiManager.WonGame();
         FinishGame();
     }
 
     public void SetDependencies(UIManager uiManager, MultiplayerBoard multi_board)
     {
+        restartGame = false;
         this.uiManager = uiManager;
         board = multi_board;
         userManager.FillBoardSquares(board.GetComponentsInChildren<BoxCollider>());
@@ -82,6 +83,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
         PhotonNetwork.NetworkingClient.EventReceived += RecieveRandomCards;
         PhotonNetwork.NetworkingClient.EventReceived += FinishGameEvent;
+        PhotonNetwork.NetworkingClient.EventReceived += ResetAllEvent;
         PhotonNetwork.AddCallbackTarget(this);
     }
 
@@ -89,6 +91,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
         PhotonNetwork.NetworkingClient.EventReceived -= RecieveRandomCards;
         PhotonNetwork.NetworkingClient.EventReceived -= FinishGameEvent;
+        PhotonNetwork.NetworkingClient.EventReceived -= ResetAllEvent;
+
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
@@ -107,10 +111,36 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             object[] data = (object[])photonEvent.CustomData;
             gameState = (GameState)data[0];
             //reset or quit application TODO
+            turnState = GameTurn.OtherTurn;
             uiManager.LoseGame();
         }
     }
 
+    public void ResetAll()
+    {
+        turnState = GameTurn.OtherTurn;
+        gameState = GameState.Init;
+        userManager.ResetAll();
+        if (!restartGame)
+        {
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
+            PhotonNetwork.RaiseEvent(RESET_GAME, null, raiseEventOptions, SendOptions.SendReliable);
+        }
+        else
+        {
+            restartGame = false;
+            NetworkManager._instance.RestartGame();
+        }
+    }
+
+    public void ResetAllEvent(EventData photonEvent)
+    {
+        byte eventCode = photonEvent.Code;
+        if (eventCode == RESET_GAME)
+        {
+            restartGame = true;
+        }
+    }
     public void OnEvent(EventData photonEvent) 
     {
         byte eventCode = photonEvent.Code;
@@ -188,7 +218,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     
     public void PassTurn()
     {
-        if (CanPerformMove() && turnState != GameTurn.MyTurnSetUp)
+        if (CanPerformMove() && turnState != GameTurn.MyTurnSetUp && turnState != GameTurn.OtherTurn )
         {
             userManager.PassTurn();
             EndTurn();

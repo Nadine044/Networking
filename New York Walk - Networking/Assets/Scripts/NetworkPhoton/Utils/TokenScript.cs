@@ -148,13 +148,14 @@ public class TokenScript : MonoBehaviour
     private void ChangeDestinyAlphaMaterial(float alpha)
     {
         Color color = destinationGO.GetComponent<MeshRenderer>().material.color;
-        color.a = alpha; //0 is transparent 1, opaque
+        color.a = alpha;
         destinationGO.GetComponent<MeshRenderer>().material.color = color;
     }
 
     public void MyTurn()
     {
         ChangeDestinyAlphaMaterial(myTurnAlphaValue);
+        if(pickUpGO!= null)
         pickUpGO.SetActive(true);
     }
 
@@ -188,7 +189,6 @@ public class TokenScript : MonoBehaviour
     {
         return tokenState;
     }
-
 
     /// <summary>
     /// This function validates that the clicked board pos is adjacent to the current token, not diagonals though
@@ -232,5 +232,13 @@ public class TokenScript : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void DeleteAll()
+    {
+        if (pickUpGO != null)
+            Destroy(pickUpGO);
+        if (destinationGO != null)
+            Destroy(destinationGO);
     }
 }

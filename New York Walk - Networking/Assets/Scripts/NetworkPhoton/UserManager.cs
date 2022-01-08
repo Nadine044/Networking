@@ -268,6 +268,34 @@ public class UserManager : MonoBehaviour
         {
             Debug.LogError("Game Finished");
         }
+    }
 
+    public void ResetAll()
+    {
+        //delete tokens
+        currentToken = null;
+        foreach(GameObject go in tokenList)
+        {
+            go.GetComponent<TokenScript>().DeleteAll();
+            Destroy(go);
+        }
+        tokenList.Clear();
+
+        tokenCounter = 0;
+        winCounter = 0;
+        blueTeam = false;
+
+        //set board to defaul values
+        for (int i = 0; i < SQUARES; i++)
+        {
+            boardArray[i] = -2;
+        }
+
+        //delete cards
+        CardMovement[] cards = FindObjectsOfType<CardMovement>();
+        foreach(CardMovement c in cards)
+        {
+            Destroy(c.gameObject);
+        }
     }
 }

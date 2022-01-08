@@ -10,8 +10,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private MultiplayerGameController controller;
 
     [Header("Buttons")]
-    [SerializeField] private Button restartButton;
     [SerializeField] private Button passTurnButton;
+    [SerializeField] private Button restartGame;
 
     [Header("Texts")]
    // [SerializeField] private Text resultText;
@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         passTurnButton.gameObject.SetActive(false);
+        restartGame.gameObject.SetActive(false);
         OnGameLaunched();
     }
 
@@ -60,7 +61,7 @@ public class UIManager : MonoBehaviour
     {
         connectScreen.SetActive(false);
         whosTurn.SetActive(true);
-        SetButton(true);
+        SetTurnButton(true);
     }
 
     public void SetTurnType(bool turn)
@@ -71,11 +72,15 @@ public class UIManager : MonoBehaviour
     public void LoseGame()
     {
         loseGame.SetActive(true);
+        passTurnButton.gameObject.SetActive(false);
+        restartGame.gameObject.SetActive(true);
     }
 
     public void WonGame()
     {
         winGame.SetActive(true);
+        passTurnButton.gameObject.SetActive(false);
+        restartGame.gameObject.SetActive(true);
     }
 
     public void PassTurn()
@@ -83,8 +88,14 @@ public class UIManager : MonoBehaviour
         controller.PassTurn();
     }
 
-    public void SetButton(bool active)
+    public void SetTurnButton(bool active)
     {
         passTurnButton.gameObject.SetActive(active);
+    }
+
+    public void RestartButton()
+    {
+        controller.ResetAll();
+        restartGame.gameObject.SetActive(false);
     }
 }
