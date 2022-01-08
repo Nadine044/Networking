@@ -224,8 +224,8 @@ public class UserManager : MonoBehaviour
     public void SpawnCard(Transform trans,int id)
     {
         GameObject go = Instantiate(cardGameObjectPrefab);
-        go.transform.position = trans.position;
+        //go.transform.position = trans.position;
         go.GetComponent<CitizenMaterial>().AssignMaterial(id);
-        //maybe aqui llançar animació
+        go.GetComponent<CardMovement>().SetDestinationPos(trans.position);
     }
 }

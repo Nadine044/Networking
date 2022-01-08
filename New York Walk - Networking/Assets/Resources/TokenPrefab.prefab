@@ -123,8 +123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baf49901c858d924eb131d9063fb2f90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blueMaterial: {fileID: 2100000, guid: 9889bd75facd0c7449c092012073a3bd, type: 2}
-  redMaterial: {fileID: 2100000, guid: 022f07a15a0ae5349961c570817d2c3f, type: 2}
   blueMaterialList:
   - {fileID: 2100000, guid: f957e2649e6543e4795668dd48aa81e9, type: 2}
   - {fileID: 2100000, guid: 1886c3b91142b744fbacd349071fd5ca, type: 2}
