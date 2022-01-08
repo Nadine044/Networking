@@ -21,25 +21,25 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (User._instance.SFX_PickUp)
-        {
-            pickUp.Play();
-            User._instance.SFX_PickUp = false;
-        }
+        //if (User._instance.SFX_PickUp)
+        //{
+        //    pickUp.Play();
+        //    User._instance.SFX_PickUp = false;
+        //}
 
-        if (User._instance.inGameMusicPlaying && !checkGameMusic)
-        {
-            checkGameMusic = true;
-            positionatingPlayersMusic.Stop();
-            inGameMusic.Play();
-        }
+        //if (User._instance.inGameMusicPlaying && !checkGameMusic)
+        //{
+        //    checkGameMusic = true;
+        //    positionatingPlayersMusic.Stop();
+        //    inGameMusic.Play();
+        //}
 
-        if (User._instance.win_counter == 2 && !lastMusicPlaying)
-        {
-            lastMusicPlaying = true;
-            inGameMusic.Stop();
-            lastCitizenMusic.Play();
-            Debug.Log("Play intense music here");
-        }
+        //if (User._instance.win_counter == 2 && !lastMusicPlaying)
+        //{
+        //    lastMusicPlaying = true;
+        //    inGameMusic.Stop();
+        //    lastCitizenMusic.Play();
+        //    Debug.Log("Play intense music here");
+        //}
     }
 }
