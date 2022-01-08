@@ -14,13 +14,26 @@ public class TokenScript : MonoBehaviour
     private JSONReader.Citizen citizen;
     private TokenAnimationMovement tokenAnimation;
 
+    [Header("Materials List")]
     [SerializeField] private List<Material> blueMaterialList;
     [SerializeField] private List<Material> redMaterialList;
+    [SerializeField] private List<Material> blueDestinnyMaterialList;
+    [SerializeField] private List<Material> redDestinnyMaterialList;
+
+    private const float myTurnAlphaValue = 1.0f;
+    private const float notMyTurnAlphaValue = 0.45f;
+    private const string destinyPrefabPath = "Destiny_Flag";
+
+    private GameObject destinationPrefab;
+
+    private GameObject destinationGO;
+    private GameObject pickUpGO;
 
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
         tokenAnimation = GetComponent<TokenAnimationMovement>();
+        destinationPrefab = Resources.Load(destinyPrefabPath) as GameObject;
     }
 
     public void SetMaterial(int materialCounter)
@@ -31,6 +44,7 @@ public class TokenScript : MonoBehaviour
         else if (!UserManager._instance.GetTeam())
             GetComponent<MeshRenderer>().material = redMaterialList[materialCounter];
     }
+
 
     public void SetID_BoardArrayPos(int id, int boardArrayPos,int materialCounter)
     {
@@ -123,10 +137,57 @@ public class TokenScript : MonoBehaviour
     public void UpdatePosition(Vector3 newPos)
     {
         tokenAnimation.SetDestPos(newPos);
+        EndMyTurn();
     }
 
     public void SetCitizenCard(JSONReader.Citizen citizen)
     {
         this.citizen = citizen;
+    }
+    public void SetPickUpPosition(Vector3 pickUpPos)
+    {
+        pickUpGO = Instantiate(destinationPrefab);
+        pickUpGO.transform.position = pickUpPos;
+        pickUpGO.SetActive(false);
+    }
+    public void SetDestiny(Vector3 destinyPos, int materialCounter)
+    {
+        destinationGO = Instantiate(destinationPrefab);
+        destinationGO.transform.position = destinyPos;
+        //SetDestinyPosition(destinyPos);
+        SetDestinyMaterial(materialCounter);
+        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
+    }
+    private void SetDestinyPosition(Vector3 destinyPos)
+    {
+        destinationPrefab.transform.position = destinyPos;
+    }
+    private void SetDestinyMaterial(int materialCounter)
+    {
+        Debug.LogError($"tokenCounter: {materialCounter} & {blueDestinnyMaterialList.Count}");
+        if (UserManager._instance.GetTeam())
+            destinationPrefab.GetComponentInChildren<MeshRenderer>().material = blueDestinnyMaterialList[materialCounter];
+
+        else 
+            destinationPrefab.GetComponentInChildren<MeshRenderer>().material = redDestinnyMaterialList[materialCounter];
+    }
+    private void ChangeDestinyAlphaMaterial(float alpha)
+    {
+        if (destinationGO.GetComponentInChildren<MeshRenderer>() == null)
+            Debug.LogError("Couldnt find material");
+
+        Color color = destinationGO.GetComponentInChildren<MeshRenderer>().material.color;
+        color.a = alpha; //0 is transparent 1, opaque
+        destinationGO.GetComponentInChildren<MeshRenderer>().material.color = color;
+    }
+    public void MyTurn()
+    {
+        ChangeDestinyAlphaMaterial(myTurnAlphaValue);
+        pickUpGO.SetActive(true);
+    }
+    private void EndMyTurn()
+    {
+        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
+        pickUpGO.SetActive(false);
     }
 }

@@ -131,6 +131,14 @@ MonoBehaviour:
   - {fileID: 2100000, guid: c0de27456e8e75549b18f5383dd96734, type: 2}
   - {fileID: 2100000, guid: 87cd314d4da3b6042aa107ce4202d768, type: 2}
   - {fileID: 2100000, guid: 538201ab115d7d14a828f06f1715e1fb, type: 2}
+  blueDestinnyMaterialList:
+  - {fileID: 2100000, guid: db1458aa520a40746a3d68e90e8d1df1, type: 2}
+  - {fileID: 2100000, guid: 23f83438d29acc44798d56a0d7e976f7, type: 2}
+  - {fileID: 2100000, guid: 19a43d7e4692ec84cb0bb8a87acb213b, type: 2}
+  redDestinnyMaterialList:
+  - {fileID: 2100000, guid: dd69a69bde20d474faaac51ac2258fdb, type: 2}
+  - {fileID: 2100000, guid: 15d49da4be6381b418bdffd312a72edb, type: 2}
+  - {fileID: 2100000, guid: 2df07f08ccd33b145b16db6a94aee91e, type: 2}
 --- !u!114 &2271189038939113992
 MonoBehaviour:
   m_ObjectHideFlags: 0

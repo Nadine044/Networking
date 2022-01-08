@@ -7,7 +7,7 @@ using System.Linq;
 
 public class UserManager : MonoBehaviour
 {
-    public static UserManager _instance;
+    public static UserManager _instance { get; private set; }
     private int[] cards = new int[3];
 
     [SerializeField] private TokenScript tokenScriptPrefab;
@@ -102,7 +102,7 @@ public class UserManager : MonoBehaviour
         //how can we no the token maybe with a list
         SetCurrentToken();
         SetSpaceCubes._instance.SetAvailableCubes(Array.IndexOf(boardArray, currentToken.GetID()));
-
+        currentToken.MyTurn();
     }
 
     void SetCurrentToken()
@@ -185,6 +185,11 @@ public class UserManager : MonoBehaviour
                     tmp_token.GetComponent<TokenScript>().SetMaterial(tokenCounter);
                     tmp_token.GetComponent<TokenScript>().SetCitizenCard(currentCitizen);
                     tmp_token.GetComponent<TokenScript>().SetID_BoardArrayPos(cards[tokenCounter],i,tokenCounter);
+                    Debug.LogError($"pickup pod {currentCitizen.pickUpID}");
+                    Debug.LogError($"pickup pod {boardSquares[currentCitizen.pickUpID].transform.position}");
+                    tmp_token.GetComponent<TokenScript>().SetPickUpPosition(boardSquares[currentCitizen.pickUpID].transform.position);
+                    tmp_token.GetComponent<TokenScript>().SetDestiny(boardSquares[currentCitizen.destinyID].transform.position, tokenCounter);
+
                     tokenList.Add(tmp_token);
 
                     CleanRestrictedSpace();

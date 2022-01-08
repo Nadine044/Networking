@@ -13,7 +13,7 @@ public class CitizenMaterial : MonoBehaviour
         rend.enabled = true;
     }
 
-    public void AssignMaterial(int material_n)//TODO
+    public void AssignMaterial(int material_n)
     {
         for(int i =0; i < materialList.Length; i++)
         {

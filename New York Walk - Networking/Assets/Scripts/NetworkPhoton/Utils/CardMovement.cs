@@ -24,7 +24,6 @@ public class CardMovement : MonoBehaviour
                 break;
 
             tmp_time += Time.deltaTime;
-            Debug.Log(tmp_time);
             float x = Mathf.MoveTowards(transform.position.x, destination.x, t);
             float z = Mathf.MoveTowards(transform.position.z, destination.z, t);
             float y = 3 * Mathf.Sin(Mathf.PI * ((Time.time - start_time) / TIME_TO_REACH_TARGET));
