@@ -2,6 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
@@ -22,7 +23,7 @@ public class TokenScript : MonoBehaviour
 
     private const float myTurnAlphaValue = 1.0f;
     private const float notMyTurnAlphaValue = 0.45f;
-    private const string destinyPrefabPath = "Destiny_Flag";
+    private const string destinyPrefabPath = "FlagPrefab";
 
     private GameObject destinationPrefab;
 
@@ -80,7 +81,6 @@ public class TokenScript : MonoBehaviour
     [PunRPC]
     private void RPC_LastTokenSetted(int id,int boardArrayPos,bool team,int materialCounter)
     {
-        Debug.LogError($"Instantiated player with id {id}, {boardArrayPos}");
         UserManager._instance.UpdateBoardArray(id, boardArrayPos);
         if(team)
             GetComponent<MeshRenderer>().material = blueMaterialList[materialCounter];
@@ -164,27 +164,21 @@ public class TokenScript : MonoBehaviour
     }
     private void SetDestinyMaterial(int materialCounter)
     {
-        Debug.LogError($"tokenCounter: {materialCounter} & {blueDestinnyMaterialList.Count}");
-        if (UserManager._instance.GetTeam())
-            destinationPrefab.GetComponentInChildren<MeshRenderer>().material = blueDestinnyMaterialList[materialCounter];
-
-        else 
-            destinationPrefab.GetComponentInChildren<MeshRenderer>().material = redDestinnyMaterialList[materialCounter];
+        destinationGO.GetComponent<MeshRenderer>().material = UserManager._instance.GetTeam() ? blueDestinnyMaterialList[materialCounter] : redDestinnyMaterialList[materialCounter];
     }
     private void ChangeDestinyAlphaMaterial(float alpha)
     {
-        if (destinationGO.GetComponentInChildren<MeshRenderer>() == null)
-            Debug.LogError("Couldnt find material");
-
-        Color color = destinationGO.GetComponentInChildren<MeshRenderer>().material.color;
+        Color color = destinationGO.GetComponent<MeshRenderer>().material.color;
         color.a = alpha; //0 is transparent 1, opaque
-        destinationGO.GetComponentInChildren<MeshRenderer>().material.color = color;
+        destinationGO.GetComponent<MeshRenderer>().material.color = color;
     }
+
     public void MyTurn()
     {
         ChangeDestinyAlphaMaterial(myTurnAlphaValue);
         pickUpGO.SetActive(true);
     }
+
     private void EndMyTurn()
     {
         ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
