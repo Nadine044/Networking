@@ -11,7 +11,8 @@ public class UserManager : MonoBehaviour
     private int[] cards = new int[3];
 
     [SerializeField] private TokenScript tokenScriptPrefab;
-
+    [SerializeField] private List<GameObject> cardAnchors;
+    [SerializeField] private GameObject cardGameObjectPrefab;
     private int tokenCounter = 0;
     // Start is called before the first frame update
     private MultiplayerGameController controller;
@@ -26,6 +27,8 @@ public class UserManager : MonoBehaviour
     private List<GameObject> tokenList = new List<GameObject>();
     private JSONReader.Citizen currentCitizen;
     private TokenScript currentToken;
+
+    private bool blueTeam = false;
     private void Awake()
     {
         _instance = this;
@@ -73,7 +76,9 @@ public class UserManager : MonoBehaviour
         currentCitizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
         Debug.LogError($"setup token {currentCitizen.citizen}");
         SetSpaceCubes._instance.SetRestrictedSpaceCubes(currentCitizen.unavailableSquares);
-        CreateRestrictedSpace(currentCitizen.unavailableSquares);        
+        CreateRestrictedSpace(currentCitizen.unavailableSquares);
+        SpawnCard(cardAnchors[tokenCounter].transform,cards[tokenCounter]);
+
     }
 
     public void FillBoardSquares(BoxCollider[] boxCollider)
@@ -147,6 +152,15 @@ public class UserManager : MonoBehaviour
             }
         }
     }
+    //the first player has the blue team
+    public void SetBlueTeamTrue()
+    {
+        blueTeam = true;
+    }
+    public bool GetTeam()
+    {
+        return blueTeam;
+    }
 
     private void SetInitialTokenPos()
     {
@@ -164,9 +178,10 @@ public class UserManager : MonoBehaviour
                         return;
 
                     GameObject tmp_token = PhotonNetwork.Instantiate(tokenScriptPrefab.name, boardSquares[i].transform.position,boardSquares[i].transform.rotation);
-                    tokenList.Add(tmp_token);
                     tmp_token.GetComponent<TokenScript>().SetCitizenCard(currentCitizen);
                     tmp_token.GetComponent<TokenScript>().SetID_BoardArrayPos(cards[tokenCounter],i);
+                    tokenList.Add(tmp_token);
+
                     CleanRestrictedSpace();
                     SetSpaceCubes._instance.EraseRestrictedSpaceCubes();
                     
@@ -199,5 +214,13 @@ public class UserManager : MonoBehaviour
     public void UpdateBoardArray(int id, int boardArrayPos)
     {
         boardArray[boardArrayPos] = id;
+    }
+
+    public void SpawnCard(Transform trans,int id)
+    {
+        GameObject go = Instantiate(cardGameObjectPrefab);
+        go.transform.position = trans.position;
+        go.GetComponent<CitizenMaterial>().AssignMaterial(id);
+        //maybe aqui llançar animació
     }
 }

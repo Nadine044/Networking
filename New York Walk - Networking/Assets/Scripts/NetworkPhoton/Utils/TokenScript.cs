@@ -13,10 +13,15 @@ public class TokenScript : MonoBehaviour
     private int boardArrayPos;
     private JSONReader.Citizen citizen;
     private TokenAnimationMovement tokenAnimation;
+
+    [SerializeField] private Material blueMaterial;
+    [SerializeField] private Material redMaterial;
+
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
         tokenAnimation = GetComponent<TokenAnimationMovement>();
+        GetComponent<MeshRenderer>().material = UserManager._instance.GetTeam() ? blueMaterial : redMaterial;
     }
 
     public void SetID_BoardArrayPos(int id, int boardArrayPos)
@@ -48,14 +53,20 @@ public class TokenScript : MonoBehaviour
     ////TODO pass more things but for know just like this
     public void LastTokenSetted() /////NO et pot fer aixi perque llavors ho rebrien tots els tokens, no només el meu, potser fer-ho a través del tablero?4
     {
-        photonView.RPC(nameof(RPC_LastTokenSetted),RpcTarget.AllBuffered, new object[] { id,boardArrayPos });
+        photonView.RPC(nameof(RPC_LastTokenSetted),RpcTarget.AllBuffered, new object[] { id,boardArrayPos,UserManager._instance.GetTeam()});
     }
 
     [PunRPC]
-    private void RPC_LastTokenSetted(int id,int boardArrayPos)
+    private void RPC_LastTokenSetted(int id,int boardArrayPos,bool team)
     {
         Debug.LogError($"Instantiated player with id {id}, {boardArrayPos}");
         UserManager._instance.UpdateBoardArray(id, boardArrayPos);
+        if(team)
+            GetComponent<MeshRenderer>().material = blueMaterial;
+        
+        else if(!team)
+            GetComponent<MeshRenderer>().material = redMaterial;
+
     }
 
     /// <summary>

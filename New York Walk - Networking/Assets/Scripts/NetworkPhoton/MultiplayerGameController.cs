@@ -131,6 +131,10 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         this.turnState = turnState;
     }
 
+    public void SetTeam()
+    {
+        userManager.SetBlueTeamTrue();
+    }
     //bassically here we tell the other player its his turn
     private void ChangeOtherGameState(GameTurn state)
     {

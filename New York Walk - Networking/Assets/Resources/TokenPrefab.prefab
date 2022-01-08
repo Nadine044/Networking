@@ -107,6 +107,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2271189038939113992}
+  - {fileID: -8658228732270354136}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -122,6 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baf49901c858d924eb131d9063fb2f90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blueMaterial: {fileID: 2100000, guid: 9889bd75facd0c7449c092012073a3bd, type: 2}
+  redMaterial: {fileID: 2100000, guid: 022f07a15a0ae5349961c570817d2c3f, type: 2}
 --- !u!114 &2271189038939113992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,5 +186,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowLayerWeightsInspector: 1
   ShowParameterInspector: 1
-  m_SynchronizeParameters: []
-  m_SynchronizeLayers: []
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: start
+  - Type: 4
+    SynchronizeType: 1
+    Name: jump
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
