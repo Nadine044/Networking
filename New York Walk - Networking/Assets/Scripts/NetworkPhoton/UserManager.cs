@@ -108,7 +108,11 @@ public class UserManager : MonoBehaviour
     void SetCurrentToken()
     {
         if (currentToken == null)
-            currentToken = tokenList[0].GetComponent<TokenScript>(); ;
+        {
+            currentToken = tokenList[0].GetComponent<TokenScript>();
+            currentToken.StartIdleAnimation();
+            return;
+        }
 
         for (int i = 0; i < tokenList.Count(); i++)
         {
@@ -178,8 +182,9 @@ public class UserManager : MonoBehaviour
                         return;
 
                     GameObject tmp_token = PhotonNetwork.Instantiate(tokenScriptPrefab.name, boardSquares[i].transform.position,boardSquares[i].transform.rotation);
+                    tmp_token.GetComponent<TokenScript>().SetMaterial(tokenCounter);
                     tmp_token.GetComponent<TokenScript>().SetCitizenCard(currentCitizen);
-                    tmp_token.GetComponent<TokenScript>().SetID_BoardArrayPos(cards[tokenCounter],i);
+                    tmp_token.GetComponent<TokenScript>().SetID_BoardArrayPos(cards[tokenCounter],i,tokenCounter);
                     tokenList.Add(tmp_token);
 
                     CleanRestrictedSpace();

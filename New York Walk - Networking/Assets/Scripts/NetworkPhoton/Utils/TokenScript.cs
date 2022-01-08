@@ -14,21 +14,29 @@ public class TokenScript : MonoBehaviour
     private JSONReader.Citizen citizen;
     private TokenAnimationMovement tokenAnimation;
 
-    [SerializeField] private Material blueMaterial;
-    [SerializeField] private Material redMaterial;
+    [SerializeField] private List<Material> blueMaterialList;
+    [SerializeField] private List<Material> redMaterialList;
 
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
         tokenAnimation = GetComponent<TokenAnimationMovement>();
-        GetComponent<MeshRenderer>().material = UserManager._instance.GetTeam() ? blueMaterial : redMaterial;
     }
 
-    public void SetID_BoardArrayPos(int id, int boardArrayPos)
+    public void SetMaterial(int materialCounter)
+    {
+        if (UserManager._instance.GetTeam())
+            GetComponent<MeshRenderer>().material = blueMaterialList[materialCounter];
+
+        else if (!UserManager._instance.GetTeam())
+            GetComponent<MeshRenderer>().material = redMaterialList[materialCounter];
+    }
+
+    public void SetID_BoardArrayPos(int id, int boardArrayPos,int materialCounter)
     {
         this.id = id;
         this.boardArrayPos = boardArrayPos;
-        LastTokenSetted();
+        LastTokenSetted(materialCounter);
     }
 
     public int GetID()
@@ -50,22 +58,21 @@ public class TokenScript : MonoBehaviour
         tokenAnimation.SetIdleAnimation(false);
     }
 
-    ////TODO pass more things but for know just like this
-    public void LastTokenSetted() /////NO et pot fer aixi perque llavors ho rebrien tots els tokens, no només el meu, potser fer-ho a través del tablero?4
+    public void LastTokenSetted(int materialCounter) 
     {
-        photonView.RPC(nameof(RPC_LastTokenSetted),RpcTarget.AllBuffered, new object[] { id,boardArrayPos,UserManager._instance.GetTeam()});
+        photonView.RPC(nameof(RPC_LastTokenSetted),RpcTarget.AllBuffered, new object[] { id,boardArrayPos,UserManager._instance.GetTeam(),materialCounter});
     }
 
     [PunRPC]
-    private void RPC_LastTokenSetted(int id,int boardArrayPos,bool team)
+    private void RPC_LastTokenSetted(int id,int boardArrayPos,bool team,int materialCounter)
     {
         Debug.LogError($"Instantiated player with id {id}, {boardArrayPos}");
         UserManager._instance.UpdateBoardArray(id, boardArrayPos);
         if(team)
-            GetComponent<MeshRenderer>().material = blueMaterial;
+            GetComponent<MeshRenderer>().material = blueMaterialList[materialCounter];
         
         else if(!team)
-            GetComponent<MeshRenderer>().material = redMaterial;
+            GetComponent<MeshRenderer>().material = redMaterialList[materialCounter];
 
     }
 

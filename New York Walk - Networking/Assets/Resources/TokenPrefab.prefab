@@ -125,6 +125,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueMaterial: {fileID: 2100000, guid: 9889bd75facd0c7449c092012073a3bd, type: 2}
   redMaterial: {fileID: 2100000, guid: 022f07a15a0ae5349961c570817d2c3f, type: 2}
+  blueMaterialList:
+  - {fileID: 2100000, guid: f957e2649e6543e4795668dd48aa81e9, type: 2}
+  - {fileID: 2100000, guid: 1886c3b91142b744fbacd349071fd5ca, type: 2}
+  - {fileID: 2100000, guid: 510869a42e4d9a148bf201178e3ebfc3, type: 2}
+  redMaterialList:
+  - {fileID: 2100000, guid: c0de27456e8e75549b18f5383dd96734, type: 2}
+  - {fileID: 2100000, guid: 87cd314d4da3b6042aa107ce4202d768, type: 2}
+  - {fileID: 2100000, guid: 538201ab115d7d14a828f06f1715e1fb, type: 2}
 --- !u!114 &2271189038939113992
 MonoBehaviour:
   m_ObjectHideFlags: 0
