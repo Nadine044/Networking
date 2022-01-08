@@ -119,6 +119,7 @@ public class TokenScript : MonoBehaviour
     public void SetPickUpPosition(Vector3 pickUpPos)
     {
         pickUpGO = Instantiate(destinationPrefab);
+        pickUpPos.x -= 1;
         pickUpGO.transform.position = pickUpPos;
         pickUpGO.SetActive(false);
     }
@@ -157,10 +158,11 @@ public class TokenScript : MonoBehaviour
         pickUpGO.SetActive(true);
     }
 
-    private void EndMyTurn()
+    public void EndMyTurn()
     {
         ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
-        pickUpGO.SetActive(false);
+        if (pickUpGO !=null)
+            pickUpGO.SetActive(false);
     }
 
     private void CheckPickUp()

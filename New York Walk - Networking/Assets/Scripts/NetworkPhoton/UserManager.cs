@@ -159,8 +159,8 @@ public class UserManager : MonoBehaviour
                     boardArray[Array.IndexOf(boardArray, currentToken.GetID())] = DEFAULT_SQUARE_VALUE;//Clean previous boardArray pos
                     boardArray[i] = currentToken.GetID();
                     SetSpaceCubes._instance.EraseAvailableSquares();
-                    currentToken.GetComponent<TokenScript>().UpdatePosition(boardSquares[i].transform.position);
                     currentToken.GetComponent<TokenScript>().UpdateboardArrayPos(i);
+                    currentToken.GetComponent<TokenScript>().UpdatePosition(boardSquares[i].transform.position);
                     if (winCounter == WIN_CONDITION)
                     {
                         controller.EndGame();
@@ -215,10 +215,14 @@ public class UserManager : MonoBehaviour
         }
     }
 
-    internal void PassTurn()
+    public void PassTurn()
     {
-        if(currentToken != null)
+        if (currentToken != null)
+        {
             currentToken.StopIdleAnimation();
+            SetSpaceCubes._instance.EraseAvailableSquares();
+            currentToken.EndMyTurn();
+        }
     }
 
     private void CreateRestrictedSpace(int[] noavailablepos) 
