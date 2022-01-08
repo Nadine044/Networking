@@ -29,6 +29,8 @@ public class UserManager : MonoBehaviour
     private TokenScript currentToken;
 
     private bool blueTeam = false;
+    private int winCounter = 0;
+    private const int WIN_CONDITION = 3;
     private void Awake()
     {
         _instance = this;
@@ -63,6 +65,7 @@ public class UserManager : MonoBehaviour
     {
         this.controller = controller;
     }
+
     public void SetCards(List<int> cards)
     {
         this.cards = cards.ToArray();
@@ -70,15 +73,11 @@ public class UserManager : MonoBehaviour
 
     public void SetUpToken()
     {
-        if(tokenCounter >=3)
-            return;
-        
         currentCitizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
         Debug.LogError($"setup token {currentCitizen.citizen}");
         SetSpaceCubes._instance.SetRestrictedSpaceCubes(currentCitizen.unavailableSquares);
         CreateRestrictedSpace(currentCitizen.unavailableSquares);
         SpawnCard(cardAnchors[tokenCounter].transform,cards[tokenCounter]);
-
     }
 
     public void FillBoardSquares(BoxCollider[] boxCollider)
@@ -130,6 +129,16 @@ public class UserManager : MonoBehaviour
                 }
             }
         }
+        if(winCounter == WIN_CONDITION)
+        {
+            //endgame 
+            return;
+        }
+        if(currentToken.GetTokenState() == TokenState.Win)
+        {
+            SetCurrentToken();
+            return;
+        }
         currentToken.StartIdleAnimation();
     }
 
@@ -151,6 +160,12 @@ public class UserManager : MonoBehaviour
                     boardArray[i] = currentToken.GetID();
                     SetSpaceCubes._instance.EraseAvailableSquares();
                     currentToken.GetComponent<TokenScript>().UpdatePosition(boardSquares[i].transform.position);
+                    currentToken.GetComponent<TokenScript>().UpdateboardArrayPos(i);
+                    if (winCounter == WIN_CONDITION)
+                    {
+                        controller.EndGame();
+                        return;
+                    }
                     controller.EndTurn();
                 }
             }
@@ -200,6 +215,12 @@ public class UserManager : MonoBehaviour
         }
     }
 
+    internal void PassTurn()
+    {
+        if(currentToken != null)
+            currentToken.StopIdleAnimation();
+    }
+
     private void CreateRestrictedSpace(int[] noavailablepos) 
     {
         for (int i = 0; i < noavailablepos.Length; ++i)
@@ -222,6 +243,11 @@ public class UserManager : MonoBehaviour
     {
         boardArray[boardArrayPos] = id;
     }
+    public void Clean_UpdateBoardArray(int id, int boardArrayPos)
+    {
+        boardArray[Array.IndexOf(boardArray, id)] = DEFAULT_SQUARE_VALUE;//Clean previous boardArray pos
+        boardArray[boardArrayPos] = id;
+    }
 
     public void SpawnCard(Transform trans,int id)
     {
@@ -229,5 +255,15 @@ public class UserManager : MonoBehaviour
         //go.transform.position = trans.position;
         go.GetComponent<CitizenMaterial>().AssignMaterial(id);
         go.GetComponent<CardMovement>().SetDestinationPos(trans.position);
+    }
+
+    public void TokenDone()
+    {
+        winCounter++;
+        if(winCounter == 3)
+        {
+            Debug.LogError("Game Finished");
+        }
+
     }
 }

@@ -15,11 +15,8 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private Transform BoardAnchor;
     [SerializeField] private UIManager UIManager;
 
-    private User user; //for now we leave it like this
-
     private void Awake()
     {
-        user = GetComponent<User>();
         controller = GetComponent<MultiplayerGameController>();
     }
     public void CreateMultiplayerBoard()
@@ -33,7 +30,7 @@ public class GameInitializer : MonoBehaviour
     public void InitializeMultiplayerGameController()
     {
         MultiplayerBoard mBoard = FindObjectOfType<MultiplayerBoard>();//try not to use findobject
-        controller.SetDependencies(UIManager,user, mBoard);
+        controller.SetDependencies(UIManager, mBoard);
         networkManager.SetController(controller);
     }
 

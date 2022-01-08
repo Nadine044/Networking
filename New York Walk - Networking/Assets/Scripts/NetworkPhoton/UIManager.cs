@@ -7,9 +7,11 @@ public class UIManager : MonoBehaviour
 {
     [Header("Scene Dependencies")]
     [SerializeField] private NetworkManager networkManager;
+    [SerializeField] private MultiplayerGameController controller;
 
     [Header("Buttons")]
     [SerializeField] private Button restartButton;
+    [SerializeField] private Button passTurnButton;
 
     [Header("Texts")]
    // [SerializeField] private Text resultText;
@@ -20,9 +22,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameoverScreen;
     [SerializeField] private GameObject connectScreen;
     [SerializeField] private GameObject whosTurn;
+    [SerializeField] private GameObject winGame;
+    [SerializeField] private GameObject loseGame;
 
     private void Awake()
     {
+        passTurnButton.gameObject.SetActive(false);
         OnGameLaunched();
     }
 
@@ -37,6 +42,8 @@ public class UIManager : MonoBehaviour
         gameoverScreen.SetActive(false);
         connectScreen.SetActive(false);
         whosTurn.SetActive(false);
+        winGame.SetActive(false);
+        loseGame.SetActive(false);
     }
 
     public void OnConnect()
@@ -53,10 +60,31 @@ public class UIManager : MonoBehaviour
     {
         connectScreen.SetActive(false);
         whosTurn.SetActive(true);
+        SetButton(true);
     }
 
     public void SetTurnType(bool turn)
     {
         turnStatusText.text = turn ? "My Turn" : "Not My Turn";
+    }
+
+    public void LoseGame()
+    {
+        loseGame.SetActive(true);
+    }
+
+    public void WonGame()
+    {
+        winGame.SetActive(true);
+    }
+
+    public void PassTurn()
+    {
+        controller.PassTurn();
+    }
+
+    public void SetButton(bool active)
+    {
+        passTurnButton.gameObject.SetActive(active);
     }
 }

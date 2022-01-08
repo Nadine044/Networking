@@ -8,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(PhotonView))]
 public class TokenScript : MonoBehaviour
 {
+    TokenState tokenState = TokenState.BaseState;
     private PhotonView photonView;
     private JSONReader.Citizen citizenCard = new JSONReader.Citizen();
     private int id = -1;
@@ -24,9 +25,7 @@ public class TokenScript : MonoBehaviour
     private const float myTurnAlphaValue = 1.0f;
     private const float notMyTurnAlphaValue = 0.45f;
     private const string destinyPrefabPath = "FlagPrefab";
-
     private GameObject destinationPrefab;
-
     private GameObject destinationGO;
     private GameObject pickUpGO;
 
@@ -46,7 +45,6 @@ public class TokenScript : MonoBehaviour
             GetComponent<MeshRenderer>().material = redMaterialList[materialCounter];
     }
 
-
     public void SetID_BoardArrayPos(int id, int boardArrayPos,int materialCounter)
     {
         this.id = id;
@@ -57,10 +55,6 @@ public class TokenScript : MonoBehaviour
     public int GetID()
     {
         return id;
-    }
-    public void UpdateBoard(int[] boardArray)
-    {
-
     }
 
     public void StartIdleAnimation()
@@ -90,12 +84,116 @@ public class TokenScript : MonoBehaviour
 
     }
 
+    public void TokenUpdate()
+    {
+        photonView.RPC(nameof(RPC_TokenUpdate), RpcTarget.AllBuffered, new object[] { id, boardArrayPos});
+    }
+    [PunRPC]
+    private void RPC_TokenUpdate(int id, int boardArrayPos)
+    {
+        Debug.LogError($"Token Updated with id{id} and BoardPos {boardArrayPos}");
+        UserManager._instance.Clean_UpdateBoardArray(id, boardArrayPos);
+    }
+    public void UpdatePosition(Vector3 newPos)
+    {
+        tokenAnimation.SetDestPos(newPos);
+        TokenUpdate();
+
+        if (tokenState == TokenState.BaseState)
+            CheckPickUp();
+        else
+        {
+            CheckDestinationComplete();
+            if(tokenState == TokenState.Win)
+            {
+                UserManager._instance.TokenDone();
+            }
+        }
+        EndMyTurn();
+    }
+
+    public void SetCitizenCard(JSONReader.Citizen citizen)
+    {
+        this.citizen = citizen;
+    }
+    public void SetPickUpPosition(Vector3 pickUpPos)
+    {
+        pickUpGO = Instantiate(destinationPrefab);
+        pickUpGO.transform.position = pickUpPos;
+        pickUpGO.SetActive(false);
+    }
+
+    public void UpdateboardArrayPos(int boardArrayPos)
+    {
+        this.boardArrayPos = boardArrayPos;
+    }
+
+    public void SetDestiny(Vector3 destinyPos, int materialCounter)
+    {
+        destinationGO = Instantiate(destinationPrefab);
+        destinationGO.transform.position = destinyPos;
+        //SetDestinyPosition(destinyPos);
+        SetDestinyMaterial(materialCounter);
+        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
+    }
+    private void SetDestinyPosition(Vector3 destinyPos)
+    {
+        destinationPrefab.transform.position = destinyPos;
+    }
+    private void SetDestinyMaterial(int materialCounter)
+    {
+        destinationGO.GetComponent<MeshRenderer>().material = UserManager._instance.GetTeam() ? blueDestinnyMaterialList[materialCounter] : redDestinnyMaterialList[materialCounter];
+    }
+    private void ChangeDestinyAlphaMaterial(float alpha)
+    {
+        Color color = destinationGO.GetComponent<MeshRenderer>().material.color;
+        color.a = alpha; //0 is transparent 1, opaque
+        destinationGO.GetComponent<MeshRenderer>().material.color = color;
+    }
+
+    public void MyTurn()
+    {
+        ChangeDestinyAlphaMaterial(myTurnAlphaValue);
+        pickUpGO.SetActive(true);
+    }
+
+    private void EndMyTurn()
+    {
+        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
+        pickUpGO.SetActive(false);
+    }
+
+    private void CheckPickUp()
+    {
+        if(boardArrayPos == citizen.pickUpID)
+        {
+            Destroy(pickUpGO);
+            tokenState = TokenState.Pickup;
+            //here we could launch some particles
+        }
+    }
+
+    public void CheckDestinationComplete()
+    {
+        if(boardArrayPos == citizen.destinyID)
+        {
+            tokenState = TokenState.Win;
+            //set some particles & tell userManager we are done
+        }
+    }
+
+    public TokenState GetTokenState()
+    {
+        return tokenState;
+    }
+
+
     /// <summary>
     /// This function validates that the clicked board pos is adjacent to the current token, not diagonals though
     /// </summary>
     /// <param name="clicked_pos"></param>
     /// <returns></returns>
-    public bool CheckAdjacentSquares(int clicked_pos,int[] boardArray)
+    public bool CheckAdjacentSquares(int clicked_pos, int[] boardArray)
     {
         //Get our current pos in the array/board
         int idx = Array.IndexOf(boardArray, id);
@@ -132,56 +230,5 @@ public class TokenScript : MonoBehaviour
             return true;
         }
         return false;
-    }
-
-    public void UpdatePosition(Vector3 newPos)
-    {
-        tokenAnimation.SetDestPos(newPos);
-        EndMyTurn();
-    }
-
-    public void SetCitizenCard(JSONReader.Citizen citizen)
-    {
-        this.citizen = citizen;
-    }
-    public void SetPickUpPosition(Vector3 pickUpPos)
-    {
-        pickUpGO = Instantiate(destinationPrefab);
-        pickUpGO.transform.position = pickUpPos;
-        pickUpGO.SetActive(false);
-    }
-    public void SetDestiny(Vector3 destinyPos, int materialCounter)
-    {
-        destinationGO = Instantiate(destinationPrefab);
-        destinationGO.transform.position = destinyPos;
-        //SetDestinyPosition(destinyPos);
-        SetDestinyMaterial(materialCounter);
-        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
-    }
-    private void SetDestinyPosition(Vector3 destinyPos)
-    {
-        destinationPrefab.transform.position = destinyPos;
-    }
-    private void SetDestinyMaterial(int materialCounter)
-    {
-        destinationGO.GetComponent<MeshRenderer>().material = UserManager._instance.GetTeam() ? blueDestinnyMaterialList[materialCounter] : redDestinnyMaterialList[materialCounter];
-    }
-    private void ChangeDestinyAlphaMaterial(float alpha)
-    {
-        Color color = destinationGO.GetComponent<MeshRenderer>().material.color;
-        color.a = alpha; //0 is transparent 1, opaque
-        destinationGO.GetComponent<MeshRenderer>().material.color = color;
-    }
-
-    public void MyTurn()
-    {
-        ChangeDestinyAlphaMaterial(myTurnAlphaValue);
-        pickUpGO.SetActive(true);
-    }
-
-    private void EndMyTurn()
-    {
-        ChangeDestinyAlphaMaterial(notMyTurnAlphaValue);
-        pickUpGO.SetActive(false);
     }
 }

@@ -9,15 +9,12 @@ using System;
 public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
 {
     private GameTurn turnState;
-    private const byte SET_GAME_STATE_EVENT_CODE = 1;
+    private GameState gameState;
+    private const byte SET_TURN_STATE_EVENT_CODE = 1;
     private const byte GIVE_CARDS = 2;
-    private const byte SET_TOKEN = 3;
-    private const byte UPDATE_TOKEN = 4;
+    private const byte GAME_STATE = 4;
 
     private UserManager userManager;
-
-    private User localUser; //get the local user TODO
-    private User activePlayer; //this will swap to the other client when turn ends
 
     private UIManager uiManager;
     private MultiplayerBoard board;
@@ -26,6 +23,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
        // userManager = ScriptableObject.CreateInstance(typeof(UserManager)) as UserManager;
         turnState = GameTurn.OtherTurn;
+        gameState = GameState.Init;
         userManager = GetComponent<UserManager>();
         userManager.SetController(this);
     }
@@ -33,7 +31,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     //this should be called when we try to click on the board
     public bool CanPerformMove()
     {
-        if(!IsLocalPlayerTurn())
+        if(!IsLocalPlayerTurn() && !IsGameInProgress())
         {
             return false;
         }
@@ -44,11 +42,11 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
         return turnState == GameTurn.MyTurnSetUp || turnState == GameTurn.MyTurn;
     }
-    ////
-    //private bool IsGameInProgress()
-    //{
-    //    //should check if the game still active
-    //}
+    
+    private bool IsGameInProgress()
+    {
+        return gameState == GameState.Game;
+    }
 
     public void EndTurn()
     {
@@ -66,44 +64,57 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         return turnState;
     }
 
+    public void EndGame()
+    {
+        gameState = GameState.Finish;
+        uiManager.WonGame();
+        FinishGame();
+    }
 
-    public void SetDependencies(UIManager uiManager, User user, MultiplayerBoard multi_board)
+    public void SetDependencies(UIManager uiManager, MultiplayerBoard multi_board)
     {
         this.uiManager = uiManager;
-        localUser = user;
         board = multi_board;
         userManager.FillBoardSquares(board.GetComponentsInChildren<BoxCollider>());
     }
 
-    #region PUN EVENTS
-
     private void OnEnable()
     {
-        PhotonNetwork.NetworkingClient.EventReceived += SetTokenEvent;
         PhotonNetwork.NetworkingClient.EventReceived += RecieveRandomCards;
+        PhotonNetwork.NetworkingClient.EventReceived += FinishGameEvent;
         PhotonNetwork.AddCallbackTarget(this);
     }
 
     private void OnDisable()
     {
-        PhotonNetwork.NetworkingClient.EventReceived -= SetTokenEvent;
         PhotonNetwork.NetworkingClient.EventReceived -= RecieveRandomCards;
+        PhotonNetwork.NetworkingClient.EventReceived -= FinishGameEvent;
         PhotonNetwork.RemoveCallbackTarget(this);
     }
-    private void SetTokenEvent(EventData photonEvent)
+
+    private void FinishGame()
+    {
+        object[] content = new object[] { (int)GameState.Finish};
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
+        PhotonNetwork.RaiseEvent(GAME_STATE, content, raiseEventOptions, SendOptions.SendReliable);
+    }
+
+    private void FinishGameEvent(EventData photonEvent)
     {
         byte eventCode = photonEvent.Code;
-        if (eventCode == SET_TOKEN)
+        if(eventCode == GAME_STATE)
         {
             object[] data = (object[])photonEvent.CustomData;
+            gameState = (GameState)data[0];
+            //reset or quit application TODO
+            uiManager.LoseGame();
         }
-        //do if from here
-        
     }
+
     public void OnEvent(EventData photonEvent) 
     {
         byte eventCode = photonEvent.Code;
-        if (eventCode == SET_GAME_STATE_EVENT_CODE)
+        if (eventCode == SET_TURN_STATE_EVENT_CODE)
         {
             object[] data = (object[])photonEvent.CustomData;
             GameTurn state = (GameTurn)data[0];
@@ -114,16 +125,9 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             else if (userManager.GetTokenCounter() == 3)
             {
                 turnState = GameTurn.MyTurn;
-                userManager.UpdateToken(); //TODO how do we use other events?
+                userManager.UpdateToken();
             }
         }
-    }
-
-    private void SetTokenEvent()
-    {
-        object[] content = new object[] { 2, 14 }; //token id, token pos
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All }; //recieverGroup Maybe just other?
-        PhotonNetwork.RaiseEvent(SET_TOKEN, content, raiseEventOptions, SendOptions.SendReliable);
     }
 
     public void SetTurnState(GameTurn turnState)
@@ -141,7 +145,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         this.turnState = GameTurn.OtherTurn;
         object[] content = new object[] { (int)state };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
-        PhotonNetwork.RaiseEvent(SET_GAME_STATE_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
+        PhotonNetwork.RaiseEvent(SET_TURN_STATE_EVENT_CODE, content, raiseEventOptions, SendOptions.SendReliable);
     }
 
 
@@ -176,7 +180,19 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             Debug.LogError("Entered here hehe");
         }
     }
-    #endregion
 
+    public void SetGameState(GameState state)
+    {
+        gameState = state;
+    }
+    
+    public void PassTurn()
+    {
+        if (CanPerformMove() && turnState != GameTurn.MyTurnSetUp)
+        {
+            userManager.PassTurn();
+            EndTurn();
+        }
+    }
 
 }
