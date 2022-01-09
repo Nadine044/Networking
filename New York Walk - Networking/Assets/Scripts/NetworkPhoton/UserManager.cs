@@ -204,6 +204,9 @@ public class UserManager : MonoBehaviour
                     SetSpaceCubes._instance.EraseRestrictedSpaceCubes();
                     
                     tokenCounter++;
+                    if (tokenCounter == 3)
+                        AudioManager._instance.SetInGameMusicClip();
+
                     //last function to call
                     controller.EndSetUpTurn();
                 }
@@ -260,6 +263,10 @@ public class UserManager : MonoBehaviour
     public void TokenDone()
     {
         winCounter++;
+        if(winCounter == 2)
+        {
+            AudioManager._instance.SetlastCitizenMusicClip();
+        }
     }
 
     public void ResetAll()
@@ -290,5 +297,10 @@ public class UserManager : MonoBehaviour
         {
             Destroy(c.gameObject);
         }
+    }
+
+    public int GetWinCounter()
+    {
+        return winCounter;
     }
 }

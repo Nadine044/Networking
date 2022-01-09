@@ -142,6 +142,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             restartGame = true;
         }
     }
+
     public void OnEvent(EventData photonEvent) 
     {
         byte eventCode = photonEvent.Code;

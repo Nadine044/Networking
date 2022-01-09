@@ -171,6 +171,7 @@ public class TokenScript : MonoBehaviour
     {
         if(boardArrayPos == citizen.pickUpID)
         {
+            AudioManager._instance.SetPickupMusicClip();
             Destroy(pickUpGO);
             tokenState = TokenState.Pickup;
             //here we could launch some particles

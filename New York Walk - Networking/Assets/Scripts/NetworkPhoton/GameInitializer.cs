@@ -29,6 +29,7 @@ public class GameInitializer : MonoBehaviour
 
     public void InitializeMultiplayerGameController()
     {
+        AudioManager._instance.SetPositioningMusicClip();
         MultiplayerBoard mBoard = FindObjectOfType<MultiplayerBoard>();//try not to use findobject
         controller.SetDependencies(UIManager, mBoard);
         networkManager.SetController(controller);
