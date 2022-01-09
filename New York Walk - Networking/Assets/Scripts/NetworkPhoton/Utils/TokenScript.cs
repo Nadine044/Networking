@@ -88,12 +88,13 @@ public class TokenScript : MonoBehaviour
     {
         photonView.RPC(nameof(RPC_TokenUpdate), RpcTarget.AllBuffered, new object[] { id, boardArrayPos});
     }
+
     [PunRPC]
     private void RPC_TokenUpdate(int id, int boardArrayPos)
     {
-        Debug.LogError($"Token Updated with id{id} and BoardPos {boardArrayPos}");
         UserManager._instance.Clean_UpdateBoardArray(id, boardArrayPos);
     }
+
     public void UpdatePosition(Vector3 newPos)
     {
         tokenAnimation.SetDestPos(newPos);

@@ -96,6 +96,7 @@ public class UIManager : MonoBehaviour
     public void RestartButton()
     {
         controller.ResetAll();
+        DisableAllScreens();
         restartGame.gameObject.SetActive(false);
     }
 }

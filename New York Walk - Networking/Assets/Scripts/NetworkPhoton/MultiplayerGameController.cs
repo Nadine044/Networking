@@ -128,6 +128,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         }
         else
         {
+            Debug.Log($"Reset secondtime");
             restartGame = false;
             NetworkManager._instance.RestartGame();
         }
@@ -207,7 +208,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
             dataRecieved.Add((int)data[1]);
             dataRecieved.Add((int)data[2]);
             userManager.SetCards(dataRecieved);
-            Debug.LogError("Entered here hehe");
+
         }
     }
 

@@ -47,12 +47,10 @@ public class UserManager : MonoBehaviour
             switch(controller.GetGameTurn())
             {
                 case GameTurn.MyTurn:
-                    Debug.LogError("MyTurn Enter");
                     UpdateTokenPos();
                     break;
                 case GameTurn.MyTurnSetUp:
                     SetInitialTokenPos();
-                    Debug.LogError("MyTurnSetUp Enter");
                     break;
                 default:
 
@@ -74,7 +72,6 @@ public class UserManager : MonoBehaviour
     public void SetUpToken()
     {
         currentCitizen = JSONReader._instance.GetCitizenCardInfo(cards[tokenCounter]);
-        Debug.LogError($"setup token {currentCitizen.citizen}");
         SetSpaceCubes._instance.SetRestrictedSpaceCubes(currentCitizen.unavailableSquares);
         CreateRestrictedSpace(currentCitizen.unavailableSquares);
         SpawnCard(cardAnchors[tokenCounter].transform,cards[tokenCounter]);
@@ -97,7 +94,6 @@ public class UserManager : MonoBehaviour
 
     public void UpdateToken()
     {
-        Debug.LogError($"UpdatePhase");
         //how can we no the token maybe with a list
         SetCurrentToken();
         SetSpaceCubes._instance.SetAvailableCubes(Array.IndexOf(boardArray, currentToken.GetID()));
@@ -264,10 +260,6 @@ public class UserManager : MonoBehaviour
     public void TokenDone()
     {
         winCounter++;
-        if(winCounter == 3)
-        {
-            Debug.LogError("Game Finished");
-        }
     }
 
     public void ResetAll()
@@ -277,8 +269,9 @@ public class UserManager : MonoBehaviour
         foreach(GameObject go in tokenList)
         {
             go.GetComponent<TokenScript>().DeleteAll();
-            Destroy(go);
+            PhotonNetwork.Destroy(go);
         }
+        SetSpaceCubes._instance.EraseAvailableSquares();
         tokenList.Clear();
 
         tokenCounter = 0;

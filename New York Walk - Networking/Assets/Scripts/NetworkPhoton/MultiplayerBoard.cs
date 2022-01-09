@@ -35,7 +35,6 @@ public class MultiplayerBoard : MonoBehaviour
     [PunRPC]
     private void RPC_SelectedTokenMove(Vector2 coords) //example
     {
-        Debug.LogError($"Selected token moved {coords}");
         Vector2Int intCoords = new Vector2Int(Mathf.RoundToInt(coords.x), Mathf.RoundToInt(coords.y)); //example
     }
 }

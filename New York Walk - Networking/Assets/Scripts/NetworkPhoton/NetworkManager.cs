@@ -27,7 +27,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        Debug.developerConsoleVisible = true;
+      //  Debug.developerConsoleVisible = true;
     }
 
     public void SetController(MultiplayerGameController controller)
@@ -39,7 +39,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsConnected)
         {
-            Debug.LogError($"Connected to server from connect");
             PhotonNetwork.JoinRandomRoom(null, MAX_PLAYERS);
         }
         else
@@ -51,13 +50,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     #region Photon Callbacks
     public override void OnConnectedToMaster()
     {
-        Debug.LogError($"Connected to server. Looking for a random room");
         PhotonNetwork.JoinRandomRoom(null, MAX_PLAYERS);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.LogError($"Joining random room failed because of {message}. Creating new one");
+        Debug.Log($"Joining random room failed because of {message}. Creating new one");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = MAX_PLAYERS;
         PhotonNetwork.CreateRoom(null, roomOptions);
@@ -66,7 +64,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         uiManager.Connected();
-        Debug.LogError($"Player {PhotonNetwork.LocalPlayer.ActorNumber} joined the room");
+        Debug.Log($"Player {PhotonNetwork.LocalPlayer.ActorNumber} joined the room");
 
         if (!IsRoomFull())
         {
@@ -82,12 +80,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
     {
-        Debug.LogError($"Player {newPlayer.ActorNumber} joined the room");
+        Debug.Log($"Player {newPlayer.ActorNumber} joined the room");
     }
 
     public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        Debug.LogError($"Player {targetPlayer.ActorNumber} has changed his property");
+        Debug.Log($"Player {targetPlayer.ActorNumber} has changed his property");
 
         if (PhotonNetwork.LocalPlayer == targetPlayer)
         {
@@ -98,7 +96,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             controller.SetGameState(GameState.Game);
             if ((bool)targetPlayer.CustomProperties[STARTING_TURN])
             {
-                Debug.LogError($"Entered here as player {targetPlayer.ActorNumber}");
+                Debug.Log($"Entered here as player {targetPlayer.ActorNumber}");
                 GetRandomCards getRandomCards = new GetRandomCards();
                 controller.SetRandomCards(getRandomCards.GenerateRandom());
                 controller.SetTurnState(GameTurn.MyTurnSetUp);
@@ -123,9 +121,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
-    /// <summary>
-    /// Swap players Team
-    /// </summary>
     public void RestartGame()
     {
 
@@ -134,10 +129,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             if((bool)p.CustomProperties[STARTING_TURN])
             {
                 p.CustomProperties[STARTING_TURN] = false;
+                p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable(){ { STARTING_TURN,false} });
             }
             else
             {
                 p.CustomProperties[STARTING_TURN] = true;
+                p.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { STARTING_TURN, true } });
             }
         }
     }
