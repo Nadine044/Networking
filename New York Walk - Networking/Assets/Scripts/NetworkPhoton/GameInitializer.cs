@@ -23,7 +23,7 @@ public class GameInitializer : MonoBehaviour
     {
         if(!networkManager.IsRoomFull()) //only the first playe instantiates the board
         {
-            PhotonNetwork.Instantiate(multiplayerBoardPrefab.name, BoardAnchor.position, BoardAnchor.rotation);
+            PhotonNetwork.InstantiateSceneObject(multiplayerBoardPrefab.name, BoardAnchor.position, BoardAnchor.rotation);
         }
     }
 
