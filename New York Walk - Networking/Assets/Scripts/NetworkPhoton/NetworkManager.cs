@@ -59,8 +59,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = MAX_PLAYERS;
         PhotonNetwork.CreateRoom(null, roomOptions);
-        if (PhotonNetwork.CurrentRoom != null)
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { GAME_STATE, gameInitializer.GetController().GetGameState() } });
+    
     }
 
     public override void OnJoinedRoom()
@@ -72,6 +71,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             if (!IsRoomFull())
             {
+                if (PhotonNetwork.CurrentRoom != null)
+                    PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { GAME_STATE, gameInitializer.GetController().GetGameState() } });
                 gameInitializer.CreateMultiplayerBoard();
             }
         }
