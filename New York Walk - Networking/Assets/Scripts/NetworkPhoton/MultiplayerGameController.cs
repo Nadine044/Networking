@@ -66,6 +66,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     public void EndGame()
     {
         gameState = GameState.Finish;
+        NetworkManager._instance.SetGameStateToRoomProperty(gameState);
         turnState = GameTurn.OtherTurn;
         uiManager.WonGame();
         FinishGame();
@@ -120,6 +121,7 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
         turnState = GameTurn.OtherTurn;
         gameState = GameState.Init;
+        NetworkManager._instance.SetGameStateToRoomProperty(gameState);
         userManager.ResetAll();
         if (!restartGame)
         {
@@ -217,6 +219,8 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     {
         gameState = state;
     }
+
+    public GameState GetGameState() => gameState;
     
     public void PassTurn()
     {

@@ -15,7 +15,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private const string STARTING_TURN = "turn";
     private const int MAX_PLAYERS = 2;
-
+    private const string GAME_STATE = "gameState";
     private void Awake()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -59,6 +59,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = MAX_PLAYERS;
         PhotonNetwork.CreateRoom(null, roomOptions);
+        if (PhotonNetwork.CurrentRoom != null)
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { GAME_STATE, gameInitializer.GetController().GetGameState() } });
     }
 
     public override void OnJoinedRoom()
@@ -66,11 +68,29 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         uiManager.Connected();
         Debug.Log($"Player {PhotonNetwork.LocalPlayer.ActorNumber} joined the room");
 
-        if (!IsRoomFull())
+        if(PhotonNetwork.IsMasterClient)
         {
-            gameInitializer.CreateMultiplayerBoard();
+            if (!IsRoomFull())
+            {
+                gameInitializer.CreateMultiplayerBoard();
+            }
         }
-        else SetTurn();
+        else
+        {
+            //check game state
+            switch((GameState)PhotonNetwork.CurrentRoom.CustomProperties[GAME_STATE])
+            {
+                case GameState.Init: //Default
+                    SetTurn();
+                    break;
+                case GameState.Game:
+                    //Do function
+                    break;
+                case GameState.Finish:
+                    //Do function
+                    break;
+            }
+        }
     }
 
     public bool IsRoomFull()
@@ -139,4 +159,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
     #endregion
+
+    public void SetGameStateToRoomProperty(GameState state)
+    {
+        if(PhotonNetwork.CurrentRoom != null)
+        {
+            PhotonNetwork.CurrentRoom.CustomProperties[GAME_STATE] = state;
+        }
+        else
+        {
+            Debug.LogError("Room is null, you aren't connected");
+        }
+    }
 }

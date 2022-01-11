@@ -41,4 +41,8 @@ public class GameInitializer : MonoBehaviour
             Application.Quit();
     }
 
+    public MultiplayerGameController GetController()
+    {
+        return controller;
+    }
 }
