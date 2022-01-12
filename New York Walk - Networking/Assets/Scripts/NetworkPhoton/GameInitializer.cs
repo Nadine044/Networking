@@ -35,12 +35,6 @@ public class GameInitializer : MonoBehaviour
         networkManager.SetController(controller);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-    }
-
     public MultiplayerGameController GetController()
     {
         return controller;

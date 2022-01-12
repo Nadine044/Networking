@@ -243,4 +243,12 @@ public class TokenScript : MonoBehaviour
         if (destinationGO != null)
             Destroy(destinationGO);
     }
+
+    public int GetBoardPos() => boardArrayPos;
+
+    /// <summary>
+    ///If returns true player has pickedUpObj
+    /// </summary>
+    /// <returns></returns>
+    public bool GetPickUp() => pickUpGO == null;
 }

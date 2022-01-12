@@ -86,7 +86,11 @@ public class UserManager : MonoBehaviour
         SetSpaceCubes._instance.DefineBoardPos(boardSquares);
     }
 
-    //maybe later pass the token list.Count()
+    public Vector3 GetBoardSquaresPos(int pos)
+    {
+        return boardSquares[pos].transform.position;
+    }
+
     public int GetTokenCounter()
     {
         return tokenCounter;
@@ -302,5 +306,13 @@ public class UserManager : MonoBehaviour
     public int GetWinCounter()
     {
         return winCounter;
+    }
+    public List<GameObject> GetTokenList() => tokenList;
+
+    public int[] GetCards() => cards;
+
+    public void ModifyBoardValue(int boardPos, int boardValue)
+    {
+        boardArray[boardPos] = boardValue;
     }
 }
