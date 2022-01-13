@@ -49,7 +49,7 @@ public class TokenScript : MonoBehaviour
     {
         this.id = id;
         this.boardArrayPos = boardArrayPos;
-        LastTokenSetted(materialCounter);
+        SendTokenInfo(materialCounter);
     }
 
     public int GetID()
@@ -67,13 +67,13 @@ public class TokenScript : MonoBehaviour
         tokenAnimation.SetIdleAnimation(false);
     }
 
-    public void LastTokenSetted(int materialCounter) 
+    public void SendTokenInfo(int materialCounter) 
     {
-        photonView.RPC(nameof(RPC_LastTokenSetted),RpcTarget.AllBuffered, new object[] { id,boardArrayPos,UserManager._instance.GetTeam(),materialCounter});
+        photonView.RPC(nameof(RPC_RecieveTokenInfo),RpcTarget.AllBuffered, new object[] { id,boardArrayPos,UserManager._instance.GetTeam(),materialCounter});
     }
 
     [PunRPC]
-    private void RPC_LastTokenSetted(int id,int boardArrayPos,bool team,int materialCounter)
+    private void RPC_RecieveTokenInfo(int id,int boardArrayPos,bool team,int materialCounter)
     {
         UserManager._instance.UpdateBoardArray(id, boardArrayPos);
         if(team)

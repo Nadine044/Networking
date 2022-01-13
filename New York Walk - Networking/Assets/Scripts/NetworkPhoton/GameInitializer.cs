@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class GameInitializer : MonoBehaviour
 {
-    // Start is called before the first frame update
     [Header("Dependant Objects")]
     [SerializeField] private MultiplayerBoard multiplayerBoardPrefab;
     private MultiplayerGameController controller;
