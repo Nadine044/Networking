@@ -27,7 +27,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-      //  Debug.developerConsoleVisible = true;
+      Debug.developerConsoleVisible = true;
     }
 
     public void SetController(MultiplayerGameController controller)
@@ -110,24 +110,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.LocalPlayer == targetPlayer)
         {
-            uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]); 
-            if(controller == null)
+            uiManager.SetTurnType((bool)PhotonNetwork.LocalPlayer.CustomProperties[STARTING_TURN]);
+
+            if (controller == null)
                 gameInitializer.InitializeMultiplayerGameController();
 
             controller.SetGameState(GameState.Game);
+
             if ((bool)targetPlayer.CustomProperties[STARTING_TURN])
             {
-                Debug.Log($"Entered here as player {targetPlayer.ActorNumber}");
                 GetRandomCards getRandomCards = new GetRandomCards();
                 controller.SetRandomCards(getRandomCards.GenerateRandom());
                 controller.SetTurnState(GameTurn.MyTurnSetUp);
                 controller.SetTeam();
-                //here we must set our game state
             }
         }
     }
 
-    private void SetTurn() //here we decide whos turn first
+    private void SetTurn() 
     {
         int tmp = Random.Range(1, 3);
         foreach(Player p in PhotonNetwork.PlayerList)
