@@ -21,13 +21,14 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private MultiplayerBoard board;
     private bool restartGame = false;
     private const string crossPath = "Cross";
-    [SerializeField] private GameObject crossPrefab;
+    private GameObject crossPrefab;
     private void Awake()
     {
         turnState = GameTurn.OtherTurn;
         gameState = GameState.Init;
         userManager = GetComponent<UserManager>();
         userManager.SetController(this);
+        crossPrefab = Resources.Load<GameObject>(crossPath);
     }
 
     public bool CanPerformMove()

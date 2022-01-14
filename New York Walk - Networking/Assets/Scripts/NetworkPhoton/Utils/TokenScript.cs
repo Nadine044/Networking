@@ -29,11 +29,13 @@ public class TokenScript : MonoBehaviour
     private GameObject destinationGO;
     private GameObject pickUpGO;
 
+    private GameObject arm;
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
         tokenAnimation = GetComponent<TokenAnimationMovement>();
         destinationPrefab = Resources.Load(destinyPrefabPath) as GameObject;
+        arm = FindObjectOfType<MoveArm>().gameObject;
     }
 
     public void SetMaterial(int materialCounter)
@@ -99,6 +101,8 @@ public class TokenScript : MonoBehaviour
     {
         tokenAnimation.SetDestPos(newPos);
         TokenUpdate();
+
+        ArmMoveMe();
 
         if (tokenState == TokenState.BaseState)
             CheckPickUp();
@@ -190,6 +194,11 @@ public class TokenScript : MonoBehaviour
     public TokenState GetTokenState()
     {
         return tokenState;
+    }
+
+    public void ArmMoveMe()
+    {
+        arm.GetComponent<MoveArm>().PickUpToken(boardArrayPos);
     }
 
     /// <summary>

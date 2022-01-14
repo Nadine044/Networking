@@ -7,6 +7,7 @@ public class GameInitializer : MonoBehaviour
 {
     [Header("Dependant Objects")]
     [SerializeField] private MultiplayerBoard multiplayerBoardPrefab;
+    [SerializeField] private MoveArm arm;
     private MultiplayerGameController controller;
 
     [Header("Scene references")]
@@ -23,6 +24,7 @@ public class GameInitializer : MonoBehaviour
         if(!networkManager.IsRoomFull()) //only the first playe instantiates the board
         {
             PhotonNetwork.InstantiateRoomObject(multiplayerBoardPrefab.name, BoardAnchor.position, BoardAnchor.rotation);
+            PhotonNetwork.Instantiate(arm.name, BoardAnchor.position, BoardAnchor.rotation);
         }
     }
 
@@ -32,6 +34,7 @@ public class GameInitializer : MonoBehaviour
         MultiplayerBoard mBoard = FindObjectOfType<MultiplayerBoard>();//try not to use findobject
         controller.SetDependencies(UIManager, mBoard);
         networkManager.SetController(controller);
+        
     }
 
     public MultiplayerGameController GetController()
