@@ -2627,7 +2627,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45cfd06def54ef74697a124aa3fa60e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crossPrefab: {fileID: 3522490931554965031, guid: a2034a10d1eecbd4b91e942eeddacb09, type: 3}
+  crossPrefab: {fileID: 3158643867263914513, guid: a2034a10d1eecbd4b91e942eeddacb09, type: 3}
 --- !u!114 &2073963378
 MonoBehaviour:
   m_ObjectHideFlags: 0

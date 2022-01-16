@@ -21,14 +21,14 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private MultiplayerBoard board;
     private bool restartGame = false;
     private const string crossPath = "Cross";
-    private GameObject crossPrefab;
+    [SerializeField] private CrossBehaviour crossPrefab;
     private void Awake()
     {
         turnState = GameTurn.OtherTurn;
         gameState = GameState.Init;
         userManager = GetComponent<UserManager>();
         userManager.SetController(this);
-        crossPrefab = Resources.Load<GameObject>(crossPath);
+       // crossPrefab = Resources.Load<GameObject>(crossPath);
     }
 
     public bool CanPerformMove()
@@ -126,6 +126,12 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
         gameState = GameState.Init;
         NetworkManager._instance.SetGameStateToRoomProperty(gameState);
         userManager.ResetAll();
+        CrossBehaviour[] crossBh = FindObjectsOfType<CrossBehaviour>();
+        for(int i = 0; i < crossBh.Length; i++)
+        {
+            PhotonNetwork.Destroy(crossBh[i].GetComponent<PhotonView>());
+        }
+
         if (!restartGame)
         {
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //recieverGroup Maybe just other?
@@ -188,9 +194,9 @@ public class MultiplayerGameController : MonoBehaviour, IOnEventCallback
     private void CrossesBlock(int[] positions)
     {
         Debug.LogError($"Croos instantiated");
-        PhotonNetwork.InstantiateRoomObject(crossPrefab.name, userManager.GetBoardSquaresPos(positions[0]), Quaternion.Euler(-90, 0, 0));
+        PhotonNetwork.Instantiate(crossPrefab.name, userManager.GetBoardSquaresPos(positions[0]), Quaternion.Euler(-90, 0, 0));
         userManager.ModifyBoardValue(positions[0],-3);
-        PhotonNetwork.InstantiateRoomObject(crossPrefab.name, userManager.GetBoardSquaresPos(positions[1]), Quaternion.Euler(-90, 0, 0));
+        PhotonNetwork.Instantiate(crossPrefab.name, userManager.GetBoardSquaresPos(positions[1]), Quaternion.Euler(-90, 0, 0));
         userManager.ModifyBoardValue(positions[1], -3);
     }
     public void SetRandomCards(List<int>randomCards)
