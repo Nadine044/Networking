@@ -1,0 +1,220 @@
+﻿{
+  "citizens": [
+    {
+      "citizen": "Actress",
+      "pickUp": "Wall Street",
+      "destiny": "Apollo Theater",
+      "pickUpID": 2,
+      "destinyID": 22,
+      "difficulty": 2,
+      "unavailableSquares": [1, 2, 3, 6, 7, 8, 16, 17, 18, 21, 22, 23]
+    },
+    {
+      "citizen": "Anthropologist",
+      "pickUp": "Battery Park",
+      "destiny": "The Schomburg Center for Research in Black Culture",
+      "pickUpID": 3,
+      "destinyID": 21,
+      "difficulty": 2,
+      "unavailableSquares": [2, 3, 4, 7, 8, 9, 15, 16, 17, 20, 21, 22]
+    },
+    {
+      "citizen": "Artist",
+      "pickUp": "Foley Square",
+      "destiny": "The Solomon R.Guggenheim Museum",
+      "pickUpID": 8,
+      "destinyID": 16,
+      "difficulty": 1,
+      "unavailableSquares": [2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22]
+    },
+    {
+      "citizen": "Cabbie",
+      "pickUp": "Cathedral Church of St. John the Divine",
+      "destiny": "Brooklyn Bridge",
+      "pickUpID": 24,
+      "destinyID": 0,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 5, 6, 18, 19, 23, 24]
+    },
+    {
+      "citizen": "Coach",
+      "pickUp": "Grand Central Terminal",
+      "destiny": "Madison Square Garden",
+      "pickUpID": 11,
+      "destinyID": 13,
+      "difficulty": 1,
+      "unavailableSquares": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,  18, 19]
+    },
+    {
+      "citizen": "Economist",
+      "pickUp": "Apollo Theater",
+      "destiny": "Wall Street",
+      "pickUpID": 22,
+      "destinyID": 2,
+      "difficulty": 2,
+      "unavailableSquares": [1, 2, 3, 6, 7, 8, 16, 17, 18, 21, 22, 23]
+    },
+    {
+      "citizen": "Grandma",
+      "pickUp": "Times Square",
+      "destiny": "Central Park",
+      "pickUpID": 7,
+      "destinyID": 17,
+      "difficulty": 1,
+      "unavailableSquares": [1, 2, 3, 6, 7, 8, 11, 12, 13, 16, 17, 18, 21, 22, 23]
+    },
+    {
+      "citizen": "Grandpa",
+      "pickUp": "Trinity Church",
+      "destiny": "Abyssinian Baptist Church",
+      "pickUpID": 4,
+      "destinyID": 20,
+      "difficulty": 2,
+      "unavailableSquares": [3, 4, 8, 9, 15, 16, 20, 21]
+    },
+    {
+      "citizen": "Historian",
+      "pickUp": "Radio City Music Hall",
+      "destiny": "Natural History Museum",
+      "pickUpID": 6,
+      "destinyID": 18,
+      "difficulty": 1,
+      "unavailableSquares": [0, 1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 17, 18, 19, 22, 23, 24]
+    },
+    {
+      "citizen": "Journalist",
+      "pickUp": "Central Park",
+      "destiny": "Times Square",
+      "pickUpID": 17,
+      "destinyID": 7,
+      "difficulty": 1,
+      "unavailableSquares": [1, 2, 3, 6, 7, 8, 11, 12, 13, 16, 17, 18, 21, 22, 23]
+    },
+    {
+      "citizen": "Kid",
+      "pickUp": "Municipal Building",
+      "destiny": "Levain Bakery - Harlem",
+      "pickUpID": 1,
+      "destinyID": 23,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 2, 5, 6, 7, 17, 18, 19, 22, 23, 24]
+    },
+    {
+      "citizen": "Pianist",
+      "pickUp": "Natural History Museum",
+      "destiny": "Radio City Music Hall",
+      "pickUpID": 18,
+      "destinyID": 6,
+      "difficulty": 1,
+      "unavailableSquares": [0, 1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 17, 18, 19, 22, 23, 24]
+    },
+    {
+      "citizen": "PizzaGuy",
+      "pickUp": "Abyssinian Baptist Church",
+      "destiny": "Trinity Church",
+      "pickUpID": 20,
+      "destinyID": 4,
+      "difficulty": 2,
+      "unavailableSquares": [3, 4, 8, 9, 15, 16, 20, 21]
+    },
+    {
+      "citizen": "Policeman",
+      "pickUp": "Stuyvesant High School",
+      "destiny": "Police Department - Upper East Side",
+      "pickUpID": 9,
+      "destinyID": 15,
+      "difficulty": 2,
+      "unavailableSquares": [3, 4, 8, 9, 10, 11, 13, 14, 15, 16, 20, 21]
+    },
+    {
+      "citizen": "Politician",
+      "pickUp": "Chrysler Building",
+      "destiny": "Lincoln Center",
+      "pickUpID": 10,
+      "destinyID": 14,
+      "difficulty": 2,
+      "unavailableSquares": [5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 18, 19]
+    },
+    {
+      "citizen": "Priest",
+      "pickUp": "Brooklyn Bridge",
+      "destiny": "Cathedral Church of St.John the Divine",
+      "pickUpID": 0,
+      "destinyID": 24,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 5, 6, 18, 19, 23, 24]
+    },
+    {
+      "citizen": "Professor",
+      "pickUp": "Manhattan Bridge",
+      "destiny": "Morningside University",
+      "pickUpID": 5,
+      "destinyID": 19,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 5, 6, 10, 11, 13, 14, 18, 19, 23, 24]
+    },
+    {
+      "citizen": "Receptionist",
+      "pickUp": "Lincoln Centre",
+      "destiny": "Chrysler Building",
+      "pickUpID": 14,
+      "destinyID": 10,
+      "difficulty": 2,
+      "unavailableSquares": [5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 18, 19]
+    },
+    {
+      "citizen": "Robot",
+      "pickUp": "The Schomburg Center for Research in Black Culture",
+      "destiny": "Battery Park",
+      "pickUpID": 21,
+      "destinyID": 3,
+      "difficulty": 2,
+      "unavailableSquares": [2, 3, 4, 7, 8, 9, 15, 16, 17, 20, 21, 22]
+    },
+    {
+      "citizen": "Secretary",
+      "pickUp": "Levain Bakery - Harlem",
+      "destiny": "Municipal Building",
+      "pickUpID": 23,
+      "destinyID": 1,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 2, 5, 6, 7, 17, 18, 19, 22, 23, 24]
+    },
+    {
+      "citizen": "Student",
+      "pickUp": "Police Department - Upper East Side",
+      "destiny": "Stuyvesant High School",
+      "pickUpID": 15,
+      "destinyID": 9,
+      "difficulty": 2,
+      "unavailableSquares": [3, 4, 8, 9, 10, 11, 13, 14, 15, 16, 20, 21]
+    },
+    {
+      "citizen": "Tourist Guide",
+      "pickUp": "The Solomon R.Guggenheim Museum",
+      "destiny": "Foley Square",
+      "pickUpID": 16,
+      "destinyID": 8,
+      "difficulty": 1,
+      "unavailableSquares": [2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22]
+    },
+    {
+      "citizen": "Truck Driver",
+      "pickUp": "Morningside University",
+      "destiny": "Manhattan Bridge",
+      "pickUpID": 19,
+      "destinyID": 5,
+      "difficulty": 2,
+      "unavailableSquares": [0, 1, 5, 6, 10, 11, 13, 14, 18, 19, 23, 24]
+    },
+    {
+      "citizen": "Watchmaker",
+      "pickUp": "Madison Square Garden",
+      "destiny": "Grand Central Terminal",
+      "pickUpID": 13,
+      "destinyID": 11,
+      "difficulty": 1,
+      "unavailableSquares": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18, 19]
+    }
+  ]
+}

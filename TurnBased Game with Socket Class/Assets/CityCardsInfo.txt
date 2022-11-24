@@ -1,0 +1,59 @@
+{
+  "powerUps": [
+    {
+      "name": "Stop1",
+      "utility": "Blablabla",
+      "turns": "3"
+    },
+    {
+      "name": "Stop2",
+      "utility": "Blablabla",
+      "turns": "3"
+    },
+    {
+      "name": "Stop3",
+      "utility": "Blablabla",
+      "turns": "3"
+    },
+    {
+      "name": "VIP1",
+      "utility": "Blablabla",
+      "turns": "0"
+    },
+    {
+      "name": "VIP2",
+      "utility": "Blablabla",
+      "turns": "0"
+    },
+    {
+      "name": "Security",
+      "utility": "Blablabla",
+      "turns": "0"
+    },
+    {
+      "name": "Filming1",
+      "utility": "Blablabla",
+      "turns": "2"
+    },
+    {
+      "name": "Filming2",
+      "utility": "Blablabla",
+      "turns": "2"
+    },
+    {
+      "name": "Subway1",
+      "utility": "Blablabla",
+      "turns": "0"
+    },
+    {
+      "name": "Subway2",
+      "utility": "Blablabla",
+      "turns": "0"
+    },
+    {
+      "name": "Subway3",
+      "utility": "Blablabla",
+      "turns": "0"
+    }
+  ]
+}
